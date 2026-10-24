@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         Title="Podcast Recorder" Height="820" Width="1280" MinHeight="640" MinWidth="1000"
-        Background="{StaticResource WindowBrush}" FontSize="13">
+        Background="{DynamicResource WindowBrush}" Foreground="{DynamicResource TextBrush}" FontSize="13">
     <!-- Keyboard shortcuts. Jingle pad keys (1-8, Q-I, A-K, Z-M by grid position) are handled in code-behind. -->
     <Window.InputBindings>
         <KeyBinding Gesture="Ctrl+R" Command="{Binding StartRecordingCommand}" />
@@ -40,8 +40,8 @@
                 <Style TargetType="Border" BasedOn="{StaticResource PanelBorder}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsRecording}" Value="True">
-                            <Setter Property="Background" Value="{StaticResource RecordSoftBrush}" />
-                            <Setter Property="BorderBrush" Value="{StaticResource RecordBrush}" />
+                            <Setter Property="Background" Value="{DynamicResource RecordSoftBrush}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource RecordBrush}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -50,7 +50,7 @@
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
                     <Button Style="{StaticResource TransportButton}" Command="{Binding StartRecordingCommand}" ToolTip="Kaydı başlat (Ctrl+R)">
                         <StackPanel Orientation="Horizontal">
-                            <Ellipse Width="12" Height="12" Fill="{StaticResource RecordBrush}" Margin="0,0,8,0" />
+                            <Ellipse Width="12" Height="12" Fill="{DynamicResource RecordBrush}" Margin="0,0,8,0" />
                             <TextBlock Text="Kaydet" FontWeight="SemiBold" />
                         </StackPanel>
                     </Button>
@@ -64,15 +64,15 @@
                     <TextBlock Text="{Binding ElapsedText}" FontFamily="Consolas" FontSize="28" FontWeight="SemiBold"
                                VerticalAlignment="Center" Margin="16,0,12,0" />
                     <TextBlock Text="{Binding StateText}" VerticalAlignment="Center" FontWeight="SemiBold"
-                               Foreground="{StaticResource MutedTextBrush}" />
+                               Foreground="{DynamicResource MutedTextBrush}" />
                     <StackPanel VerticalAlignment="Center" Margin="20,0,0,0"
                                 ToolTip="Ses yüksekliği (EBU R128). Anlık: son 0,4 sn. Kayıt: kaydın tamamı. Podcast'ler için yaygın hedef -16 LUFS.">
                         <TextBlock>
-                            <Run Text="Anlık:" Foreground="{StaticResource MutedTextBrush}" />
+                            <Run Text="Anlık:" Foreground="{DynamicResource MutedTextBrush}" />
                             <Run Text="{Binding MomentaryLoudnessText, Mode=OneWay}" FontWeight="SemiBold" />
                         </TextBlock>
                         <TextBlock>
-                            <Run Text="Kayıt:" Foreground="{StaticResource MutedTextBrush}" />
+                            <Run Text="Kayıt:" Foreground="{DynamicResource MutedTextBrush}" />
                             <Run Text="{Binding IntegratedLoudnessText, Mode=OneWay}" FontWeight="SemiBold" />
                         </TextBlock>
                     </StackPanel>
@@ -124,10 +124,10 @@
                 <Ellipse Width="10" Height="10" VerticalAlignment="Center" ToolTip="Konuşma algılandı">
                     <Ellipse.Style>
                         <Style TargetType="Ellipse">
-                            <Setter Property="Fill" Value="{StaticResource BorderBrush}" />
+                            <Setter Property="Fill" Value="{DynamicResource BorderBrush}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsVoiceDetected}" Value="True">
-                                    <Setter Property="Fill" Value="{StaticResource LiveBrush}" />
+                                    <Setter Property="Fill" Value="{DynamicResource LiveBrush}" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -140,7 +140,7 @@
             <Expander.Header>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Yapay zeka: yazıya çevirme ve seslendirme" FontWeight="SemiBold" />
-                    <TextBlock Text="  · transkript çıkarılıyor…" Foreground="{StaticResource MutedTextBrush}"
+                    <TextBlock Text="  · transkript çıkarılıyor…" Foreground="{DynamicResource MutedTextBrush}"
                                Visibility="{Binding IsTranscribing, Converter={StaticResource BoolToVisibility}}" />
                 </StackPanel>
             </Expander.Header>
@@ -173,10 +173,10 @@
                                 <Button Content="Transkripti aç" Command="{Binding OpenTranscriptCommand}" />
                             </WrapPanel>
                             <ProgressBar Height="6" Minimum="0" Maximum="1" Value="{Binding TranscriptionProgress, Mode=OneWay}"
-                                         Foreground="{StaticResource AccentBrush}" BorderThickness="0" Margin="0,6,0,0"
+                                         Foreground="{DynamicResource AccentBrush}" BorderThickness="0" Margin="0,6,0,0"
                                          Visibility="{Binding IsTranscribing, Converter={StaticResource BoolToVisibility}}" />
                             <TextBlock Text="{Binding TranscriptionStatus}" TextWrapping="Wrap" Margin="0,4,0,0"
-                                       Foreground="{StaticResource MutedTextBrush}" />
+                                       Foreground="{DynamicResource MutedTextBrush}" />
                         </StackPanel>
 
                         <!-- Text to speech -->
@@ -201,7 +201,7 @@
                                 <Button Content="Boş jingle hücresine ata" Command="{Binding AssignSpeechToJingleCommand}" />
                             </WrapPanel>
                             <TextBlock Text="{Binding SynthesisStatus}" TextWrapping="Wrap" Margin="0,4,0,0"
-                                       Foreground="{StaticResource MutedTextBrush}" />
+                                       Foreground="{DynamicResource MutedTextBrush}" />
                         </StackPanel>
                     </Grid>
 
@@ -214,7 +214,7 @@
                                         <ComboBox ItemsSource="{x:Static vm:AiViewModel.WhisperModels}" DisplayMemberPath="DisplayName"
                                                   SelectedValuePath="Id" SelectedValue="{Binding WhisperModel}" Width="260" />
                                     </WrapPanel>
-                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{StaticResource MutedTextBrush}">
+                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{DynamicResource MutedTextBrush}">
                                         <Run Text="Ücretsiz ve internetsiz çalışır, ama işlemcide bulut servislerinden yavaştır. Model ilk kullanımda indirilir:" />
                                         <Run Text="{x:Static vm:AiViewModel.WhisperModelFolder}" />
                                     </TextBlock>
@@ -255,7 +255,7 @@
                                         <TextBlock Text="Seslendirme dağıtımı:" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <TextBox Text="{Binding AzureOpenAiSpeechDeployment, UpdateSourceTrigger=PropertyChanged}" Width="160" />
                                     </WrapPanel>
-                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{StaticResource MutedTextBrush}"
+                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{DynamicResource MutedTextBrush}"
                                                Text="Foundry portalında whisper ya da gpt-4o-transcribe ve tts ya da gpt-4o-mini-tts modellerini dağıtın; burada dağıtım (deployment) adlarını yazın." />
                                 </StackPanel>
                             </TabItem>
@@ -268,17 +268,17 @@
                                         <TextBlock Text="Anahtar:" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <PasswordBox services:PasswordBoxAssist.Password="{Binding AzureSpeechKey}" Width="240" />
                                     </WrapPanel>
-                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{StaticResource MutedTextBrush}"
+                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{DynamicResource MutedTextBrush}"
                                                Text="Speech kaynağının &quot;Keys and Endpoint&quot; sayfasındaki anahtar ve bölge. Türkçe için tr-TR-EmelNeural ve tr-TR-AhmetNeural sesleri hazır gelir." />
                                 </StackPanel>
                             </TabItem>
                             <TabItem Header="Windows sesleri">
-                                <TextBlock Margin="8" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"
+                                <TextBlock Margin="8" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}"
                                            Text="İnternetsiz ve ücretsizdir. Türkçe ses için Windows Ayarlar › Saat ve dil › Konuşma bölümünden Türkçe konuşma paketini ekleyin; ses listesi uygulama açılırken okunur." />
                             </TabItem>
                         </TabControl>
                     </Expander>
-                    <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"
+                    <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}"
                                Text="API anahtarları ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Bulut servislerine gönderilen ses ve metin için ilgili servisin ücret ve gizlilik koşulları geçerlidir." />
                 </StackPanel>
             </Border>
@@ -302,10 +302,10 @@
                         <Button Content="Klasör seç…" Command="{Binding ChooseFolderCommand}" />
                         <Button Content="↑ Üst klasör" Command="{Binding UpCommand}" />
                     </StackPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentFolder}" Foreground="{StaticResource MutedTextBrush}"
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentFolder}" Foreground="{DynamicResource MutedTextBrush}"
                                TextTrimming="CharacterEllipsis" ToolTip="{Binding CurrentFolder}" Margin="0,0,0,6" />
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
-                    <TextBlock DockPanel.Dock="Bottom" Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
+                    <TextBlock DockPanel.Dock="Bottom" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
                                Text="Çift tık: klasöre gir ya da listeye ekle. Dosyaları listeye veya jingle hücresine sürükleyin." />
                     <ListBox x:Name="BrowserList" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}"
                              PreviewMouseLeftButtonDown="BrowserList_PreviewMouseLeftButtonDown"
@@ -341,7 +341,7 @@
                     </WrapPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
                         <ProgressBar Height="6" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}"
-                                     Foreground="{StaticResource AccentBrush}" BorderThickness="0" />
+                                     Foreground="{DynamicResource AccentBrush}" BorderThickness="0" />
                         <DockPanel Margin="0,4,0,0">
                             <CheckBox DockPanel.Dock="Right" Content="Bitince sonrakine geç" IsChecked="{Binding AutoAdvance}" />
                             <TextBlock Text="{Binding PositionText}" FontFamily="Consolas" />
@@ -365,7 +365,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="▶ " Foreground="{StaticResource AccentBrush}"
+                                    <TextBlock Text="▶ " Foreground="{DynamicResource AccentBrush}"
                                                Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVisibility}}" />
                                     <TextBlock Text="{Binding Title}" ToolTip="{Binding FilePath}">
                                         <TextBlock.Style>
@@ -397,7 +397,7 @@
                         <TextBlock Text="Jingle paneli" Style="{StaticResource PanelTitle}" />
                     </DockPanel>
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
-                    <TextBlock DockPanel.Dock="Bottom" Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
+                    <TextBlock DockPanel.Dock="Bottom" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
                                Text="Tıkla ya da köşedeki tuşa bas: çal / durdur. Dosyayı hücreye sürükleyin; sağ tık ile dosya seçin veya temizleyin." />
                     <TabControl ItemsSource="{Binding Banks}" SelectedItem="{Binding SelectedBank}">
                         <TabControl.ItemTemplate>
@@ -437,27 +437,27 @@
                                                     <Button.Template>
                                                         <ControlTemplate TargetType="Button">
                                                             <Border x:Name="Cell" CornerRadius="6" BorderThickness="1"
-                                                                    BorderBrush="{StaticResource BorderBrush}" Background="{StaticResource PanelBrush}" Padding="6">
+                                                                    BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource PanelBrush}" Padding="6">
                                                                 <Grid>
                                                                     <TextBlock x:Name="KeyLabel" Text="{Binding Shortcut}" FontSize="10" FontWeight="SemiBold"
                                                                                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,-4,0,0"
-                                                                               Foreground="{StaticResource MutedTextBrush}" />
+                                                                               Foreground="{DynamicResource MutedTextBrush}" />
                                                                     <TextBlock x:Name="Label" Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
                                                                                VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                                                 </Grid>
                                                             </Border>
                                                             <ControlTemplate.Triggers>
                                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                                                                 </Trigger>
                                                                 <DataTrigger Binding="{Binding HasFile}" Value="False">
-                                                                    <Setter TargetName="Label" Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+                                                                    <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
                                                                 </DataTrigger>
                                                                 <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                                                                    <Setter TargetName="Cell" Property="Background" Value="{StaticResource AccentBrush}" />
-                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
-                                                                    <Setter TargetName="Label" Property="Foreground" Value="White" />
-                                                                    <Setter TargetName="KeyLabel" Property="Foreground" Value="White" />
+                                                                    <Setter TargetName="Cell" Property="Background" Value="{DynamicResource AccentBrush}" />
+                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                                                    <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+                                                                    <Setter TargetName="KeyLabel" Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
                                                                     <Setter TargetName="Label" Property="FontWeight" Value="SemiBold" />
                                                                 </DataTrigger>
                                                             </ControlTemplate.Triggers>
@@ -487,13 +487,13 @@
             </Border>
 
             <Border DockPanel.Dock="Right" Style="{StaticResource PanelBorder}" Width="140" Margin="8,0,0,0" Padding="8"
-                    BorderBrush="{StaticResource AccentBrush}" ToolTip="Kayda giden toplam ses">
+                    BorderBrush="{DynamicResource AccentBrush}" ToolTip="Kayda giden toplam ses">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="Master (kayıt)" FontWeight="SemiBold" HorizontalAlignment="Center" />
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0"
                                 ToolTip="Kayıt -1 dB'yi geçmesin diye tepe seviyeleri anlık kısar. Turuncu: şu an kısıyor.">
                         <CheckBox Content="Limiter" IsChecked="{Binding LimiterEnabled}" />
-                        <Ellipse Width="8" Height="8" Margin="6,0,0,0" VerticalAlignment="Center" Fill="Orange"
+                        <Ellipse Width="8" Height="8" Margin="6,0,0,0" VerticalAlignment="Center" Fill="{DynamicResource WarningBrush}"
                                  Visibility="{Binding IsLimiting, Converter={StaticResource BoolToVisibility}}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
@@ -501,7 +501,7 @@
                                 SmallChange="0.05" LargeChange="0.1" Margin="0,0,8,0" />
                         <ProgressBar Style="{StaticResource VerticalMeter}" Value="{Binding MasterMeter.Left, Mode=OneWay}" />
                         <ProgressBar Style="{StaticResource VerticalMeter}" Value="{Binding MasterMeter.Right, Mode=OneWay}" />
-                        <Ellipse Width="8" Height="8" Margin="4,0,0,0" VerticalAlignment="Top" Fill="{StaticResource RecordBrush}"
+                        <Ellipse Width="8" Height="8" Margin="4,0,0,0" VerticalAlignment="Top" Fill="{DynamicResource RecordBrush}"
                                  ToolTip="Kırpılma (clip)"
                                  Visibility="{Binding MasterMeter.IsClipping, Converter={StaticResource BoolToVisibility}}" />
                     </StackPanel>
@@ -514,8 +514,8 @@
                     <Style TargetType="Border" BasedOn="{StaticResource PanelBorder}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsLive}" Value="True">
-                                <Setter Property="Background" Value="{StaticResource RecordSoftBrush}" />
-                                <Setter Property="BorderBrush" Value="{StaticResource RecordBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource RecordSoftBrush}" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource RecordBrush}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -523,13 +523,13 @@
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="Canlı yayın" Style="{StaticResource PanelTitle}" />
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                        <Ellipse Width="10" Height="10" Fill="{StaticResource RecordBrush}" Margin="0,0,8,0" VerticalAlignment="Center"
+                        <Ellipse Width="10" Height="10" Fill="{DynamicResource RecordBrush}" Margin="0,0,8,0" VerticalAlignment="Center"
                                  Visibility="{Binding IsLive, Converter={StaticResource BoolToVisibility}}" />
                         <TextBlock Text="{Binding StateText}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,12,0" />
                         <TextBlock Text="{Binding ElapsedText}" FontFamily="Consolas" FontSize="18" VerticalAlignment="Center"
                                    Visibility="{Binding IsLive, Converter={StaticResource BoolToVisibility}}" />
                     </StackPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="{Binding TargetText}" Foreground="{StaticResource MutedTextBrush}"
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding TargetText}" Foreground="{DynamicResource MutedTextBrush}"
                                TextTrimming="CharacterEllipsis" ToolTip="{Binding TargetText}" Margin="0,4,0,8" />
                     <WrapPanel DockPanel.Dock="Top">
                         <Button Content="Yayına başla" Command="{Binding StartCommand}" FontWeight="SemiBold"
@@ -537,7 +537,7 @@
                         <Button Content="Yayını durdur" Command="{Binding StopCommand}" ToolTip="Ctrl+Shift+L" />
                         <Button Content="Ayarlar…" Command="{Binding EditSettingsCommand}" Margin="0" />
                     </WrapPanel>
-                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedTextBrush}" />
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{DynamicResource MutedTextBrush}" />
                 </DockPanel>
             </Border>
 
@@ -555,7 +555,10 @@
         <!-- Status -->
         <DockPanel Grid.Row="4" Margin="4,10,0,0">
             <Button DockPanel.Dock="Right" Content="Kısayollar (F1)" Command="ApplicationCommands.Help" Margin="0" />
-            <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource MutedTextBrush}"
+            <ComboBox DockPanel.Dock="Right" ItemsSource="{x:Static vm:MainViewModel.Themes}" DisplayMemberPath="Name"
+                      SelectedItem="{Binding SelectedTheme}" Width="90" Margin="0,0,8,0" ToolTip="Görünüm: açık, koyu ya da Windows'a göre" />
+            <TextBlock DockPanel.Dock="Right" Text="Tema:" VerticalAlignment="Center" Margin="12,0,6,0" />
+            <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource MutedTextBrush}"
                        TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
         </DockPanel>
     </Grid>

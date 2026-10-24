@@ -1,0 +1,19 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- App colours for the dark theme; same keys as Light.xaml. -->
+    <SolidColorBrush x:Key="WindowBrush" Color="#1C1D20" />
+    <SolidColorBrush x:Key="PanelBrush" Color="#2A2C30" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#41444A" />
+    <SolidColorBrush x:Key="TextBrush" Color="#E8E9EC" />
+    <SolidColorBrush x:Key="MutedTextBrush" Color="#A4A9B1" />
+    <SolidColorBrush x:Key="AccentBrush" Color="#5B95F7" />
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#24324A" />
+    <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="RecordBrush" Color="#F05A5A" />
+    <SolidColorBrush x:Key="RecordSoftBrush" Color="#46252A" />
+    <SolidColorBrush x:Key="MeterBrush" Color="#4CC473" />
+    <SolidColorBrush x:Key="MeterTrackBrush" Color="#3A3D43" />
+    <SolidColorBrush x:Key="LiveBrush" Color="#45C771" />
+    <SolidColorBrush x:Key="LiveSoftBrush" Color="#1E3A28" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#F5A524" />
+</ResourceDictionary>

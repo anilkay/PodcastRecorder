@@ -63,6 +63,8 @@ public sealed class AppSettings
     public LiveStreamSettings Live { get; set; } = new();
 
     public AiSettings Ai { get; set; } = new();
+
+    public AppTheme Theme { get; set; } = AppTheme.System;
 }
 
 public sealed class JingleBankSettings

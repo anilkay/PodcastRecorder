@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Canlı yayın ayarları" Width="460" SizeToContent="Height" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
-        Background="{StaticResource WindowBrush}" FontSize="13">
+        Background="{DynamicResource WindowBrush}" Foreground="{DynamicResource TextBrush}" FontSize="13">
     <StackPanel Margin="16">
-        <TextBlock TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}" Margin="0,0,0,12"
+        <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,12"
                    Text="Kayda giden ses (Master) bir Icecast sunucusuna MP3 olarak gönderilir. Bilgileri yayın sunucunuzdan alın." />
 
         <Grid>

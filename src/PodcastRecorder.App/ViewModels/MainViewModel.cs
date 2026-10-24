@@ -45,6 +45,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         MasterMeter = new LevelMeterViewModel(_engine.Mixer.MasterMeter);
         Live = new LiveStreamViewModel(_engine.Live, _settings.Live, liveDialog, () => _engine.IsOutputRunning, _ui);
         Ai = new AiViewModel(_settings.Ai, () => RecordingFolder, Playlist, Jingles, dialogs);
+        SelectedTheme = ThemeService.Options.FirstOrDefault(o => o.Theme == _settings.Theme) ?? ThemeService.Options[0];
         Playlist.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(PlaylistViewModel.CurrentItem)) Live.SetNowPlaying(Playlist.CurrentItem?.Title);
@@ -65,6 +66,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public LiveStreamViewModel Live { get; }
 
     public AiViewModel Ai { get; }
+
+    public static IReadOnlyList<ThemeOption> Themes => ThemeService.Options;
+
+    [ObservableProperty]
+    public partial ThemeOption SelectedTheme { get; set; }
+
+    partial void OnSelectedThemeChanged(ThemeOption value) => ThemeService.Apply(value.Theme);
 
     public JinglePadViewModel Jingles { get; }
 
@@ -583,6 +591,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _settings.LimiterEnabled = LimiterEnabled;
         _settings.Playlist = Playlist.Items.Select(i => i.FilePath).ToList();
         Ai.SaveTo(_settings.Ai);
+        _settings.Theme = SelectedTheme.Theme;
         _settings.Jingles = null;
         _settings.JingleBanks = Jingles.Banks
             .Select(b => new JingleBankSettings
