@@ -48,24 +48,24 @@
             </Border.Style>
             <DockPanel LastChildFill="False">
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Style="{StaticResource TransportButton}" Command="{Binding StartRecordingCommand}" ToolTip="Kaydı başlat (Ctrl+R)">
+                    <Button Style="{DynamicResource TransportButton}" Command="{Binding StartRecordingCommand}" ToolTip="Kaydı başlat (Ctrl+R)">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="12" Height="12" Fill="{DynamicResource RecordBrush}" Margin="0,0,8,0" />
                             <TextBlock Text="Kaydet" FontWeight="SemiBold" />
                         </StackPanel>
                     </Button>
-                    <Button Style="{StaticResource TransportButton}" Command="{Binding TogglePauseCommand}" Content="{Binding PauseButtonText}"
+                    <Button Style="{DynamicResource TransportButton}" Command="{Binding TogglePauseCommand}" Content="{Binding PauseButtonText}"
                             ToolTip="Duraklat / devam (Ctrl+P)" />
-                    <Button Style="{StaticResource TransportButton}" Command="{Binding StopRecordingCommand}" Content="Durdur"
+                    <Button Style="{DynamicResource TransportButton}" Command="{Binding StopRecordingCommand}" Content="Durdur"
                             ToolTip="Kaydı durdur ve dosyayı kaydet (Ctrl+Shift+R)" />
                     <ToggleButton Style="{StaticResource MicrophoneToggle}" IsChecked="{Binding IsMicrophoneLive}"
                                   Content="{Binding MicrophoneButtonText}" Margin="10,0,0,0"
                                   ToolTip="Kapalıyken mikrofon kayda girmez. Açıkken (ducking etkinse) müzik kısılır. (Ctrl+M)" />
                     <TextBlock Text="{Binding ElapsedText}" FontFamily="Consolas" FontSize="28" FontWeight="SemiBold"
-                               VerticalAlignment="Center" Margin="16,0,12,0" />
+                               VerticalAlignment="Center" Margin="14,0,10,0" />
                     <TextBlock Text="{Binding StateText}" VerticalAlignment="Center" FontWeight="SemiBold"
                                Foreground="{DynamicResource MutedTextBrush}" />
-                    <StackPanel VerticalAlignment="Center" Margin="20,0,0,0"
+                    <StackPanel VerticalAlignment="Center" Margin="14,0,16,0"
                                 ToolTip="Ses yüksekliği (EBU R128). Anlık: son 0,4 sn. Kayıt: kaydın tamamı. Podcast'ler için yaygın hedef -16 LUFS.">
                         <TextBlock>
                             <Run Text="Anlık:" Foreground="{DynamicResource MutedTextBrush}" />
@@ -86,13 +86,8 @@
                               VerticalAlignment="Center" Margin="0,0,8,0"
                               ToolTip="Kayıt bitince ses yüksekliği ölçülür ve dosya podcast standardı -16 LUFS'e getirilir. Kayıt sırasında geçici bir WAV dosyası tutulur." />
                     <CheckBox Content="Ayrı izler" IsChecked="{Binding RecordStems}" IsEnabled="{Binding IsIdle}"
-                              VerticalAlignment="Center" Margin="0,0,16,0"
+                              VerticalAlignment="Center"
                               ToolTip="Karışıma ek olarak her kanalı (her mikrofon, müzik, jingle) ayrı dosyaya da kaydeder. Kurgu için WAV veya FLAC önerilir." />
-                    <TextBlock Text="Kayıt klasörü:" VerticalAlignment="Center" Margin="0,0,6,0" />
-                    <TextBlock Text="{Binding RecordingFolder}" VerticalAlignment="Center" MaxWidth="240"
-                               TextTrimming="CharacterEllipsis" ToolTip="{Binding RecordingFolder}" Margin="0,0,6,0" />
-                    <Button Content="…" Command="{Binding ChooseRecordingFolderCommand}" IsEnabled="{Binding IsIdle}" ToolTip="Kayıt klasörünü değiştir" />
-                    <Button Content="Klasörü aç" Command="{Binding OpenRecordingFolderCommand}" Margin="0" />
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -102,19 +97,19 @@
         <WrapPanel Orientation="Horizontal" Margin="4,10,0,6">
             <TextBlock Text="Mikrofon ekle:" VerticalAlignment="Center" Margin="0,0,6,0" />
             <ComboBox ItemsSource="{Binding InputDevices}" SelectedItem="{Binding InputToAdd}" DisplayMemberPath="Name"
-                      Width="260" IsEnabled="{Binding IsIdle}" Margin="0,0,6,0" />
-            <Button Content="Ekle" Command="{Binding AddMicrophoneCommand}" Margin="0,0,20,0" />
+                      Width="210" IsEnabled="{Binding IsIdle}" Margin="0,0,6,0" />
+            <Button Content="Ekle" Command="{Binding AddMicrophoneCommand}" Margin="0,0,16,0" />
             <TextBlock Text="Dinleme çıkışı (kulaklık):" VerticalAlignment="Center" Margin="0,0,6,0" />
             <ComboBox ItemsSource="{Binding OutputDevices}" SelectedItem="{Binding SelectedOutput}" DisplayMemberPath="Name"
-                      Width="300" IsEnabled="{Binding IsIdle}" Margin="0,0,20,0" />
-            <CheckBox Content="Ducking: mikrofon açıkken müziği kıs" IsChecked="{Binding DuckingEnabled}"
-                      VerticalAlignment="Center" Margin="0,0,8,0" />
-            <Slider Minimum="-30" Maximum="-3" Value="{Binding DuckLevelDb}" Width="120" VerticalAlignment="Center"
+                      Width="220" IsEnabled="{Binding IsIdle}" Margin="0,0,16,0" />
+            <CheckBox Content="Ducking" IsChecked="{Binding DuckingEnabled}" MinWidth="0"
+                      VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Mikrofon açıkken (ya da konuşunca) müziği kıs" />
+            <Slider Minimum="-30" Maximum="-3" Value="{Binding DuckLevelDb}" Width="100" VerticalAlignment="Center"
                     SmallChange="1" LargeChange="3" IsSnapToTickEnabled="True" TickFrequency="1"
                     IsEnabled="{Binding DuckingEnabled}" ToolTip="Mikrofon açıkken müziğin seviyesi" />
             <TextBlock Text="{Binding DuckLevelDb, StringFormat={}{0:0} dB}" VerticalAlignment="Center" Margin="6,0,16,0" />
             <ComboBox ItemsSource="{Binding DuckingModes}" SelectedItem="{Binding SelectedDuckingMode}" DisplayMemberPath="Name"
-                      Width="170" IsEnabled="{Binding DuckingEnabled}" Margin="0,0,8,0" />
+                      Width="160" IsEnabled="{Binding DuckingEnabled}" Margin="0,0,8,0" />
             <StackPanel Orientation="Horizontal" Visibility="{Binding IsVoiceDucking, Converter={StaticResource BoolToVisibility}}"
                         ToolTip="Mikrofon bu seviyeyi geçince konuşma algılanır. Ortam gürültüsü müziği kısıyorsa eşiği yükseltin.">
                 <TextBlock Text="Eşik:" VerticalAlignment="Center" Margin="0,0,6,0" />
@@ -136,7 +131,7 @@
             </StackPanel>
         </WrapPanel>
 
-        <Expander Margin="0,0,0,10" DataContext="{Binding Ai}">
+        <Expander x:Name="AiExpander" Margin="0,0,0,10" DataContext="{Binding Ai}">
             <Expander.Header>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Yapay zeka: yazıya çevirme ve seslendirme" FontWeight="SemiBold" />
@@ -144,7 +139,206 @@
                                Visibility="{Binding IsTranscribing, Converter={StaticResource BoolToVisibility}}" />
                 </StackPanel>
             </Expander.Header>
-            <Border Style="{StaticResource PanelBorder}" Margin="0,6,0,0">
+            <TextBlock Text="Araçlar aşağıda, klasör gezgini ve listelerin yerinde açık. Kapatmak için başlığa yeniden tıklayın."
+                       Foreground="{DynamicResource MutedTextBrush}" FontSize="12" />
+        </Expander>
+        </StackPanel>
+
+        <!-- Folder browser, playlist, jingle pad -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="1.3*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="1.3*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource PanelBorder}" DataContext="{Binding Browser}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Klasör gezgini" Style="{StaticResource PanelTitle}" />
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                        <Button Content="Klasör seç…" Command="{Binding ChooseFolderCommand}" />
+                        <Button Content="↑ Üst klasör" Command="{Binding UpCommand}" />
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentFolder}" Foreground="{DynamicResource MutedTextBrush}"
+                               TextTrimming="CharacterEllipsis" ToolTip="{Binding CurrentFolder}" Margin="0,0,0,6" />
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
+                    <TextBlock DockPanel.Dock="Bottom" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
+                               Text="Çift tık: klasöre gir ya da listeye ekle. Dosyaları listeye veya jingle hücresine sürükleyin." />
+                    <ListBox x:Name="BrowserList" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}"
+                             PreviewMouseLeftButtonDown="BrowserList_PreviewMouseLeftButtonDown"
+                             PreviewMouseMove="BrowserList_PreviewMouseMove">
+                        <ListBox.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding OpenCommand}" />
+                            <KeyBinding Key="Enter" Command="{Binding OpenCommand}" />
+                        </ListBox.InputBindings>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Icon}" Margin="0,0,6,0" />
+                                    <TextBlock Text="{Binding Name}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Column="2" Style="{StaticResource PanelBorder}" DataContext="{Binding Playlist}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Çalma listesi" Style="{StaticResource PanelTitle}" />
+                    <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                        <Button Content="▶ Çal" Command="{Binding PlayCommand}" ToolTip="Seçili şarkıyı çal (F5)" />
+                        <Button Content="■ Durdur" Command="{Binding StopCommand}" ToolTip="Müziği durdur (F6)" />
+                        <Button Content="⏭ Sonraki" Command="{Binding NextCommand}" ToolTip="Sonraki şarkı (F7)" />
+                        <Button Content="Ekle…" Command="{Binding BrowseCommand}" />
+                        <Button Content="↑" Command="{Binding MoveUpCommand}" ToolTip="Yukarı taşı" />
+                        <Button Content="↓" Command="{Binding MoveDownCommand}" ToolTip="Aşağı taşı" />
+                        <Button Content="Kaldır" Command="{Binding RemoveCommand}" />
+                        <Button Content="Temizle" Command="{Binding ClearCommand}" />
+                    </WrapPanel>
+                    <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                        <ProgressBar Height="6" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}"
+                                     Foreground="{DynamicResource AccentBrush}" BorderThickness="0" />
+                        <DockPanel Margin="0,4,0,0">
+                            <CheckBox DockPanel.Dock="Right" Content="Bitince sonrakine geç" IsChecked="{Binding AutoAdvance}" />
+                            <TextBlock Text="{Binding PositionText}" FontFamily="Consolas" />
+                        </DockPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
+                                    ToolTip="Şarkılar arasında bindirme süresi. 0 ise geçiş anında olur.">
+                            <TextBlock Text="Crossfade:" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <Slider Minimum="0" Maximum="10" Value="{Binding CrossfadeSeconds}" Width="140" VerticalAlignment="Center"
+                                    IsSnapToTickEnabled="True" TickFrequency="0.5" SmallChange="0.5" LargeChange="1" />
+                            <TextBlock Text="{Binding CrossfadeSeconds, StringFormat={}{0:0.0} sn}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
+                    </StackPanel>
+                    <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" AllowDrop="True"
+                             DragOver="FileDrop_DragOver" Drop="Playlist_Drop">
+                        <ListBox.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding PlayCommand}" />
+                            <KeyBinding Key="Enter" Command="{Binding PlayCommand}" />
+                            <KeyBinding Key="Delete" Command="{Binding RemoveCommand}" />
+                        </ListBox.InputBindings>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="▶ " Foreground="{DynamicResource AccentBrush}"
+                                               Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVisibility}}" />
+                                    <TextBlock Text="{Binding Title}" ToolTip="{Binding FilePath}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                        <Setter Property="FontWeight" Value="SemiBold" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Column="4" Style="{StaticResource PanelBorder}" DataContext="{Binding Jingles}">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="+ Sekme" Command="{Binding NewBankCommand}" />
+                            <Button Content="Sekmeyi sil" Command="{Binding RemoveBankCommand}" />
+                            <Button Content="Tümünü durdur" Command="{Binding StopAllCommand}" Margin="0"
+                                    ToolTip="Çalan bütün jingle'ları durdur (Esc)" />
+                        </StackPanel>
+                        <!-- The usage hint is a tooltip so the pads get the height. -->
+                        <TextBlock Text="Jingle paneli ⓘ" Style="{StaticResource PanelTitle}"
+                                   ToolTip="Tıkla ya da köşedeki tuşa bas: çal / durdur. Dosyayı hücreye sürükleyin; sağ tık ile dosya seçin veya temizleyin." />
+                    </DockPanel>
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
+                    <TabControl ItemsSource="{Binding Banks}" SelectedItem="{Binding SelectedBank}">
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <DockPanel Margin="0,6,0,0">
+                                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                                        <TextBlock Text="Ad:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,12,0" />
+                                        <TextBlock Text="Satır:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Rows}"
+                                                  Width="72" Margin="0,0,12,0" />
+                                        <TextBlock Text="Sütun:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Columns}"
+                                                  Width="72" />
+                                    </StackPanel>
+                                    <ItemsControl ItemsSource="{Binding Cells}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button Command="{Binding ToggleCommand}" AllowDrop="True" Margin="3"
+                                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                        DragOver="FileDrop_DragOver" Drop="JingleCell_Drop" ToolTip="{Binding FilePath}">
+                                                    <Button.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="Dosya seç…" Command="{Binding BrowseCommand}" />
+                                                            <MenuItem Header="Temizle" Command="{Binding ClearCommand}" />
+                                                        </ContextMenu>
+                                                    </Button.ContextMenu>
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border x:Name="Cell" CornerRadius="6" BorderThickness="1"
+                                                                    BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource PanelBrush}" Padding="6">
+                                                                <Grid>
+                                                                    <TextBlock x:Name="KeyLabel" Text="{Binding Shortcut}" FontSize="10" FontWeight="SemiBold"
+                                                                               HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,-4,0,0"
+                                                                               Foreground="{DynamicResource MutedTextBrush}" />
+                                                                    <TextBlock x:Name="Label" Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
+                                                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                                </Grid>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                                                </Trigger>
+                                                                <DataTrigger Binding="{Binding HasFile}" Value="False">
+                                                                    <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                    <Setter TargetName="Cell" Property="Background" Value="{DynamicResource AccentBrush}" />
+                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                                                    <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+                                                                    <Setter TargetName="KeyLabel" Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+                                                                    <Setter TargetName="Label" Property="FontWeight" Value="SemiBold" />
+                                                                </DataTrigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </DockPanel>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+                    </TabControl>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- AI tools open over the middle row, so they never push the panels off a small screen. -->
+        <Border Grid.Row="2" Style="{StaticResource PanelBorder}" DataContext="{Binding Ai}" Panel.ZIndex="1"
+                Visibility="{Binding IsExpanded, ElementName=AiExpander, Converter={StaticResource BoolToVisibility}}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -281,199 +475,8 @@
                     <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}"
                                Text="API anahtarları ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Bulut servislerine gönderilen ses ve metin için ilgili servisin ücret ve gizlilik koşulları geçerlidir." />
                 </StackPanel>
-            </Border>
-        </Expander>
-        </StackPanel>
-
-        <!-- Folder browser, playlist, jingle pad -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="1.3*" />
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="1.3*" />
-            </Grid.ColumnDefinitions>
-
-            <Border Grid.Column="0" Style="{StaticResource PanelBorder}" DataContext="{Binding Browser}">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Klasör gezgini" Style="{StaticResource PanelTitle}" />
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
-                        <Button Content="Klasör seç…" Command="{Binding ChooseFolderCommand}" />
-                        <Button Content="↑ Üst klasör" Command="{Binding UpCommand}" />
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentFolder}" Foreground="{DynamicResource MutedTextBrush}"
-                               TextTrimming="CharacterEllipsis" ToolTip="{Binding CurrentFolder}" Margin="0,0,0,6" />
-                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
-                    <TextBlock DockPanel.Dock="Bottom" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
-                               Text="Çift tık: klasöre gir ya da listeye ekle. Dosyaları listeye veya jingle hücresine sürükleyin." />
-                    <ListBox x:Name="BrowserList" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}"
-                             PreviewMouseLeftButtonDown="BrowserList_PreviewMouseLeftButtonDown"
-                             PreviewMouseMove="BrowserList_PreviewMouseMove">
-                        <ListBox.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding OpenCommand}" />
-                            <KeyBinding Key="Enter" Command="{Binding OpenCommand}" />
-                        </ListBox.InputBindings>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Icon}" Margin="0,0,6,0" />
-                                    <TextBlock Text="{Binding Name}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-            </Border>
-
-            <Border Grid.Column="2" Style="{StaticResource PanelBorder}" DataContext="{Binding Playlist}">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Çalma listesi" Style="{StaticResource PanelTitle}" />
-                    <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
-                        <Button Content="▶ Çal" Command="{Binding PlayCommand}" ToolTip="Seçili şarkıyı çal (F5)" />
-                        <Button Content="■ Durdur" Command="{Binding StopCommand}" ToolTip="Müziği durdur (F6)" />
-                        <Button Content="⏭ Sonraki" Command="{Binding NextCommand}" ToolTip="Sonraki şarkı (F7)" />
-                        <Button Content="Ekle…" Command="{Binding BrowseCommand}" />
-                        <Button Content="↑" Command="{Binding MoveUpCommand}" ToolTip="Yukarı taşı" />
-                        <Button Content="↓" Command="{Binding MoveDownCommand}" ToolTip="Aşağı taşı" />
-                        <Button Content="Kaldır" Command="{Binding RemoveCommand}" />
-                        <Button Content="Temizle" Command="{Binding ClearCommand}" />
-                    </WrapPanel>
-                    <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
-                        <ProgressBar Height="6" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}"
-                                     Foreground="{DynamicResource AccentBrush}" BorderThickness="0" />
-                        <DockPanel Margin="0,4,0,0">
-                            <CheckBox DockPanel.Dock="Right" Content="Bitince sonrakine geç" IsChecked="{Binding AutoAdvance}" />
-                            <TextBlock Text="{Binding PositionText}" FontFamily="Consolas" />
-                        </DockPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
-                                    ToolTip="Şarkılar arasında bindirme süresi. 0 ise geçiş anında olur.">
-                            <TextBlock Text="Crossfade:" VerticalAlignment="Center" Margin="0,0,8,0" />
-                            <Slider Minimum="0" Maximum="10" Value="{Binding CrossfadeSeconds}" Width="140" VerticalAlignment="Center"
-                                    IsSnapToTickEnabled="True" TickFrequency="0.5" SmallChange="0.5" LargeChange="1" />
-                            <TextBlock Text="{Binding CrossfadeSeconds, StringFormat={}{0:0.0} sn}" VerticalAlignment="Center" Margin="6,0,0,0" />
-                        </StackPanel>
-                        <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
-                    </StackPanel>
-                    <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" AllowDrop="True"
-                             DragOver="FileDrop_DragOver" Drop="Playlist_Drop">
-                        <ListBox.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding PlayCommand}" />
-                            <KeyBinding Key="Enter" Command="{Binding PlayCommand}" />
-                            <KeyBinding Key="Delete" Command="{Binding RemoveCommand}" />
-                        </ListBox.InputBindings>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="▶ " Foreground="{DynamicResource AccentBrush}"
-                                               Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVisibility}}" />
-                                    <TextBlock Text="{Binding Title}" ToolTip="{Binding FilePath}">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                                                        <Setter Property="FontWeight" Value="SemiBold" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-            </Border>
-
-            <Border Grid.Column="4" Style="{StaticResource PanelBorder}" DataContext="{Binding Jingles}">
-                <DockPanel>
-                    <DockPanel DockPanel.Dock="Top">
-                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <Button Content="+ Sekme" Command="{Binding NewBankCommand}" />
-                            <Button Content="Sekmeyi sil" Command="{Binding RemoveBankCommand}" />
-                            <Button Content="Tümünü durdur" Command="{Binding StopAllCommand}" Margin="0"
-                                    ToolTip="Çalan bütün jingle'ları durdur (Esc)" />
-                        </StackPanel>
-                        <TextBlock Text="Jingle paneli" Style="{StaticResource PanelTitle}" />
-                    </DockPanel>
-                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
-                    <TextBlock DockPanel.Dock="Bottom" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
-                               Text="Tıkla ya da köşedeki tuşa bas: çal / durdur. Dosyayı hücreye sürükleyin; sağ tık ile dosya seçin veya temizleyin." />
-                    <TabControl ItemsSource="{Binding Banks}" SelectedItem="{Binding SelectedBank}">
-                        <TabControl.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" />
-                            </DataTemplate>
-                        </TabControl.ItemTemplate>
-                        <TabControl.ContentTemplate>
-                            <DataTemplate>
-                                <DockPanel Margin="0,6,0,0">
-                                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock Text="Ad:" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,12,0" />
-                                        <TextBlock Text="Satır:" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Rows}"
-                                                  Width="50" Margin="0,0,12,0" />
-                                        <TextBlock Text="Sütun:" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Columns}"
-                                                  Width="50" />
-                                    </StackPanel>
-                                    <ItemsControl ItemsSource="{Binding Cells}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Button Command="{Binding ToggleCommand}" AllowDrop="True" Margin="3"
-                                                        DragOver="FileDrop_DragOver" Drop="JingleCell_Drop" ToolTip="{Binding FilePath}">
-                                                    <Button.ContextMenu>
-                                                        <ContextMenu>
-                                                            <MenuItem Header="Dosya seç…" Command="{Binding BrowseCommand}" />
-                                                            <MenuItem Header="Temizle" Command="{Binding ClearCommand}" />
-                                                        </ContextMenu>
-                                                    </Button.ContextMenu>
-                                                    <Button.Template>
-                                                        <ControlTemplate TargetType="Button">
-                                                            <Border x:Name="Cell" CornerRadius="6" BorderThickness="1"
-                                                                    BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource PanelBrush}" Padding="6">
-                                                                <Grid>
-                                                                    <TextBlock x:Name="KeyLabel" Text="{Binding Shortcut}" FontSize="10" FontWeight="SemiBold"
-                                                                               HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,-4,0,0"
-                                                                               Foreground="{DynamicResource MutedTextBrush}" />
-                                                                    <TextBlock x:Name="Label" Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
-                                                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                                                </Grid>
-                                                            </Border>
-                                                            <ControlTemplate.Triggers>
-                                                                <Trigger Property="IsMouseOver" Value="True">
-                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-                                                                </Trigger>
-                                                                <DataTrigger Binding="{Binding HasFile}" Value="False">
-                                                                    <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                                                                    <Setter TargetName="Cell" Property="Background" Value="{DynamicResource AccentBrush}" />
-                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-                                                                    <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
-                                                                    <Setter TargetName="KeyLabel" Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
-                                                                    <Setter TargetName="Label" Property="FontWeight" Value="SemiBold" />
-                                                                </DataTrigger>
-                                                            </ControlTemplate.Triggers>
-                                                        </ControlTemplate>
-                                                    </Button.Template>
-                                                </Button>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </DockPanel>
-                            </DataTemplate>
-                        </TabControl.ContentTemplate>
-                    </TabControl>
-                </DockPanel>
-            </Border>
-        </Grid>
+            </ScrollViewer>
+        </Border>
 
         <!-- Mixer: channel strips scroll sideways when there are many microphones -->
         <DockPanel Grid.Row="3" Margin="0,12,0,0" Height="250">
@@ -558,6 +561,13 @@
             <ComboBox DockPanel.Dock="Right" ItemsSource="{x:Static vm:MainViewModel.Themes}" DisplayMemberPath="Name"
                       SelectedItem="{Binding SelectedTheme}" Width="90" Margin="0,0,8,0" ToolTip="Görünüm: açık, koyu ya da Windows'a göre" />
             <TextBlock DockPanel.Dock="Right" Text="Tema:" VerticalAlignment="Center" Margin="12,0,6,0" />
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,16,0">
+                <TextBlock Text="Kayıt klasörü:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                <TextBlock Text="{Binding RecordingFolder}" VerticalAlignment="Center" MaxWidth="260"
+                           TextTrimming="CharacterEllipsis" ToolTip="{Binding RecordingFolder}" Margin="0,0,6,0" />
+                <Button Content="…" Command="{Binding ChooseRecordingFolderCommand}" IsEnabled="{Binding IsIdle}" ToolTip="Kayıt klasörünü değiştir" />
+                <Button Content="Klasörü aç" Command="{Binding OpenRecordingFolderCommand}" Margin="0" />
+            </StackPanel>
             <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource MutedTextBrush}"
                        TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
         </DockPanel>

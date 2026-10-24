@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Interop;
 using Microsoft.Win32;
 
@@ -51,11 +52,39 @@ public static class ThemeService
             Source = new Uri($"pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.{variant}.xaml"),
         };
         merged[1] = new ResourceDictionary { Source = new Uri($"pack://application:,,,/Themes/{variant}.xaml") };
+        ApplyButtonStyles(app.Resources, (Style)merged[0][typeof(Button)]);
 
         foreach (Window window in app.Windows)
         {
             ApplyTitleBar(window);
         }
+    }
+
+    /// <summary>
+    /// The app's compact button spacing on top of the Fluent button, rebuilt for each theme so every
+    /// button keeps the Fluent template. Views use "TransportButton" through DynamicResource.
+    /// </summary>
+    private static void ApplyButtonStyles(ResourceDictionary resources, Style fluentButton)
+    {
+        var button = new Style(typeof(Button), fluentButton)
+        {
+            Setters =
+            {
+                new Setter(Control.PaddingProperty, new Thickness(10, 4, 10, 4)),
+                new Setter(FrameworkElement.MarginProperty, new Thickness(0, 0, 6, 0)),
+                new Setter(FrameworkElement.MinWidthProperty, 32.0),
+            },
+        };
+        resources[typeof(Button)] = button;
+        resources["TransportButton"] = new Style(typeof(Button), button)
+        {
+            Setters =
+            {
+                new Setter(Control.FontSizeProperty, 14.0),
+                new Setter(Control.PaddingProperty, new Thickness(14, 6, 14, 6)),
+                new Setter(FrameworkElement.MinWidthProperty, 96.0),
+            },
+        };
     }
 
     private static void Hook()

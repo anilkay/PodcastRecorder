@@ -335,7 +335,9 @@ public partial class AiViewModel : ObservableObject, IDisposable
     {
         var words = string.Join(' ', text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Take(5));
         var safe = Regex.Replace(words, $"[{Regex.Escape(new string(Path.GetInvalidFileNameChars()))}]", "");
-        if (safe.Length > 40) safe = safe[..40].TrimEnd();
+        if (safe.Length > 40) safe = safe[..40];
+        // Windows drops trailing dots and spaces from names, and "metin." would end in "..wav".
+        safe = safe.TrimEnd('.', ' ');
         return $"anons-{DateTime.Now:yyyyMMdd-HHmmss} {safe}".TrimEnd();
     }
 }

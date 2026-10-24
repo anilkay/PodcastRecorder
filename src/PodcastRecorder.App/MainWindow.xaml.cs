@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using PodcastRecorder.App.ViewModels;
 using PodcastRecorder.Audio.Sources;
 
@@ -73,8 +74,26 @@ public partial class MainWindow : Window
         }
     }
 
-    private void Help_Executed(object sender, ExecutedRoutedEventArgs e) =>
-        MessageBox.Show(this, ShortcutHelp, "Klavye kısayolları", MessageBoxButton.OK, MessageBoxImage.Information);
+    /// <summary>Shows the shortcut list in a monospace font so the key column lines up (MessageBox cannot).</summary>
+    private void Help_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        var text = new TextBlock { Text = ShortcutHelp, FontFamily = new FontFamily("Consolas"), FontSize = 13 };
+        var ok = new Button { Content = "Tamam", IsDefault = true, IsCancel = true, MinWidth = 90,
+            Margin = new Thickness(0, 16, 0, 0), HorizontalAlignment = HorizontalAlignment.Right };
+        var help = new Window
+        {
+            Title = "Klavye kısayolları",
+            Owner = this,
+            SizeToContent = SizeToContent.WidthAndHeight,
+            ResizeMode = ResizeMode.NoResize,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            ShowInTaskbar = false,
+            Content = new StackPanel { Margin = new Thickness(20, 16, 20, 16), Children = { text, ok } },
+        };
+        help.SetResourceReference(BackgroundProperty, "WindowBrush");
+        help.SetResourceReference(ForegroundProperty, "TextBrush");
+        help.ShowDialog();
+    }
 
     private void BrowserList_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {

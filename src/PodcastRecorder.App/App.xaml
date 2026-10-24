@@ -32,17 +32,9 @@
                 <Setter Property="Margin" Value="0,6,0,0" />
             </Style>
 
-            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                <Setter Property="Padding" Value="10,4" />
-                <Setter Property="Margin" Value="0,0,6,0" />
-                <Setter Property="MinWidth" Value="32" />
-            </Style>
-
-            <Style x:Key="TransportButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                <Setter Property="FontSize" Value="14" />
-                <Setter Property="Padding" Value="14,6" />
-                <Setter Property="MinWidth" Value="96" />
-            </Style>
+            <!-- The implicit Button style and "TransportButton" are built by ThemeService on top of the
+                 active Fluent dictionary: BasedOn="{StaticResource {x:Type Button}}" here resolves to
+                 null in the compiled resources, which falls back to the classic Aero2 button. -->
 
             <Style x:Key="VerticalMeter" TargetType="ProgressBar">
                 <Setter Property="Orientation" Value="Vertical" />
@@ -81,8 +73,8 @@
                         </DockPanel>
                         <TextBlock DockPanel.Dock="Top" Text="{Binding DeviceName}" FontSize="11" Foreground="{DynamicResource MutedTextBrush}"
                                    TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" ToolTip="{Binding DeviceName}" />
-                        <CheckBox DockPanel.Dock="Bottom" Content="Kulaklıkta duy" IsChecked="{Binding MonitorEnabled}" Margin="0,4,0,0"
-                                  ToolTip="Kapalıyken de kayda girer; sadece kulaklıkta duyulmaz." />
+                        <CheckBox DockPanel.Dock="Bottom" Content="Kulaklık" IsChecked="{Binding MonitorEnabled}" Margin="0,4,0,0"
+                                  ToolTip="Kulaklıkta duy. Kapalıyken de kayda girer; sadece kulaklıkta duyulmaz." />
                         <ToggleButton DockPanel.Dock="Bottom" Content="Sessiz" IsChecked="{Binding IsMuted}" Margin="0,6,0,0" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
                             <Slider Orientation="Vertical" Minimum="0" Maximum="1.5" Value="{Binding Volume}"
