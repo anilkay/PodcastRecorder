@@ -102,6 +102,33 @@ public partial class AiViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial string AzureSpeechKey { get; set; }
 
+    /// <summary>Whether the "Servis ayarları" section is open.</summary>
+    [ObservableProperty]
+    public partial bool IsServiceSettingsOpen { get; set; }
+
+    /// <summary>The open tab in "Servis ayarları"; the order of <see cref="ServiceSettingsTabs"/>.</summary>
+    [ObservableProperty]
+    public partial int ServiceSettingsTab { get; set; }
+
+    /// <summary>Provider ids in the order of the tabs in MainWindow.xaml.</summary>
+    private static readonly string[] ServiceSettingsTabs =
+    [
+        SpeechProviders.LocalWhisper,
+        SpeechProviders.OpenAi,
+        SpeechProviders.AzureOpenAi,
+        SpeechProviders.AzureSpeech,
+        SpeechProviders.Windows,
+    ];
+
+    /// <summary>Opens "Servis ayarları" on the tab of the given provider.</summary>
+    [RelayCommand]
+    private void OpenServiceSettings(string? providerId)
+    {
+        int tab = Array.IndexOf(ServiceSettingsTabs, providerId);
+        if (tab >= 0) ServiceSettingsTab = tab;
+        IsServiceSettingsOpen = true;
+    }
+
     // Transcription
 
     [ObservableProperty]
@@ -186,6 +213,12 @@ public partial class AiViewModel : ObservableObject, IDisposable
         {
             TranscriptionStatus = "Transkript iptal edildi.";
         }
+        catch (SpeechException ex)
+        {
+            // Usually a missing key, address or region: show where to enter it.
+            TranscriptionStatus = $"Transkript çıkarılamadı: {ex.Message}";
+            OpenServiceSettings(TranscriptionProvider);
+        }
         catch (Exception ex)
         {
             TranscriptionStatus = $"Transkript çıkarılamadı: {ex.Message}";
@@ -248,6 +281,12 @@ public partial class AiViewModel : ObservableObject, IDisposable
             await service.SynthesizeAsync(text, Voice, path, CancellationToken.None);
             LastSpeechPath = path;
             SynthesisStatus = $"Hazır: {Path.GetFileName(path)}";
+        }
+        catch (SpeechException ex)
+        {
+            // Usually a missing key, address or region: show where to enter it.
+            SynthesisStatus = $"Ses oluşturulamadı: {ex.Message}";
+            OpenServiceSettings(SynthesisProvider);
         }
         catch (Exception ex)
         {

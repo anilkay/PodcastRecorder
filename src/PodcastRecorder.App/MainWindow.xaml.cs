@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using PodcastRecorder.App.ViewModels;
 using PodcastRecorder.Audio.Sources;
 
@@ -73,6 +74,25 @@ public partial class MainWindow : Window
             e.Handled = true;
         }
     }
+
+    /// <summary>
+    /// Scrolls "Servis ayarları" into view when it opens or its tab changes (a ⚙ Ayarlar button or a
+    /// missing key), since it sits at the bottom of the AI panel.
+    /// </summary>
+    private void ServiceSettings_Changed(object sender, RoutedEventArgs e)
+    {
+        // SelectionChanged also bubbles up from the combo boxes inside the tabs.
+        if (ReferenceEquals(e.OriginalSource, sender)) ScrollToServiceSettings();
+    }
+
+    /// <summary>A ⚙ Ayarlar button: scroll even when the settings were already open on that tab.</summary>
+    private void ServiceSettingsButton_Click(object sender, RoutedEventArgs e) => ScrollToServiceSettings();
+
+    private void ScrollToServiceSettings() =>
+        Dispatcher.BeginInvoke(() =>
+        {
+            if (ServiceSettings.IsExpanded) ServiceSettings.BringIntoView();
+        }, DispatcherPriority.Loaded);
 
     /// <summary>Shows the shortcut list in a monospace font so the key column lines up (MessageBox cannot).</summary>
     private void Help_Executed(object sender, ExecutedRoutedEventArgs e)

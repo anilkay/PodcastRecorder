@@ -134,7 +134,7 @@
         <Expander x:Name="AiExpander" Margin="0,0,0,10" DataContext="{Binding Ai}">
             <Expander.Header>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Yapay zeka: yazıya çevirme ve seslendirme" FontWeight="SemiBold" />
+                    <TextBlock Text="Yapay zeka: yazıya çevirme ve seslendirme (Whisper, OpenAI, Foundry)" FontWeight="SemiBold" />
                     <TextBlock Text="  · transkript çıkarılıyor…" Foreground="{DynamicResource MutedTextBrush}"
                                Visibility="{Binding IsTranscribing, Converter={StaticResource BoolToVisibility}}" />
                 </StackPanel>
@@ -353,7 +353,10 @@
                             <WrapPanel>
                                 <TextBlock Text="Servis:" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <ComboBox ItemsSource="{x:Static vm:AiViewModel.TranscriptionProviders}" DisplayMemberPath="Name"
-                                          SelectedValuePath="Id" SelectedValue="{Binding TranscriptionProvider}" Width="210" Margin="0,0,12,0" />
+                                          SelectedValuePath="Id" SelectedValue="{Binding TranscriptionProvider}" Width="210" Margin="0,0,6,0" />
+                                <Button Content="⚙ Ayarlar" Command="{Binding OpenServiceSettingsCommand}" Click="ServiceSettingsButton_Click"
+                                        CommandParameter="{Binding TranscriptionProvider}" Margin="0,0,12,0"
+                                        ToolTip="Seçili servisin anahtar ve model ayarlarını aç" />
                                 <TextBlock Text="Dil:" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBox Text="{Binding Language, UpdateSourceTrigger=PropertyChanged}" Width="40"
                                          ToolTip="tr, en, de… Boş bırakılırsa dil otomatik algılanır." />
@@ -379,7 +382,10 @@
                             <WrapPanel>
                                 <TextBlock Text="Servis:" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <ComboBox ItemsSource="{x:Static vm:AiViewModel.SynthesisProviders}" DisplayMemberPath="Name"
-                                          SelectedValuePath="Id" SelectedValue="{Binding SynthesisProvider}" Width="210" Margin="0,0,12,0" />
+                                          SelectedValuePath="Id" SelectedValue="{Binding SynthesisProvider}" Width="210" Margin="0,0,6,0" />
+                                <Button Content="⚙ Ayarlar" Command="{Binding OpenServiceSettingsCommand}" Click="ServiceSettingsButton_Click"
+                                        CommandParameter="{Binding SynthesisProvider}" Margin="0,0,12,0"
+                                        ToolTip="Seçili servisin anahtar ve model ayarlarını aç" />
                                 <TextBlock Text="Ses:" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <ComboBox ItemsSource="{Binding VoiceSuggestions}" Text="{Binding Voice, UpdateSourceTrigger=LostFocus}"
                                           IsEditable="True" Width="210"
@@ -399,8 +405,11 @@
                         </StackPanel>
                     </Grid>
 
-                    <Expander Header="Servis ayarları (API anahtarları, modeller)" Margin="0,10,0,0">
-                        <TabControl Margin="0,6,0,0">
+                    <!-- Tab order must match AiViewModel.ServiceSettingsTabs. -->
+                    <Expander x:Name="ServiceSettings" Header="Servis ayarları (API anahtarları, modeller)" Margin="0,10,0,0"
+                              IsExpanded="{Binding IsServiceSettingsOpen, Mode=TwoWay}" Expanded="ServiceSettings_Changed">
+                        <TabControl Margin="0,6,0,0" SelectedIndex="{Binding ServiceSettingsTab, Mode=TwoWay}"
+                                    SelectionChanged="ServiceSettings_Changed">
                             <TabItem Header="Whisper (bu bilgisayarda)">
                                 <StackPanel Margin="8">
                                     <WrapPanel>
