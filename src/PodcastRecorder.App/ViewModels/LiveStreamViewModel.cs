@@ -34,10 +34,17 @@ public partial class LiveStreamViewModel : ObservableObject
             State = _streamer.State;
             Message = ex.Message;
         }, null);
+        _streamer.StateChanged += (_, state) => _ui.Post(_ =>
+        {
+            State = state;
+            Message = state == LiveState.Reconnecting
+                ? "Bağlantı koptu, yeniden bağlanılıyor…"
+                : "Bağlantı yeniden kuruldu, yayın sürüyor.";
+        }, null);
     }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsLive), nameof(IsOffline), nameof(StateText))]
+    [NotifyPropertyChangedFor(nameof(IsLive), nameof(IsOffline), nameof(CanStop), nameof(StateText))]
     [NotifyCanExecuteChangedFor(nameof(StartCommand), nameof(StopCommand), nameof(EditSettingsCommand))]
     public partial LiveState State { get; set; }
 
@@ -51,10 +58,14 @@ public partial class LiveStreamViewModel : ObservableObject
 
     public bool IsOffline => State == LiveState.Offline;
 
+    /// <summary>Live or trying to get back on air.</summary>
+    public bool CanStop => State is LiveState.Live or LiveState.Reconnecting;
+
     public string StateText => State switch
     {
         LiveState.Live => "YAYINDA",
         LiveState.Connecting => "Bağlanıyor…",
+        LiveState.Reconnecting => "Yeniden bağlanıyor…",
         _ => "Kapalı",
     };
 
@@ -103,7 +114,7 @@ public partial class LiveStreamViewModel : ObservableObject
         State = _streamer.State;
     }
 
-    [RelayCommand(CanExecute = nameof(IsLive))]
+    [RelayCommand(CanExecute = nameof(CanStop))]
     private async Task Stop()
     {
         await _streamer.StopAsync();

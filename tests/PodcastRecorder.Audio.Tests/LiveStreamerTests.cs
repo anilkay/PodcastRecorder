@@ -103,6 +103,64 @@ public class LiveStreamerTests
     }
 
     /// <summary>Accepts one source connection, answers with a fixed status and keeps what it receives.</summary>
+    [Fact]
+    public async Task Reconnects_after_the_server_drops_the_connection()
+    {
+        var listener = new TcpListener(IPAddress.Loopback, 0);
+        listener.Start();
+        int port = ((IPEndPoint)listener.LocalEndpoint).Port;
+        int connections = 0;
+        var server = Task.Run(async () =>
+        {
+            // First connection: accept the login, then hang up. Second: accept and keep reading.
+            for (int i = 0; i < 2; i++)
+            {
+                var client = await listener.AcceptTcpClientAsync();
+                Interlocked.Increment(ref connections);
+                var stream = client.GetStream();
+                var head = new StringBuilder();
+                var one = new byte[1];
+                while (!head.ToString().EndsWith("\r\n\r\n", StringComparison.Ordinal) && await stream.ReadAsync(one) == 1)
+                {
+                    head.Append((char)one[0]);
+                }
+
+                await stream.WriteAsync(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n"));
+                if (i == 0)
+                {
+                    client.Client.LingerState = new LingerOption(true, 0); // reset, so the next write fails
+                    client.Dispose();
+                }
+                else
+                {
+                    _ = stream.CopyToAsync(Stream.Null);
+                }
+            }
+        });
+        // Raw PCM instead of MP3, so the test needs no native LAME library.
+        var streamer = new LiveStreamer((output, _) => output) { ReconnectDelay = TimeSpan.FromMilliseconds(50) };
+        var states = new List<LiveState>();
+        streamer.StateChanged += (_, state) => { lock (states) states.Add(state); };
+
+        await streamer.StartAsync(new IcecastSettings("127.0.0.1", port, "/canli", "source", "gizli", 128, null));
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (true)
+        {
+            lock (states) if (states.Contains(LiveState.Live)) break;
+            Assert.True(DateTime.UtcNow < deadline, $"did not reconnect; state {streamer.State}");
+            streamer.Write(new float[1920]);
+            await Task.Delay(10);
+        }
+
+        Assert.Equal(LiveState.Live, streamer.State);
+        Assert.Equal(2, connections);
+        lock (states) Assert.Equal([LiveState.Reconnecting, LiveState.Live], states);
+        await streamer.StopAsync();
+        Assert.Equal(LiveState.Offline, streamer.State);
+        listener.Stop();
+        await server;
+    }
+
     private sealed class FakeIcecast : IDisposable
     {
         private readonly TcpListener _listener = new(IPAddress.Loopback, 0);

@@ -13,12 +13,16 @@ public enum LiveState
     Offline,
     Connecting,
     Live,
+
+    /// <summary>The connection broke; trying to connect again.</summary>
+    Reconnecting,
 }
 
 /// <summary>
 /// Sends the program bus to an Icecast server as MP3. Like <see cref="Recorder"/> it copies
 /// blocks on the audio thread and encodes and sends them on a background task. The queue is
 /// bounded: if the network falls behind, audio is dropped instead of piling up in memory.
+/// If the connection breaks, it reconnects on its own a few times before giving up.
 /// </summary>
 public sealed class LiveStreamer : IProgramSink
 {
@@ -27,16 +31,35 @@ public sealed class LiveStreamer : IProgramSink
 
     private static readonly TimeSpan ConnectTimeout = TimeSpan.FromSeconds(10);
 
+    private readonly Func<Stream, IcecastSettings, Stream> _createEncoder;
     private readonly Lock _gate = new();
     private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(5) };
     private Channel<Block>? _queue;
     private Task? _sender;
+    private Task? _reconnect;
+    private CancellationTokenSource? _session;
     private IcecastSettings? _settings;
     private long _frames;
     private long _droppedBlocks;
     private volatile LiveState _state = LiveState.Offline;
 
+    public LiveStreamer()
+        : this((output, settings) => new LameMP3FileWriter(
+            output, new WaveFormat(AudioFormat.SampleRate, 16, AudioFormat.Channels), settings.BitrateKbps))
+    {
+    }
+
+    /// <param name="createEncoder">Wraps the connection in a stream that takes 16-bit PCM.</param>
+    internal LiveStreamer(Func<Stream, IcecastSettings, Stream> createEncoder)
+    {
+        _createEncoder = createEncoder;
+    }
+
     public LiveState State => _state;
+
+    public int MaxReconnectAttempts { get; init; } = 10;
+
+    public TimeSpan ReconnectDelay { get; init; } = TimeSpan.FromSeconds(3);
 
     /// <summary>Length of audio sent since the stream started.</summary>
     public TimeSpan Elapsed => AudioFormat.FramesToTime(Interlocked.Read(ref _frames));
@@ -44,8 +67,11 @@ public sealed class LiveStreamer : IProgramSink
     /// <summary>Blocks dropped because the connection could not keep up.</summary>
     public long DroppedBlocks => Interlocked.Read(ref _droppedBlocks);
 
-    /// <summary>Raised on a background thread when the connection breaks; the stream is then offline.</summary>
+    /// <summary>Raised on a background thread when reconnecting failed for good; the stream is then offline.</summary>
     public event EventHandler<Exception>? Faulted;
+
+    /// <summary>Raised on a background thread when the connection breaks and when it comes back.</summary>
+    public event EventHandler<LiveState>? StateChanged;
 
     /// <summary>Connects, logs in and starts sending. Throws with a user-readable message on failure.</summary>
     public async Task StartAsync(IcecastSettings settings, CancellationToken cancellationToken = default)
@@ -65,8 +91,31 @@ public sealed class LiveStreamer : IProgramSink
             _state = LiveState.Connecting;
         }
 
+        var session = new CancellationTokenSource();
+        try
+        {
+            var (client, encoder) = await ConnectAsync(settings, cancellationToken).ConfigureAwait(false);
+            lock (_gate)
+            {
+                _settings = settings;
+                _session = session;
+                Interlocked.Exchange(ref _frames, 0);
+                Interlocked.Exchange(ref _droppedBlocks, 0);
+                BeginSending(settings, client, encoder, session.Token);
+            }
+        }
+        catch
+        {
+            session.Dispose();
+            _state = LiveState.Offline;
+            throw;
+        }
+    }
+
+    /// <summary>Opens the connection, logs in and wraps it in an MP3 encoder.</summary>
+    private async Task<(TcpClient Client, Stream Encoder)> ConnectAsync(IcecastSettings settings, CancellationToken cancellationToken)
+    {
         var client = new TcpClient { NoDelay = true };
-        LameMP3FileWriter? encoder = null;
         try
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -87,41 +136,38 @@ public sealed class LiveStreamer : IProgramSink
 
             var stream = client.GetStream();
             stream.WriteTimeout = (int)ConnectTimeout.TotalMilliseconds;
-            encoder = new LameMP3FileWriter(stream, new WaveFormat(AudioFormat.SampleRate, 16, AudioFormat.Channels), settings.BitrateKbps);
-            var queue = Channel.CreateBounded<Block>(new BoundedChannelOptions(QueueCapacity)
-            {
-                SingleReader = true,
-                SingleWriter = true,
-                FullMode = BoundedChannelFullMode.Wait,
-            });
-
-            lock (_gate)
-            {
-                _settings = settings;
-                _queue = queue;
-                Interlocked.Exchange(ref _frames, 0);
-                Interlocked.Exchange(ref _droppedBlocks, 0);
-                var ownedEncoder = encoder;
-                _sender = Task.Run(() => SendLoopAsync(queue, ownedEncoder, client));
-                _state = LiveState.Live;
-            }
+            return (client, _createEncoder(stream, settings));
         }
         catch
         {
-            encoder?.Dispose();
             client.Dispose();
-            _state = LiveState.Offline;
             throw;
         }
+    }
+
+    /// <summary>Starts the sender for a fresh connection. Call under <see cref="_gate"/>.</summary>
+    private void BeginSending(IcecastSettings settings, TcpClient client, Stream encoder, CancellationToken session)
+    {
+        var queue = Channel.CreateBounded<Block>(new BoundedChannelOptions(QueueCapacity)
+        {
+            SingleReader = true,
+            SingleWriter = true,
+            FullMode = BoundedChannelFullMode.Wait,
+        });
+        _queue = queue;
+        _sender = Task.Run(() => SendLoopAsync(queue, encoder, client, settings, session));
+        _state = LiveState.Live;
     }
 
     /// <summary>Stops sending and closes the connection.</summary>
     public async Task StopAsync()
     {
         Task? sender;
+        Task? reconnect;
+        CancellationTokenSource? session;
         lock (_gate)
         {
-            if (_state != LiveState.Live)
+            if (_state is not (LiveState.Live or LiveState.Reconnecting))
             {
                 return;
             }
@@ -131,10 +177,17 @@ public sealed class LiveStreamer : IProgramSink
             _queue = null;
             sender = _sender;
             _sender = null;
+            reconnect = _reconnect;
+            _reconnect = null;
+            session = _session;
+            _session = null;
             _settings = null;
         }
 
+        session?.Cancel();
         if (sender is not null) await sender.ConfigureAwait(false);
+        if (reconnect is not null) await reconnect.ConfigureAwait(false);
+        session?.Dispose();
     }
 
     /// <summary>Sets the "now playing" title on the server. Does nothing when offline.</summary>
@@ -169,9 +222,11 @@ public sealed class LiveStreamer : IProgramSink
     }
 
     /// <summary>Owns the encoder and the connection and closes both when it ends.</summary>
-    private async Task SendLoopAsync(Channel<Block> queue, LameMP3FileWriter encoder, TcpClient client)
+    private async Task SendLoopAsync(Channel<Block> queue, Stream encoder, TcpClient client,
+        IcecastSettings settings, CancellationToken session)
     {
         Exception? failure = null;
+        bool reconnect = false; // false when the break came from StopAsync closing things
         byte[] pcm = [];
         await foreach (var block in queue.Reader.ReadAllAsync().ConfigureAwait(false))
         {
@@ -190,10 +245,10 @@ public sealed class LiveStreamer : IProgramSink
                 {
                     if (_queue == queue)
                     {
-                        _state = LiveState.Offline;
+                        _state = LiveState.Reconnecting;
                         _queue = null;
                         _sender = null;
-                        _settings = null;
+                        reconnect = true;
                     }
                 }
 
@@ -215,10 +270,69 @@ public sealed class LiveStreamer : IProgramSink
         }
 
         client.Dispose();
-        if (failure is not null)
+        if (reconnect && failure is not null)
         {
-            Faulted?.Invoke(this, new IcecastException($"Yayın bağlantısı koptu: {failure.Message}"));
+            StateChanged?.Invoke(this, LiveState.Reconnecting);
+            lock (_gate)
+            {
+                if (_state == LiveState.Reconnecting)
+                {
+                    _reconnect = Task.Run(() => ReconnectAsync(settings, failure, session));
+                }
+            }
         }
+    }
+
+    private async Task ReconnectAsync(IcecastSettings settings, Exception cause, CancellationToken session)
+    {
+        var last = cause;
+        for (int attempt = 0; attempt < MaxReconnectAttempts; attempt++)
+        {
+            try
+            {
+                await Task.Delay(ReconnectDelay, session).ConfigureAwait(false);
+                var (client, encoder) = await ConnectAsync(settings, session).ConfigureAwait(false);
+                lock (_gate)
+                {
+                    if (_state != LiveState.Reconnecting || session.IsCancellationRequested)
+                    {
+                        encoder.Dispose();
+                        client.Dispose();
+                        return;
+                    }
+
+                    _reconnect = null;
+                    BeginSending(settings, client, encoder, session);
+                }
+
+                StateChanged?.Invoke(this, LiveState.Live);
+                return;
+            }
+            catch (OperationCanceledException) when (session.IsCancellationRequested)
+            {
+                return;
+            }
+            catch (Exception ex) when (ex is IOException or SocketException)
+            {
+                last = ex;
+            }
+        }
+
+        lock (_gate)
+        {
+            if (_state != LiveState.Reconnecting || session.IsCancellationRequested)
+            {
+                return;
+            }
+
+            _state = LiveState.Offline;
+            _reconnect = null;
+            _settings = null;
+            _session = null;
+        }
+
+        Faulted?.Invoke(this, new IcecastException(
+            $"Yayın bağlantısı koptu ve {MaxReconnectAttempts} denemede yeniden kurulamadı: {last.Message}"));
     }
 
     private readonly record struct Block(float[] Samples, int Length);
