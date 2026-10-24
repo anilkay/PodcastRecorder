@@ -66,4 +66,41 @@ public class DuckingTests
 
         Assert.Equal(1f, engine.MusicChannel.FadeTarget);
     }
+
+    [Fact]
+    public void Voice_ducking_follows_speech_and_releases_after_the_hold()
+    {
+        using var engine = new AudioEngine();
+        var voice = new SwitchableSource();
+        engine.AddMicrophone(voice, "Mikrofon");
+        engine.DuckingMode = DuckingMode.WhileSpeaking;
+        engine.VoiceHoldTime = TimeSpan.FromMilliseconds(100);
+        var buffer = new float[960];
+
+        engine.Bus.Read(buffer, 0, buffer.Length);
+        Assert.Equal(1f, engine.MusicChannel.FadeTarget);
+
+        voice.Level = 0.3f;
+        engine.Bus.Read(buffer, 0, buffer.Length);
+        Assert.True(engine.IsVoiceDetected);
+        Assert.True(engine.MusicChannel.FadeTarget < 1f);
+
+        voice.Level = 0f;
+        for (int i = 0; i < 12; i++) engine.Bus.Read(buffer, 0, buffer.Length);
+        Assert.False(engine.IsVoiceDetected);
+        Assert.Equal(1f, engine.MusicChannel.FadeTarget);
+    }
+
+    private sealed class SwitchableSource : NAudio.Wave.ISampleProvider
+    {
+        public float Level { get; set; }
+
+        public NAudio.Wave.WaveFormat WaveFormat => AudioFormat.Mix;
+
+        public int Read(float[] buffer, int offset, int count)
+        {
+            Array.Fill(buffer, Level, offset, count);
+            return count;
+        }
+    }
 }

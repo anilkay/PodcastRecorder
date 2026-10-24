@@ -13,6 +13,9 @@ Windows için podcast kayıt uygulaması. Mikrofonu, çalma listesindeki şarkı
 - Klasör gezgini: dosyaları listeye ya da jingle hücresine sürükle
 - Ayarlar `%APPDATA%\PodcastRecorder\settings.json` dosyasında saklanır
 - **Mikrofon AÇIK/KAPALI düğmesi:** Kapalıyken mikrofon kayda girmez; açıkken ducking etkinse müzik ayarlanan seviyeye (-3 ile -30 dB arası) yumuşakça kısılır. Jingle'lar kısılmaz.
+- **Ducking modu:** "Mikrofon açıkken" (düğme açık olduğu sürece) ya da "Konuşunca (otomatik)": müzik yalnızca mikrofona konuşulurken kısılır, susunca geri gelir. Konuşma eşiği ayarlanabilir.
+- **Limiter:** Kayıt -1 dBFS'yi geçmesin diye tepe seviyeleri anlık kısar; kırpılma (clip) olmaz.
+- **LUFS ölçer:** Kayıt çubuğunda anlık ve kaydın tamamı için ses yüksekliği (EBU R128 / ITU-R BS.1770-4). Podcast'ler için yaygın hedef -16 LUFS.
 - **Crossfade:** Çalma listesinde şarkılar 0-10 saniye bindirilerek geçer; otomatik sonrakine geçişte de, elle "Sonraki" ya da başka şarkı çalındığında da uygulanır.
 - **Jingle sekmeleri:** Her program için ayrı sekme; sekme adı ve ızgara boyutu (2x2 ile 8x8 arası) değiştirilebilir.
 
@@ -68,5 +71,4 @@ Tüm kaynaklar 48 kHz stereo float formatına çevrilir. Çıkış cihazının s
 
 ## Yol haritası
 
-- Konuşunca otomatik ducking (ses algılamalı)
-- Kayıt sonrası ses seviyesi normalizasyonu (LUFS)
+- Kayıt sonrası otomatik ses yüksekliği normalizasyonu (-16 LUFS)

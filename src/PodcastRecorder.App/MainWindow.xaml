@@ -46,6 +46,17 @@
                                VerticalAlignment="Center" Margin="16,0,12,0" />
                     <TextBlock Text="{Binding StateText}" VerticalAlignment="Center" FontWeight="SemiBold"
                                Foreground="{StaticResource MutedTextBrush}" />
+                    <StackPanel VerticalAlignment="Center" Margin="20,0,0,0"
+                                ToolTip="Ses yüksekliği (EBU R128). Anlık: son 0,4 sn. Kayıt: kaydın tamamı. Podcast'ler için yaygın hedef -16 LUFS.">
+                        <TextBlock>
+                            <Run Text="Anlık:" Foreground="{StaticResource MutedTextBrush}" />
+                            <Run Text="{Binding MomentaryLoudnessText, Mode=OneWay}" FontWeight="SemiBold" />
+                        </TextBlock>
+                        <TextBlock>
+                            <Run Text="Kayıt:" Foreground="{StaticResource MutedTextBrush}" />
+                            <Run Text="{Binding IntegratedLoudnessText, Mode=OneWay}" FontWeight="SemiBold" />
+                        </TextBlock>
+                    </StackPanel>
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
@@ -78,7 +89,28 @@
             <Slider Minimum="-30" Maximum="-3" Value="{Binding DuckLevelDb}" Width="120" VerticalAlignment="Center"
                     SmallChange="1" LargeChange="3" IsSnapToTickEnabled="True" TickFrequency="1"
                     IsEnabled="{Binding DuckingEnabled}" ToolTip="Mikrofon açıkken müziğin seviyesi" />
-            <TextBlock Text="{Binding DuckLevelDb, StringFormat={}{0:0} dB}" VerticalAlignment="Center" Margin="6,0,0,0" />
+            <TextBlock Text="{Binding DuckLevelDb, StringFormat={}{0:0} dB}" VerticalAlignment="Center" Margin="6,0,16,0" />
+            <ComboBox ItemsSource="{Binding DuckingModes}" SelectedItem="{Binding SelectedDuckingMode}" DisplayMemberPath="Name"
+                      Width="170" IsEnabled="{Binding DuckingEnabled}" Margin="0,0,8,0" />
+            <StackPanel Orientation="Horizontal" Visibility="{Binding IsVoiceDucking, Converter={StaticResource BoolToVisibility}}"
+                        ToolTip="Mikrofon bu seviyeyi geçince konuşma algılanır. Ortam gürültüsü müziği kısıyorsa eşiği yükseltin.">
+                <TextBlock Text="Eşik:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                <Slider Minimum="-60" Maximum="-10" Value="{Binding VoiceThresholdDb}" Width="100" VerticalAlignment="Center"
+                        IsSnapToTickEnabled="True" TickFrequency="1" />
+                <TextBlock Text="{Binding VoiceThresholdDb, StringFormat={}{0:0} dB}" VerticalAlignment="Center" Margin="6,0,6,0" />
+                <Ellipse Width="10" Height="10" VerticalAlignment="Center" ToolTip="Konuşma algılandı">
+                    <Ellipse.Style>
+                        <Style TargetType="Ellipse">
+                            <Setter Property="Fill" Value="{StaticResource BorderBrush}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsVoiceDetected}" Value="True">
+                                    <Setter Property="Fill" Value="{StaticResource LiveBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+            </StackPanel>
         </WrapPanel>
 
         <!-- Folder browser, playlist, jingle pad -->
@@ -279,6 +311,12 @@
                     BorderBrush="{StaticResource AccentBrush}" ToolTip="Kayda giden toplam ses">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="Master (kayıt)" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0"
+                                ToolTip="Kayıt -1 dB'yi geçmesin diye tepe seviyeleri anlık kısar. Turuncu: şu an kısıyor.">
+                        <CheckBox Content="Limiter" IsChecked="{Binding LimiterEnabled}" />
+                        <Ellipse Width="8" Height="8" Margin="6,0,0,0" VerticalAlignment="Center" Fill="Orange"
+                                 Visibility="{Binding IsLimiting, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
                         <Slider Orientation="Vertical" Minimum="0" Maximum="1.5" Value="{Binding MasterVolume}"
                                 SmallChange="0.05" LargeChange="0.1" Margin="0,0,8,0" />

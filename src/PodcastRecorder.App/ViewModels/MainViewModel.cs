@@ -13,6 +13,8 @@ using PodcastRecorder.Audio.Sources;
 
 namespace PodcastRecorder.App.ViewModels;
 
+public sealed record DuckingModeOption(DuckingMode Mode, string Name);
+
 public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly AudioEngine _engine = new();
@@ -24,6 +26,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly DispatcherTimer _timer;
     private readonly List<ChannelStripViewModel> _microphoneStrips = [];
     private bool _initialized;
+    private int _refreshTicks;
 
     public MainViewModel(SettingsStore settingsStore, IFileDialogs dialogs)
     {
@@ -99,6 +102,37 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial double DuckLevelDb { get; set; }
 
+    public IReadOnlyList<DuckingModeOption> DuckingModes { get; } =
+    [
+        new(DuckingMode.WhileMicrophoneLive, "Mikrofon açıkken"),
+        new(DuckingMode.WhileSpeaking, "Konuşunca (otomatik)"),
+    ];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsVoiceDucking))]
+    public partial DuckingModeOption? SelectedDuckingMode { get; set; }
+
+    public bool IsVoiceDucking => SelectedDuckingMode?.Mode == DuckingMode.WhileSpeaking;
+
+    /// <summary>Microphone level above which speech is detected, in dBFS.</summary>
+    [ObservableProperty]
+    public partial double VoiceThresholdDb { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsVoiceDetected { get; set; }
+
+    [ObservableProperty]
+    public partial bool LimiterEnabled { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsLimiting { get; set; }
+
+    [ObservableProperty]
+    public partial string MomentaryLoudnessText { get; set; } = "–";
+
+    [ObservableProperty]
+    public partial string IntegratedLoudnessText { get; set; } = "–";
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle), nameof(IsRecording), nameof(IsPaused), nameof(StateText), nameof(PauseButtonText))]
     [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand), nameof(AddMicrophoneCommand))]
@@ -146,6 +180,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         DuckLevelDb = _settings.DuckLevelDb;
         _engine.DuckingEnabled = DuckingEnabled;
         _engine.DuckLevelDb = DuckLevelDb;
+        SelectedDuckingMode = DuckingModes.FirstOrDefault(m => m.Mode == _settings.DuckingMode) ?? DuckingModes[0];
+        VoiceThresholdDb = _settings.VoiceThresholdDb;
+        _engine.VoiceThresholdDb = VoiceThresholdDb;
+        LimiterEnabled = _settings.LimiterEnabled;
+        _engine.Mixer.Limiter.Enabled = LimiterEnabled;
         Playlist.CrossfadeSeconds = _settings.CrossfadeSeconds;
         SelectedEncoder = EncoderCatalog.Find(_settings.EncoderId);
         RecordingFolder = _settings.RecordingFolder;
@@ -267,6 +306,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     partial void OnDuckLevelDbChanged(double value) => _engine.DuckLevelDb = value;
 
+    partial void OnSelectedDuckingModeChanged(DuckingModeOption? value)
+    {
+        if (value is not null) _engine.DuckingMode = value.Mode;
+    }
+
+    partial void OnVoiceThresholdDbChanged(double value) => _engine.VoiceThresholdDb = value;
+
+    partial void OnLimiterEnabledChanged(bool value) => _engine.Mixer.Limiter.Enabled = value;
+
     [RelayCommand]
     private void ToggleMicrophone() => IsMicrophoneLive = !IsMicrophoneLive;
 
@@ -287,6 +335,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             var mix = new RecordingTarget(Path.Combine(RecordingFolder, name + encoder.FileExtension), encoder);
             var stems = RecordStems ? StemTargets(Path.Combine(RecordingFolder, name + " izler")) : null;
             _engine.Recorder.Start(mix, stems);
+            _engine.Loudness.ResetIntegrated();
             StatusMessage = $"Kaydediliyor: {mix.Path}" + (stems is null ? "" : $" (+{stems.Count} ayrı iz)");
         }
         catch (Exception ex)
@@ -353,7 +402,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
         MasterMeter.Refresh();
         Playlist.Refresh();
         ElapsedText = _engine.Recorder.Elapsed.ToString(@"hh\:mm\:ss");
+        IsVoiceDetected = _engine.IsVoiceDetected;
+        IsLimiting = _engine.Mixer.Limiter.ReadAndResetReductionDb() < -0.5;
+
+        // Loudness changes slowly; the integrated value is also costlier to compute.
+        if (++_refreshTicks % 5 == 0) MomentaryLoudnessText = FormatLufs(_engine.Loudness.MomentaryLufs);
+        if (_refreshTicks % 20 == 0) IntegratedLoudnessText = FormatLufs(_engine.Loudness.IntegratedLufs);
     }
+
+    private static string FormatLufs(double lufs) => double.IsFinite(lufs) && lufs > -70 ? $"{lufs:0.0} LUFS" : "–";
 
     private void LoadJingleBanks()
     {
@@ -414,6 +471,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _settings.CrossfadeSeconds = Playlist.CrossfadeSeconds;
         _settings.DuckingEnabled = DuckingEnabled;
         _settings.DuckLevelDb = DuckLevelDb;
+        _settings.DuckingMode = SelectedDuckingMode?.Mode ?? DuckingMode.WhileMicrophoneLive;
+        _settings.VoiceThresholdDb = VoiceThresholdDb;
+        _settings.LimiterEnabled = LimiterEnabled;
         _settings.Playlist = Playlist.Items.Select(i => i.FilePath).ToList();
         _settings.Jingles = null;
         _settings.JingleBanks = Jingles.Banks

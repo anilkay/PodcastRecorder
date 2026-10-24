@@ -51,6 +51,9 @@ public sealed class MixerChannel : ISampleProvider
 
     public PeakMeter Meter { get; } = new();
 
+    /// <summary>RMS level of the last block read, after fader and fades; used for voice detection.</summary>
+    public float LastBlockRms { get; private set; }
+
     /// <summary>
     /// The level an automatic fade is heading to (1 = untouched). Used for ducking and for
     /// switching a microphone on and off, independently of the fader and mute.
@@ -66,6 +69,15 @@ public sealed class MixerChannel : ISampleProvider
         _gain.Apply(samples, WaveFormat.Channels, IsMuted ? 0f : _volume);
         _fade.Apply(samples, WaveFormat.Channels);
         Meter.Process(samples, WaveFormat.Channels);
+        LastBlockRms = Rms(samples);
         return read;
+    }
+
+    private static float Rms(ReadOnlySpan<float> samples)
+    {
+        if (samples.IsEmpty) return 0f;
+        double sum = 0;
+        foreach (var s in samples) sum += s * s;
+        return (float)Math.Sqrt(sum / samples.Length);
     }
 }

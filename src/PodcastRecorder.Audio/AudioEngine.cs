@@ -7,6 +7,15 @@ using PodcastRecorder.Audio.Sources;
 
 namespace PodcastRecorder.Audio;
 
+public enum DuckingMode
+{
+    /// <summary>Music stays down for as long as the on-air switch is on.</summary>
+    WhileMicrophoneLive,
+
+    /// <summary>Music dips only while someone is actually speaking into a live microphone.</summary>
+    WhileSpeaking,
+}
+
 /// <summary>
 /// Wires the sources, mixer, recorder and output device together. The output device's clock
 /// drives everything: each buffer it asks for is mixed, recorded and played.
@@ -16,10 +25,17 @@ public sealed class AudioEngine : IDisposable
     private static readonly TimeSpan MicrophoneSwitchTime = TimeSpan.FromMilliseconds(30);
 
     private readonly Dictionary<MixerChannel, ISampleProvider> _microphones = [];
+
+    // Snapshot of the microphone channels for the audio thread, replaced on every change.
+    private volatile MixerChannel[] _microphoneChannels = [];
     private WasapiOut? _output;
     private bool _microphoneLive = true;
     private bool _duckingEnabled = true;
     private float _duckLevel = DecibelsToGain(-12);
+    private DuckingMode _duckingMode = DuckingMode.WhileMicrophoneLive;
+    private float _voiceThreshold = DecibelsToGain(-40);
+    private int _voiceHoldFrames;
+    private bool _voiceDucked;
 
     public AudioEngine(AudioFileOpener? opener = null)
     {
@@ -29,7 +45,7 @@ public sealed class AudioEngine : IDisposable
         JingleChannel = new MixerChannel("Jingle", Jingles);
         Mixer.Add(MusicChannel);
         Mixer.Add(JingleChannel);
-        Bus = new OutputBus(Mixer, Recorder);
+        Bus = new OutputBus(Mixer, Recorder, AfterMix);
     }
 
     public AudioMixer Mixer { get; } = new();
@@ -45,7 +61,9 @@ public sealed class AudioEngine : IDisposable
     public MixerChannel JingleChannel { get; }
 
     /// <summary>The monitor output; reading from it also feeds the recorder.</summary>
-    public ISampleProvider Bus { get; }
+    public OutputBus Bus { get; }
+
+    public LoudnessMeter Loudness => Bus.Loudness;
 
     public bool IsOutputRunning => _output?.PlaybackState == PlaybackState.Playing;
 
@@ -59,7 +77,7 @@ public sealed class AudioEngine : IDisposable
         set
         {
             _microphoneLive = value;
-            foreach (var channel in _microphones.Keys)
+            foreach (var channel in _microphoneChannels)
             {
                 channel.FadeTo(value ? 1f : 0f, MicrophoneSwitchTime);
             }
@@ -92,6 +110,31 @@ public sealed class AudioEngine : IDisposable
     /// <summary>How long the music takes to dip and to come back.</summary>
     public TimeSpan DuckFadeTime { get; set; } = TimeSpan.FromMilliseconds(400);
 
+    public DuckingMode DuckingMode
+    {
+        get => _duckingMode;
+        set
+        {
+            _duckingMode = value;
+            _voiceDucked = false;
+            _voiceHoldFrames = 0;
+            UpdateDucking();
+        }
+    }
+
+    /// <summary>Microphone RMS level, in dBFS, above which speech is detected.</summary>
+    public double VoiceThresholdDb
+    {
+        get => 20 * Math.Log10(_voiceThreshold);
+        set => _voiceThreshold = DecibelsToGain(Math.Clamp(value, -70, 0));
+    }
+
+    /// <summary>How long the music stays down after the speaker stops.</summary>
+    public TimeSpan VoiceHoldTime { get; set; } = TimeSpan.FromMilliseconds(700);
+
+    /// <summary>Whether a microphone is currently above the voice threshold (with hold).</summary>
+    public bool IsVoiceDetected => _voiceDucked;
+
     /// <summary>Raised when the output device stops, with the error if it failed.</summary>
     public event EventHandler<Exception?>? OutputStopped;
 
@@ -104,6 +147,7 @@ public sealed class AudioEngine : IDisposable
         var channel = new MixerChannel(name, microphone, monitorEnabled: false);
         channel.FadeTo(_microphoneLive ? 1f : 0f, TimeSpan.Zero);
         _microphones[channel] = microphone;
+        _microphoneChannels = [.. _microphones.Keys];
         Mixer.Add(channel);
         if (microphone is MicrophoneSource device) device.Start();
         UpdateDucking();
@@ -117,6 +161,8 @@ public sealed class AudioEngine : IDisposable
         {
             disposable.Dispose();
         }
+
+        _microphoneChannels = [.. _microphones.Keys];
 
         UpdateDucking();
     }
@@ -140,8 +186,38 @@ public sealed class AudioEngine : IDisposable
 
     private void UpdateDucking()
     {
-        bool duck = _duckingEnabled && _microphoneLive && _microphones.Count > 0;
-        MusicChannel.FadeTo(duck ? _duckLevel : 1f, DuckFadeTime);
+        bool trigger = _duckingMode == DuckingMode.WhileMicrophoneLive || _voiceDucked;
+        bool duck = _duckingEnabled && _microphoneLive && _microphoneChannels.Length > 0 && trigger;
+        float target = duck ? _duckLevel : 1f;
+        if (MusicChannel.FadeTarget != target) MusicChannel.FadeTo(target, DuckFadeTime);
+    }
+
+    /// <summary>Runs on the audio thread after every block to follow the speaker.</summary>
+    private void AfterMix(int frames)
+    {
+        if (_duckingMode != DuckingMode.WhileSpeaking) return;
+
+        bool speaking = false;
+        if (_microphoneLive)
+        {
+            foreach (var channel in _microphoneChannels) speaking |= channel.LastBlockRms > _voiceThreshold;
+        }
+
+        if (speaking)
+        {
+            _voiceHoldFrames = (int)(VoiceHoldTime.TotalSeconds * AudioFormat.SampleRate);
+        }
+        else
+        {
+            _voiceHoldFrames = Math.Max(0, _voiceHoldFrames - frames);
+        }
+
+        bool ducked = _voiceHoldFrames > 0;
+        if (ducked != _voiceDucked)
+        {
+            _voiceDucked = ducked;
+            UpdateDucking();
+        }
     }
 
     private static float DecibelsToGain(double db) => (float)Math.Pow(10, db / 20);

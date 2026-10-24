@@ -37,7 +37,10 @@ public sealed class AudioMixer
         set => _monitorVolume = Math.Clamp(value, 0f, MixerChannel.MaxVolume);
     }
 
-    /// <summary>Meter of the program bus after the master fader.</summary>
+    /// <summary>Keeps the program bus below -1 dBFS.</summary>
+    public Limiter Limiter { get; } = new();
+
+    /// <summary>Meter of the program bus after the master fader and limiter.</summary>
     public PeakMeter MasterMeter { get; } = new();
 
     public void Add(MixerChannel channel)
@@ -91,6 +94,7 @@ public sealed class AudioMixer
         }
 
         _masterGain.Apply(program, AudioFormat.Channels, _masterVolume);
+        Limiter.Process(program, AudioFormat.Channels);
         _monitorGain.Apply(monitor, AudioFormat.Channels, _monitorVolume);
         MasterMeter.Process(program, AudioFormat.Channels);
     }

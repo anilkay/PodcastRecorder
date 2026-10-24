@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json.Serialization;
+using PodcastRecorder.Audio;
 
 namespace PodcastRecorder.App.Services;
 
@@ -40,6 +41,12 @@ public sealed class AppSettings
     public bool DuckingEnabled { get; set; } = true;
 
     public double DuckLevelDb { get; set; } = -12;
+
+    public DuckingMode DuckingMode { get; set; } = DuckingMode.WhileMicrophoneLive;
+
+    public double VoiceThresholdDb { get; set; } = -40;
+
+    public bool LimiterEnabled { get; set; } = true;
 
     public List<string> Playlist { get; set; } = [];
 
