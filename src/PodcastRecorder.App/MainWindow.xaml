@@ -39,6 +39,9 @@
                     </Button>
                     <Button Style="{StaticResource TransportButton}" Command="{Binding TogglePauseCommand}" Content="{Binding PauseButtonText}" />
                     <Button Style="{StaticResource TransportButton}" Command="{Binding StopRecordingCommand}" Content="Durdur" />
+                    <ToggleButton Style="{StaticResource MicrophoneToggle}" IsChecked="{Binding IsMicrophoneLive}"
+                                  Content="{Binding MicrophoneButtonText}" Margin="10,0,0,0"
+                                  ToolTip="Kapalıyken mikrofon kayda girmez. Açıkken (ducking etkinse) müzik kısılır." />
                     <TextBlock Text="{Binding ElapsedText}" FontFamily="Consolas" FontSize="28" FontWeight="SemiBold"
                                VerticalAlignment="Center" Margin="16,0,12,0" />
                     <TextBlock Text="{Binding StateText}" VerticalAlignment="Center" FontWeight="SemiBold"
@@ -59,14 +62,20 @@
         </Border>
 
         <!-- Devices -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4,10,0,10">
+        <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="4,10,0,10">
             <TextBlock Text="Mikrofon:" VerticalAlignment="Center" Margin="0,0,6,0" />
             <ComboBox ItemsSource="{Binding InputDevices}" SelectedItem="{Binding SelectedInput}" DisplayMemberPath="Name"
                       Width="300" IsEnabled="{Binding IsIdle}" Margin="0,0,20,0" />
             <TextBlock Text="Dinleme çıkışı (kulaklık):" VerticalAlignment="Center" Margin="0,0,6,0" />
             <ComboBox ItemsSource="{Binding OutputDevices}" SelectedItem="{Binding SelectedOutput}" DisplayMemberPath="Name"
-                      Width="300" IsEnabled="{Binding IsIdle}" />
-        </StackPanel>
+                      Width="300" IsEnabled="{Binding IsIdle}" Margin="0,0,20,0" />
+            <CheckBox Content="Ducking: mikrofon açıkken müziği kıs" IsChecked="{Binding DuckingEnabled}"
+                      VerticalAlignment="Center" Margin="0,0,8,0" />
+            <Slider Minimum="-30" Maximum="-3" Value="{Binding DuckLevelDb}" Width="120" VerticalAlignment="Center"
+                    SmallChange="1" LargeChange="3" IsSnapToTickEnabled="True" TickFrequency="1"
+                    IsEnabled="{Binding DuckingEnabled}" ToolTip="Mikrofon açıkken müziğin seviyesi" />
+            <TextBlock Text="{Binding DuckLevelDb, StringFormat={}{0:0} dB}" VerticalAlignment="Center" Margin="6,0,0,0" />
+        </WrapPanel>
 
         <!-- Folder browser, playlist, jingle pad -->
         <Grid Grid.Row="2">
@@ -129,6 +138,13 @@
                             <CheckBox DockPanel.Dock="Right" Content="Bitince sonrakine geç" IsChecked="{Binding AutoAdvance}" />
                             <TextBlock Text="{Binding PositionText}" FontFamily="Consolas" />
                         </DockPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
+                                    ToolTip="Şarkılar arasında bindirme süresi. 0 ise geçiş anında olur.">
+                            <TextBlock Text="Crossfade:" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <Slider Minimum="0" Maximum="10" Value="{Binding CrossfadeSeconds}" Width="140" VerticalAlignment="Center"
+                                    IsSnapToTickEnabled="True" TickFrequency="0.5" SmallChange="0.5" LargeChange="1" />
+                            <TextBlock Text="{Binding CrossfadeSeconds, StringFormat={}{0:0.0} sn}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                        </StackPanel>
                         <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
                     </StackPanel>
                     <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" AllowDrop="True"
@@ -164,55 +180,82 @@
             <Border Grid.Column="4" Style="{StaticResource PanelBorder}" DataContext="{Binding Jingles}">
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top">
-                        <Button DockPanel.Dock="Right" Content="Tümünü durdur" Command="{Binding StopAllCommand}" Margin="0" />
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="+ Sekme" Command="{Binding NewBankCommand}" />
+                            <Button Content="Sekmeyi sil" Command="{Binding RemoveBankCommand}" />
+                            <Button Content="Tümünü durdur" Command="{Binding StopAllCommand}" Margin="0" />
+                        </StackPanel>
                         <TextBlock Text="Jingle paneli" Style="{StaticResource PanelTitle}" />
                     </DockPanel>
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
                     <TextBlock DockPanel.Dock="Bottom" Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
                                Text="Tıkla: çal / durdur. Dosyayı hücreye sürükleyin; sağ tık ile dosya seçin veya temizleyin." />
-                    <ItemsControl ItemsSource="{Binding Cells}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Rows="4" Columns="4" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
+                    <TabControl ItemsSource="{Binding Banks}" SelectedItem="{Binding SelectedBank}">
+                        <TabControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding ToggleCommand}" AllowDrop="True" Margin="3"
-                                        DragOver="FileDrop_DragOver" Drop="JingleCell_Drop" ToolTip="{Binding FilePath}">
-                                    <Button.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Dosya seç…" Command="{Binding BrowseCommand}" />
-                                            <MenuItem Header="Temizle" Command="{Binding ClearCommand}" />
-                                        </ContextMenu>
-                                    </Button.ContextMenu>
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border x:Name="Cell" CornerRadius="6" BorderThickness="1"
-                                                    BorderBrush="{StaticResource BorderBrush}" Background="{StaticResource PanelBrush}" Padding="6">
-                                                <TextBlock x:Name="Label" Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
-                                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
-                                                </Trigger>
-                                                <DataTrigger Binding="{Binding HasFile}" Value="False">
-                                                    <Setter TargetName="Label" Property="Foreground" Value="{StaticResource MutedTextBrush}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                                                    <Setter TargetName="Cell" Property="Background" Value="{StaticResource AccentBrush}" />
-                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
-                                                    <Setter TargetName="Label" Property="Foreground" Value="White" />
-                                                    <Setter TargetName="Label" Property="FontWeight" Value="SemiBold" />
-                                                </DataTrigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>
+                                <TextBlock Text="{Binding Name}" />
                             </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <DockPanel Margin="0,6,0,0">
+                                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                                        <TextBlock Text="Ad:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,12,0" />
+                                        <TextBlock Text="Satır:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Rows}"
+                                                  Width="50" Margin="0,0,12,0" />
+                                        <TextBlock Text="Sütun:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Columns}"
+                                                  Width="50" />
+                                    </StackPanel>
+                                    <ItemsControl ItemsSource="{Binding Cells}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button Command="{Binding ToggleCommand}" AllowDrop="True" Margin="3"
+                                                        DragOver="FileDrop_DragOver" Drop="JingleCell_Drop" ToolTip="{Binding FilePath}">
+                                                    <Button.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="Dosya seç…" Command="{Binding BrowseCommand}" />
+                                                            <MenuItem Header="Temizle" Command="{Binding ClearCommand}" />
+                                                        </ContextMenu>
+                                                    </Button.ContextMenu>
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border x:Name="Cell" CornerRadius="6" BorderThickness="1"
+                                                                    BorderBrush="{StaticResource BorderBrush}" Background="{StaticResource PanelBrush}" Padding="6">
+                                                                <TextBlock x:Name="Label" Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
+                                                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                                                </Trigger>
+                                                                <DataTrigger Binding="{Binding HasFile}" Value="False">
+                                                                    <Setter TargetName="Label" Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                    <Setter TargetName="Cell" Property="Background" Value="{StaticResource AccentBrush}" />
+                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                                                    <Setter TargetName="Label" Property="Foreground" Value="White" />
+                                                                    <Setter TargetName="Label" Property="FontWeight" Value="SemiBold" />
+                                                                </DataTrigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </DockPanel>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+                    </TabControl>
                 </DockPanel>
             </Border>
         </Grid>

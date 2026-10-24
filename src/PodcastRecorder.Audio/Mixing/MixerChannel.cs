@@ -11,6 +11,7 @@ public sealed class MixerChannel : ISampleProvider
 
     private readonly ISampleProvider _source;
     private readonly GainRamp _gain;
+    private readonly Fade _fade = new();
     private float _volume = 1f;
 
     public MixerChannel(string name, ISampleProvider source, bool monitorEnabled = true)
@@ -50,11 +51,20 @@ public sealed class MixerChannel : ISampleProvider
 
     public PeakMeter Meter { get; } = new();
 
+    /// <summary>
+    /// The level an automatic fade is heading to (1 = untouched). Used for ducking and for
+    /// switching a microphone on and off, independently of the fader and mute.
+    /// </summary>
+    public float FadeTarget => _fade.Target;
+
+    public void FadeTo(float level, TimeSpan duration) => _fade.Start(Math.Clamp(level, 0f, 1f), duration);
+
     public int Read(float[] buffer, int offset, int count)
     {
         int read = _source.Read(buffer, offset, count);
         var samples = buffer.AsSpan(offset, read);
         _gain.Apply(samples, WaveFormat.Channels, IsMuted ? 0f : _volume);
+        _fade.Apply(samples, WaveFormat.Channels);
         Meter.Process(samples, WaveFormat.Channels);
         return read;
     }

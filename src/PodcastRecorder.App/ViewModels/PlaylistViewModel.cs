@@ -28,7 +28,8 @@ public partial class PlaylistViewModel : ObservableObject
         _deck = deck;
         _dialogs = dialogs;
         _ui = ui;
-        _deck.PlaybackEnded += (_, _) => _ui.Post(_ => OnPlaybackEnded(), null);
+        _deck.PlaybackEnded += (_, path) => _ui.Post(_ => OnPlaybackEnded(path), null);
+        _deck.TrackEnding += (_, path) => _ui.Post(_ => OnTrackEnding(path), null);
     }
 
     public ObservableCollection<PlaylistItemViewModel> Items { get; } = [];
@@ -42,6 +43,10 @@ public partial class PlaylistViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool AutoAdvance { get; set; } = true;
+
+    /// <summary>Overlap between songs in seconds; 0 turns crossfade off.</summary>
+    [ObservableProperty]
+    public partial double CrossfadeSeconds { get; set; }
 
     [ObservableProperty]
     public partial double Progress { get; set; }
@@ -152,8 +157,22 @@ public partial class PlaylistViewModel : ObservableObject
         return index >= 0 && index + 1 < Items.Count ? Items[index + 1] : null;
     }
 
-    private void OnPlaybackEnded()
+    partial void OnCrossfadeSecondsChanged(double value) => _deck.CrossfadeDuration = TimeSpan.FromSeconds(value);
+
+    /// <summary>With crossfade on, the next song starts over the tail of the current one.</summary>
+    private void OnTrackEnding(string path)
     {
+        if (AutoAdvance && CurrentItem?.FilePath == path && NextAfter(CurrentItem) is { } next)
+        {
+            Play(next);
+        }
+    }
+
+    private void OnPlaybackEnded(string path)
+    {
+        // A crossfade may already have moved on to the next song.
+        if (CurrentItem?.FilePath != path) return;
+
         var finished = CurrentItem;
         SetCurrent(null);
         if (AutoAdvance && NextAfter(finished) is { } next)

@@ -7,11 +7,11 @@ using PodcastRecorder.Audio.Sources;
 
 namespace PodcastRecorder.App.ViewModels;
 
-public partial class JingleCellViewModel(int index, JinglePadViewModel pad) : ObservableObject
+public partial class JingleCellViewModel(string key, int index, JinglePadViewModel pad) : ObservableObject
 {
     public int Index { get; } = index;
 
-    public string Key => $"pad-{Index}";
+    public string Key { get; } = key;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Title), nameof(HasFile))]
@@ -48,31 +48,108 @@ public partial class JingleCellViewModel(int index, JinglePadViewModel pad) : Ob
     }
 }
 
-/// <summary>The jingle cart: a fixed grid of pads, each holding one file.</summary>
-public partial class JinglePadViewModel : ObservableObject
+/// <summary>One tab of the jingle cart, e.g. one per show, with its own grid size.</summary>
+public partial class JingleBankViewModel : ObservableObject
 {
-    public const int Rows = 4;
-    public const int Columns = 4;
+    private readonly int _id;
+    private readonly JinglePadViewModel _pad;
 
-    private readonly JinglePlayer _player;
-    private readonly IFileDialogs _dialogs;
-
-    public JinglePadViewModel(JinglePlayer player, IFileDialogs dialogs, SynchronizationContext ui)
+    public JingleBankViewModel(int id, string name, int rows, int columns, JinglePadViewModel pad)
     {
-        _player = player;
-        _dialogs = dialogs;
-        for (int i = 0; i < Rows * Columns; i++)
-        {
-            Cells.Add(new JingleCellViewModel(i, this));
-        }
-
-        _player.JingleEnded += (_, key) => ui.Post(_ => MarkStopped(key), null);
+        _id = id;
+        _pad = pad;
+        Name = name;
+        Rows = Math.Clamp(rows, JinglePadViewModel.MinSize, JinglePadViewModel.MaxSize);
+        Columns = Math.Clamp(columns, JinglePadViewModel.MinSize, JinglePadViewModel.MaxSize);
     }
 
     public ObservableCollection<JingleCellViewModel> Cells { get; } = [];
 
     [ObservableProperty]
+    public partial string Name { get; set; }
+
+    [ObservableProperty]
+    public partial int Rows { get; set; }
+
+    [ObservableProperty]
+    public partial int Columns { get; set; }
+
+    partial void OnRowsChanged(int value) => Resize();
+
+    partial void OnColumnsChanged(int value) => Resize();
+
+    /// <summary>Grows or shrinks the grid; pads keep their file by position.</summary>
+    private void Resize()
+    {
+        int size = Rows * Columns;
+        while (Cells.Count > size)
+        {
+            var last = Cells[^1];
+            _pad.Stop(last);
+            Cells.RemoveAt(Cells.Count - 1);
+        }
+
+        while (Cells.Count < size)
+        {
+            int index = Cells.Count;
+            Cells.Add(new JingleCellViewModel($"{_id}-{index}", index, _pad));
+        }
+    }
+}
+
+/// <summary>The jingle cart: tabs of pads, each pad holding one file.</summary>
+public partial class JinglePadViewModel : ObservableObject
+{
+    public const int MinSize = 2;
+    public const int MaxSize = 8;
+    public const int DefaultSize = 4;
+
+    private readonly JinglePlayer _player;
+    private readonly IFileDialogs _dialogs;
+    private int _nextBankId;
+
+    public JinglePadViewModel(JinglePlayer player, IFileDialogs dialogs, SynchronizationContext ui)
+    {
+        _player = player;
+        _dialogs = dialogs;
+        _player.JingleEnded += (_, key) => ui.Post(_ => MarkStopped(key), null);
+    }
+
+    public static IReadOnlyList<int> SizeOptions { get; } = Enumerable.Range(MinSize, MaxSize - MinSize + 1).ToList();
+
+    public ObservableCollection<JingleBankViewModel> Banks { get; } = [];
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RemoveBankCommand))]
+    public partial JingleBankViewModel? SelectedBank { get; set; }
+
+    [ObservableProperty]
     public partial string? ErrorMessage { get; set; }
+
+    public JingleBankViewModel AddBank(string name, int rows = DefaultSize, int columns = DefaultSize)
+    {
+        var bank = new JingleBankViewModel(_nextBankId++, name, rows, columns, this);
+        Banks.Add(bank);
+        SelectedBank ??= bank;
+        RemoveBankCommand.NotifyCanExecuteChanged();
+        return bank;
+    }
+
+    [RelayCommand]
+    private void NewBank() => SelectedBank = AddBank($"Sekme {Banks.Count + 1}");
+
+    [RelayCommand(CanExecute = nameof(CanRemoveBank))]
+    private void RemoveBank()
+    {
+        if (SelectedBank is not { } bank) return;
+        foreach (var cell in bank.Cells) Stop(cell);
+        int index = Banks.IndexOf(bank);
+        Banks.Remove(bank);
+        SelectedBank = Banks[Math.Min(index, Banks.Count - 1)];
+        RemoveBankCommand.NotifyCanExecuteChanged();
+    }
+
+    private bool CanRemoveBank() => SelectedBank is not null && Banks.Count > 1;
 
     public void Toggle(JingleCellViewModel cell)
     {
@@ -106,14 +183,14 @@ public partial class JinglePadViewModel : ObservableObject
     private void StopAll()
     {
         _player.StopAll();
-        foreach (var cell in Cells) cell.IsPlaying = false;
+        foreach (var cell in Banks.SelectMany(b => b.Cells)) cell.IsPlaying = false;
     }
 
     internal string? PickFile() => _dialogs.PickAudioFiles(multiple: false).FirstOrDefault();
 
     private void MarkStopped(string key)
     {
-        var cell = Cells.FirstOrDefault(c => c.Key == key);
+        var cell = Banks.SelectMany(b => b.Cells).FirstOrDefault(c => c.Key == key);
         if (cell is not null && !_player.IsPlaying(key)) cell.IsPlaying = false;
     }
 }

@@ -12,6 +12,8 @@
         <SolidColorBrush x:Key="RecordBrush" Color="#D93A3A" />
         <SolidColorBrush x:Key="RecordSoftBrush" Color="#FBE3E3" />
         <SolidColorBrush x:Key="MeterBrush" Color="#3DAA5C" />
+        <SolidColorBrush x:Key="LiveBrush" Color="#2E9E50" />
+        <SolidColorBrush x:Key="LiveSoftBrush" Color="#DFF3E5" />
 
         <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
 
@@ -79,5 +81,30 @@
                 </DockPanel>
             </Border>
         </DataTemplate>
+        <!-- The on-air switch: green while the microphone is live. -->
+        <Style x:Key="MicrophoneToggle" TargetType="ToggleButton">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="MinWidth" Value="150" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Body" CornerRadius="6" BorderThickness="2" Padding="14,6"
+                                BorderBrush="{StaticResource BorderBrush}" Background="{StaticResource PanelBrush}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Body" Property="Background" Value="{StaticResource LiveSoftBrush}" />
+                                <Setter TargetName="Body" Property="BorderBrush" Value="{StaticResource LiveBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Body" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>

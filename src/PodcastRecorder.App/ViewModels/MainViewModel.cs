@@ -80,6 +80,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial double MonitorVolume { get; set; }
 
+    /// <summary>The on-air switch: off silences the microphone, on opens it and ducks the music.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(MicrophoneButtonText))]
+    public partial bool IsMicrophoneLive { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool DuckingEnabled { get; set; }
+
+    /// <summary>Music level under the live microphone, in dB.</summary>
+    [ObservableProperty]
+    public partial double DuckLevelDb { get; set; }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle), nameof(IsRecording), nameof(IsPaused), nameof(StateText), nameof(PauseButtonText))]
     [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand))]
@@ -109,6 +121,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public string PauseButtonText => IsPaused ? "Devam" : "Duraklat";
 
+    public string MicrophoneButtonText => IsMicrophoneLive ? "Mikrofon AÇIK" : "Mikrofon KAPALI";
+
     /// <summary>Opens the devices from the saved settings and starts the audio output.</summary>
     public void Initialize()
     {
@@ -121,17 +135,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Channels.Add(new ChannelStripViewModel(_engine.JingleChannel) { Volume = _settings.JingleVolume });
         MasterVolume = _settings.MasterVolume;
         MonitorVolume = _settings.MonitorVolume;
+        DuckingEnabled = _settings.DuckingEnabled;
+        DuckLevelDb = _settings.DuckLevelDb;
+        _engine.DuckingEnabled = DuckingEnabled;
+        _engine.DuckLevelDb = DuckLevelDb;
+        Playlist.CrossfadeSeconds = _settings.CrossfadeSeconds;
         SelectedEncoder = EncoderCatalog.Find(_settings.EncoderId);
         RecordingFolder = _settings.RecordingFolder;
 
         Playlist.AddFiles(_settings.Playlist.Where(File.Exists));
-        foreach (var slot in _settings.Jingles)
-        {
-            if (slot.Index >= 0 && slot.Index < Jingles.Cells.Count && File.Exists(slot.FilePath))
-            {
-                Jingles.Cells[slot.Index].Assign(slot.FilePath);
-            }
-        }
+        LoadJingleBanks();
 
         Browser.Navigate(_settings.BrowseFolder is { } folder && Directory.Exists(folder)
             ? folder
@@ -191,6 +204,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnMasterVolumeChanged(double value) => _engine.Mixer.MasterVolume = (float)value;
 
     partial void OnMonitorVolumeChanged(double value) => _engine.Mixer.MonitorVolume = (float)value;
+
+    partial void OnIsMicrophoneLiveChanged(bool value) => _engine.IsMicrophoneLive = value;
+
+    partial void OnDuckingEnabledChanged(bool value) => _engine.DuckingEnabled = value;
+
+    partial void OnDuckLevelDbChanged(double value) => _engine.DuckLevelDb = value;
+
+    [RelayCommand]
+    private void ToggleMicrophone() => IsMicrophoneLive = !IsMicrophoneLive;
 
     [RelayCommand(CanExecute = nameof(IsIdle))]
     private void StartRecording()
@@ -260,6 +282,28 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ElapsedText = _engine.Recorder.Elapsed.ToString(@"hh\:mm\:ss");
     }
 
+    private void LoadJingleBanks()
+    {
+        var banks = _settings.JingleBanks;
+        if (banks.Count == 0)
+        {
+            // Settings from the first version had a single 4x4 grid.
+            banks = [new JingleBankSettings { Name = "Genel", Slots = _settings.Jingles ?? [] }];
+        }
+
+        foreach (var saved in banks)
+        {
+            var bank = Jingles.AddBank(saved.Name, saved.Rows, saved.Columns);
+            foreach (var slot in saved.Slots)
+            {
+                if (slot.Index >= 0 && slot.Index < bank.Cells.Count && File.Exists(slot.FilePath))
+                {
+                    bank.Cells[slot.Index].Assign(slot.FilePath);
+                }
+            }
+        }
+    }
+
     private static AudioDevice? Pick(IReadOnlyList<AudioDevice> devices, string? savedId, string? defaultId) =>
         devices.FirstOrDefault(d => d.Id == savedId)
         ?? devices.FirstOrDefault(d => d.Id == defaultId)
@@ -291,10 +335,22 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _settings.MasterVolume = MasterVolume;
         _settings.MonitorVolume = MonitorVolume;
         _settings.AutoAdvance = Playlist.AutoAdvance;
+        _settings.CrossfadeSeconds = Playlist.CrossfadeSeconds;
+        _settings.DuckingEnabled = DuckingEnabled;
+        _settings.DuckLevelDb = DuckLevelDb;
         _settings.Playlist = Playlist.Items.Select(i => i.FilePath).ToList();
-        _settings.Jingles = Jingles.Cells
-            .Where(c => c.FilePath is not null)
-            .Select(c => new JingleSlot { Index = c.Index, FilePath = c.FilePath! })
+        _settings.Jingles = null;
+        _settings.JingleBanks = Jingles.Banks
+            .Select(b => new JingleBankSettings
+            {
+                Name = b.Name,
+                Rows = b.Rows,
+                Columns = b.Columns,
+                Slots = b.Cells
+                    .Where(c => c.FilePath is not null)
+                    .Select(c => new JingleSlot { Index = c.Index, FilePath = c.FilePath! })
+                    .ToList(),
+            })
             .ToList();
 
         try

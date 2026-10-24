@@ -2,7 +2,7 @@
 
 Windows için podcast kayıt uygulaması. Mikrofonu, çalma listesindeki şarkıları ve jingle panelini uygulamanın kendi mikserinde birleştirir ve tek bir MP3 (veya WAV) dosyasına kaydeder. Windows "Stereo Mix" ayarı gerekmez.
 
-## Özellikler (M1)
+## Özellikler
 
 - Mikrofon ve dinleme (kulaklık) cihazı seçimi (WASAPI)
 - Kaydet / duraklat / durdur, süre sayacı; MP3 128/192/320 kbps veya WAV
@@ -11,6 +11,9 @@ Windows için podcast kayıt uygulaması. Mikrofonu, çalma listesindeki şarkı
 - Çalma listesi: ekle, sırala, çal, sonraki, bitince otomatik sonrakine geç
 - Klasör gezgini: dosyaları listeye ya da jingle hücresine sürükle
 - Ayarlar `%APPDATA%\PodcastRecorder\settings.json` dosyasında saklanır
+- **Mikrofon AÇIK/KAPALI düğmesi:** Kapalıyken mikrofon kayda girmez; açıkken ducking etkinse müzik ayarlanan seviyeye (-3 ile -30 dB arası) yumuşakça kısılır. Jingle'lar kısılmaz.
+- **Crossfade:** Çalma listesinde şarkılar 0-10 saniye bindirilerek geçer; otomatik sonrakine geçişte de, elle "Sonraki" ya da başka şarkı çalındığında da uygulanır.
+- **Jingle sekmeleri:** Her program için ayrı sekme; sekme adı ve ızgara boyutu (2x2 ile 8x8 arası) değiştirilebilir.
 
 Mikrofon varsayılan olarak kulaklığa verilmez (konuşurken kendi sesinizi gecikmeli duymamanız için) ama her zaman kayda girer.
 
@@ -55,5 +58,4 @@ Tüm kaynaklar 48 kHz stereo float formatına çevrilir. Çıkış cihazının s
 
 ## Yol haritası
 
-- **M2:** Ducking (mikrofon açılınca müziği kısma), crossfade, jingle sekmeleri
 - **M3:** Çoklu mikrofon, FLAC ve multitrack kayıt
