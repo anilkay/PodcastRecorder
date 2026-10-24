@@ -26,6 +26,9 @@ public sealed class AppSettings
     /// <summary>Also write every channel to its own file.</summary>
     public bool RecordStems { get; set; }
 
+    /// <summary>Bring each finished recording to -16 LUFS.</summary>
+    public bool NormalizeOnStop { get; set; }
+
     public double MusicVolume { get; set; } = 0.8;
 
     public double JingleVolume { get; set; } = 0.8;

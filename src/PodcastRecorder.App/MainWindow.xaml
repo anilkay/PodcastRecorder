@@ -63,6 +63,9 @@
                     <TextBlock Text="Format:" VerticalAlignment="Center" Margin="0,0,6,0" />
                     <ComboBox ItemsSource="{Binding Encoders}" SelectedItem="{Binding SelectedEncoder}"
                               DisplayMemberPath="DisplayName" Width="130" IsEnabled="{Binding IsIdle}" Margin="0,0,8,0" />
+                    <CheckBox Content="-16 LUFS'e normalize et" IsChecked="{Binding NormalizeOnStop}" IsEnabled="{Binding IsIdle}"
+                              VerticalAlignment="Center" Margin="0,0,8,0"
+                              ToolTip="Kayıt bitince ses yüksekliği ölçülür ve dosya podcast standardı -16 LUFS'e getirilir. Kayıt sırasında geçici bir WAV dosyası tutulur." />
                     <CheckBox Content="Ayrı izler" IsChecked="{Binding RecordStems}" IsEnabled="{Binding IsIdle}"
                               VerticalAlignment="Center" Margin="0,0,16,0"
                               ToolTip="Karışıma ek olarak her kanalı (her mikrofon, müzik, jingle) ayrı dosyaya da kaydeder. Kurgu için WAV veya FLAC önerilir." />

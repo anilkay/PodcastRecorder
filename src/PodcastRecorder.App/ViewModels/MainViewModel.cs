@@ -15,6 +15,9 @@ namespace PodcastRecorder.App.ViewModels;
 
 public sealed record DuckingModeOption(DuckingMode Mode, string Name);
 
+/// <summary>The lossless capture of a recording and the file it becomes once normalized.</summary>
+internal sealed record PendingNormalization(string CapturePath, RecordingTarget Final);
+
 public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly AudioEngine _engine = new();
@@ -27,6 +30,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly List<ChannelStripViewModel> _microphoneStrips = [];
     private bool _initialized;
     private int _refreshTicks;
+    private PendingNormalization? _pendingNormalization;
 
     public MainViewModel(SettingsStore settingsStore, IFileDialogs dialogs)
     {
@@ -70,6 +74,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddMicrophoneCommand))]
     public partial AudioDevice? InputToAdd { get; set; }
+
+    /// <summary>When recording stops, bring the mix to -16 LUFS before writing the final file.</summary>
+    [ObservableProperty]
+    public partial bool NormalizeOnStop { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsIdle))]
+    [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand), nameof(AddMicrophoneCommand))]
+    public partial bool IsNormalizing { get; set; }
 
     /// <summary>Also write every mixer channel to its own file (multitrack).</summary>
     [ObservableProperty]
@@ -147,7 +160,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial string? LastRecordingPath { get; set; }
 
-    public bool IsIdle => RecordingState == RecorderState.Idle;
+    public bool IsIdle => RecordingState == RecorderState.Idle && !IsNormalizing;
 
     public bool IsRecording => RecordingState == RecorderState.Recording;
 
@@ -189,6 +202,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         SelectedEncoder = EncoderCatalog.Find(_settings.EncoderId);
         RecordingFolder = _settings.RecordingFolder;
         RecordStems = _settings.RecordStems;
+        NormalizeOnStop = _settings.NormalizeOnStop;
 
         Playlist.AddFiles(_settings.Playlist.Where(File.Exists));
         LoadJingleBanks();
@@ -332,11 +346,24 @@ public partial class MainViewModel : ObservableObject, IDisposable
             Directory.CreateDirectory(RecordingFolder);
             var name = $"podcast-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
             var encoder = SelectedEncoder.Create();
-            var mix = new RecordingTarget(Path.Combine(RecordingFolder, name + encoder.FileExtension), encoder);
+            var finalPath = Path.Combine(RecordingFolder, name + encoder.FileExtension);
+            RecordingTarget mix;
+            if (NormalizeOnStop)
+            {
+                // Capture the mix losslessly first; the final file is written after measuring it.
+                mix = new RecordingTarget(Path.Combine(RecordingFolder, name + ".tmp.wav"), new WavEncoder(floatingPoint: true));
+                _pendingNormalization = new PendingNormalization(mix.Path, new RecordingTarget(finalPath, encoder));
+            }
+            else
+            {
+                mix = new RecordingTarget(finalPath, encoder);
+                _pendingNormalization = null;
+            }
+
             var stems = RecordStems ? StemTargets(Path.Combine(RecordingFolder, name + " izler")) : null;
             _engine.Recorder.Start(mix, stems);
             _engine.Loudness.ResetIntegrated();
-            StatusMessage = $"Kaydediliyor: {mix.Path}" + (stems is null ? "" : $" (+{stems.Count} ayrı iz)");
+            StatusMessage = $"Kaydediliyor: {finalPath}" + (stems is null ? "" : $" (+{stems.Count} ayrı iz)");
         }
         catch (Exception ex)
         {
@@ -358,9 +385,37 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private async Task StopRecording()
     {
         var path = await _engine.Recorder.StopAsync();
+        var pending = _pendingNormalization;
+        _pendingNormalization = null;
+        if (pending is null)
+        {
+            RecordingState = _engine.Recorder.State;
+            LastRecordingPath = path;
+            StatusMessage = path is null ? null : $"Kayıt kaydedildi: {path}";
+            return;
+        }
+
+        IsNormalizing = true;
         RecordingState = _engine.Recorder.State;
-        LastRecordingPath = path;
-        StatusMessage = path is null ? null : $"Kayıt kaydedildi: {path}";
+        double measured = _engine.Loudness.IntegratedLufs;
+        double gain = Normalizer.GainFor(measured);
+        var progress = new Progress<double>(p => StatusMessage = $"Normalize ediliyor… %{p * 100:0}");
+        try
+        {
+            await Normalizer.NormalizeAsync(pending.CapturePath, pending.Final, gain, progress);
+            File.Delete(pending.CapturePath);
+            LastRecordingPath = pending.Final.Path;
+            StatusMessage = $"Kayıt kaydedildi: {pending.Final.Path} ({FormatLufs(measured)} → {Normalizer.PodcastTargetLufs} LUFS, {gain:+0.0;-0.0} dB)";
+        }
+        catch (Exception ex)
+        {
+            LastRecordingPath = pending.CapturePath;
+            StatusMessage = $"Normalize edilemedi, ham kayıt duruyor: {pending.CapturePath} ({ex.Message})";
+        }
+        finally
+        {
+            IsNormalizing = false;
+        }
     }
 
     [RelayCommand]
@@ -392,9 +447,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
             });
     }
 
-    private bool CanPause() => !IsIdle;
+    private bool CanPause() => RecordingState != RecorderState.Idle;
 
-    private bool CanStop() => !IsIdle;
+    private bool CanStop() => RecordingState != RecorderState.Idle;
 
     private void Refresh()
     {
@@ -442,9 +497,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         _timer.Stop();
-        if (!IsIdle)
+        if (RecordingState != RecorderState.Idle)
         {
             _engine.Recorder.StopAsync().GetAwaiter().GetResult();
+            if (_pendingNormalization is { } pending)
+            {
+                // Closing mid-recording: finish the file before exiting.
+                var gain = Normalizer.GainFor(_engine.Loudness.IntegratedLufs);
+                Normalizer.NormalizeAsync(pending.CapturePath, pending.Final, gain).GetAwaiter().GetResult();
+                File.Delete(pending.CapturePath);
+            }
         }
 
         SaveSettings();
@@ -459,6 +521,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             .Select(m => new MicrophoneSettings { DeviceId = m.DeviceId!, Volume = m.Volume, MonitorEnabled = m.MonitorEnabled })
             .ToList();
         _settings.RecordStems = RecordStems;
+        _settings.NormalizeOnStop = NormalizeOnStop;
         _settings.OutputDeviceId = SelectedOutput?.Id;
         _settings.EncoderId = SelectedEncoder.Id;
         _settings.RecordingFolder = RecordingFolder;
