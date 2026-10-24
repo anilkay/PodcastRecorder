@@ -13,7 +13,7 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        _viewModel = new MainViewModel(new SettingsStore(), new FileDialogs());
+        _viewModel = new MainViewModel(new SettingsStore(), new FileDialogs(), new LiveSettingsDialog());
         var version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
         var window = new MainWindow { DataContext = _viewModel, Title = $"Podcast Recorder {version}" };
         window.Show();

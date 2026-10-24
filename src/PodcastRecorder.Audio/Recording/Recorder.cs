@@ -19,7 +19,7 @@ public sealed record RecordingTarget(string Path, IAudioEncoder Encoder);
 /// audio thread and hands it to the encoders on background tasks, so slow encoding or disk
 /// writes never stall playback.
 /// </summary>
-public sealed class Recorder
+public sealed class Recorder : IProgramSink
 {
     private readonly Lock _gate = new();
     private Track? _mix;

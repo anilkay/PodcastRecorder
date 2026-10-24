@@ -32,7 +32,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private int _refreshTicks;
     private PendingNormalization? _pendingNormalization;
 
-    public MainViewModel(SettingsStore settingsStore, IFileDialogs dialogs)
+    public MainViewModel(SettingsStore settingsStore, IFileDialogs dialogs, ILiveSettingsDialog liveDialog)
     {
         _settingsStore = settingsStore;
         _settings = settingsStore.Load();
@@ -43,6 +43,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Jingles = new JinglePadViewModel(_engine.Jingles, dialogs, _ui);
         Browser = new FolderBrowserViewModel(dialogs, path => Playlist.AddFiles([path]));
         MasterMeter = new LevelMeterViewModel(_engine.Mixer.MasterMeter);
+        Live = new LiveStreamViewModel(_engine.Live, _settings.Live, liveDialog, () => _engine.IsOutputRunning, _ui);
+        Playlist.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(PlaylistViewModel.CurrentItem)) Live.SetNowPlaying(Playlist.CurrentItem?.Title);
+        };
 
         _engine.Recorder.Faulted += (_, ex) => _ui.Post(_ => StatusMessage = $"Kayıt hatası: {ex.Message}", null);
         _engine.OutputStopped += (_, ex) =>
@@ -55,6 +60,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     public PlaylistViewModel Playlist { get; }
+
+    public LiveStreamViewModel Live { get; }
 
     public JinglePadViewModel Jingles { get; }
 
@@ -384,7 +391,21 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand(CanExecute = nameof(CanStop))]
     private async Task StopRecording()
     {
-        var path = await _engine.Recorder.StopAsync();
+        StatusMessage = "Kayıt dosyası kapatılıyor…";
+        string? path;
+        try
+        {
+            // Off the UI thread: closing can take a while (WMA converts the whole file at the end).
+            path = await Task.Run(_engine.Recorder.StopAsync);
+        }
+        catch (Exception ex) when (ex is IOException or InvalidOperationException or UnauthorizedAccessException)
+        {
+            _pendingNormalization = null;
+            RecordingState = _engine.Recorder.State;
+            StatusMessage = ex.Message;
+            return;
+        }
+
         var pending = _pendingNormalization;
         _pendingNormalization = null;
         if (pending is null)
@@ -456,6 +477,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         foreach (var channel in Channels) channel.Meter.Refresh();
         MasterMeter.Refresh();
         Playlist.Refresh();
+        Live.Refresh();
         ElapsedText = _engine.Recorder.Elapsed.ToString(@"hh\:mm\:ss");
         IsVoiceDetected = _engine.IsVoiceDetected;
         IsLimiting = _engine.Mixer.Limiter.ReadAndResetReductionDb() < -0.5;
@@ -499,13 +521,20 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _timer.Stop();
         if (RecordingState != RecorderState.Idle)
         {
-            _engine.Recorder.StopAsync().GetAwaiter().GetResult();
-            if (_pendingNormalization is { } pending)
+            try
             {
-                // Closing mid-recording: finish the file before exiting.
-                var gain = Normalizer.GainFor(_engine.Loudness.IntegratedLufs);
-                Normalizer.NormalizeAsync(pending.CapturePath, pending.Final, gain).GetAwaiter().GetResult();
-                File.Delete(pending.CapturePath);
+                _engine.Recorder.StopAsync().GetAwaiter().GetResult();
+                if (_pendingNormalization is { } pending)
+                {
+                    // Closing mid-recording: finish the file before exiting.
+                    var gain = Normalizer.GainFor(_engine.Loudness.IntegratedLufs);
+                    Normalizer.NormalizeAsync(pending.CapturePath, pending.Final, gain).GetAwaiter().GetResult();
+                    File.Delete(pending.CapturePath);
+                }
+            }
+            catch (Exception ex) when (ex is IOException or InvalidOperationException or UnauthorizedAccessException)
+            {
+                // The app is closing; the encoder already kept what it could (WMA falls back to WAV).
             }
         }
 

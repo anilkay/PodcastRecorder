@@ -58,6 +58,8 @@ public sealed class AppSettings
     /// <summary>Single jingle grid from the first version; read once and moved into a bank.</summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<JingleSlot>? Jingles { get; set; }
+
+    public LiveStreamSettings Live { get; set; } = new();
 }
 
 public sealed class JingleBankSettings
@@ -78,6 +80,27 @@ public sealed class MicrophoneSettings
     public double Volume { get; set; } = 1;
 
     public bool MonitorEnabled { get; set; }
+}
+
+/// <summary>The Icecast server to stream to. The password is kept encrypted for the Windows user.</summary>
+public sealed class LiveStreamSettings
+{
+    public string Host { get; set; } = "";
+
+    public int Port { get; set; } = 8000;
+
+    public string Mount { get; set; } = "/canli";
+
+    public string User { get; set; } = "source";
+
+    /// <summary>DPAPI-protected password (see <see cref="Secrets"/>); never stored as plain text.</summary>
+    public string? ProtectedPassword { get; set; }
+
+    public int BitrateKbps { get; set; } = 128;
+
+    public string StreamName { get; set; } = "";
+
+    public bool IsConfigured => !string.IsNullOrWhiteSpace(Host) && ProtectedPassword is not null;
 }
 
 public sealed class JingleSlot

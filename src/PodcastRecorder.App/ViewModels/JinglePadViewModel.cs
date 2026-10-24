@@ -13,6 +13,10 @@ public partial class JingleCellViewModel(string key, int index, JinglePadViewMod
 
     public string Key { get; } = key;
 
+    /// <summary>The keyboard key that plays this pad, shown in its corner; null past the fourth row or eighth column.</summary>
+    [ObservableProperty]
+    public partial string? Shortcut { get; set; }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Title), nameof(HasFile))]
     public partial string? FilePath { get; set; }
@@ -94,6 +98,11 @@ public partial class JingleBankViewModel : ObservableObject
             int index = Cells.Count;
             Cells.Add(new JingleCellViewModel($"{_id}-{index}", index, _pad));
         }
+
+        foreach (var cell in Cells)
+        {
+            cell.Shortcut = JinglePadViewModel.ShortcutFor(cell.Index / Columns, cell.Index % Columns)?.ToString();
+        }
     }
 }
 
@@ -103,6 +112,12 @@ public partial class JinglePadViewModel : ObservableObject
     public const int MinSize = 2;
     public const int MaxSize = 8;
     public const int DefaultSize = 4;
+
+    /// <summary>
+    /// Pad keys, laid out like the grid on the left of the keyboard: the first row of pads is
+    /// 1-8, then Q-I, A-K and Z-M. A 4x4 tab uses 1234 / QWER / ASDF / ZXCV.
+    /// </summary>
+    public static readonly string[] ShortcutRows = ["12345678", "QWERTYUI", "ASDFGHJK", "ZXCVBNM"];
 
     private readonly JinglePlayer _player;
     private readonly IFileDialogs _dialogs;
@@ -150,6 +165,13 @@ public partial class JinglePadViewModel : ObservableObject
     }
 
     private bool CanRemoveBank() => SelectedBank is not null && Banks.Count > 1;
+
+    public static char? ShortcutFor(int row, int column) =>
+        row < ShortcutRows.Length && column < ShortcutRows[row].Length ? ShortcutRows[row][column] : null;
+
+    /// <summary>The pad in the open tab that <paramref name="key"/> plays, if any.</summary>
+    public JingleCellViewModel? CellForShortcut(char key) =>
+        SelectedBank?.Cells.FirstOrDefault(c => c.Shortcut is [var k] && k == char.ToUpperInvariant(key));
 
     public void Toggle(JingleCellViewModel cell)
     {
