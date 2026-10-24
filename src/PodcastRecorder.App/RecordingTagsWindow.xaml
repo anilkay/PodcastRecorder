@@ -1,0 +1,106 @@
+<Window x:Class="PodcastRecorder.App.RecordingTagsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:PodcastRecorder.App.ViewModels"
+        xmlns:app="clr-namespace:PodcastRecorder.App"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:RecordingTagsViewModel}"
+        Title="Dosya bilgileri" Width="620" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{DynamicResource WindowBrush}" Foreground="{DynamicResource TextBrush}" FontSize="13">
+    <Window.Resources>
+        <app:ImagePathConverter x:Key="ImagePath" />
+    </Window.Resources>
+    <StackPanel Margin="16">
+        <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,12"
+                   Text="Kayıt bitince bu bilgiler dosyaya (ve ayrı izlere) yazılır; müzik çalarlar ve Windows Gezgini bunları gösterir. Bölüm no her kayıttan sonra bir artar." />
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="150" />
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Margin" Value="0,0,12,8" />
+                    </Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Setter Property="Margin" Value="0,0,0,8" />
+                    </Style>
+                </Grid.Resources>
+
+                <TextBlock Grid.Row="0" Text="Başlık:" />
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="Boş bırakılırsa dosya adı kullanılır." />
+
+                <TextBlock Grid.Row="1" Text="Sunucu / Sanatçı:" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Artist, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Grid.Row="2" Text="Program / Albüm:" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Album, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Grid.Row="3" Text="Bölüm no:" />
+                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                    <TextBox Text="{Binding EpisodeText, UpdateSourceTrigger=PropertyChanged}" Width="70"
+                             ToolTip="Sonraki kaydın bölüm numarası; her kayıttan sonra bir artar. Boş bırakılırsa yazılmaz." />
+                    <TextBlock Text="Yıl:" Margin="16,0,8,8" />
+                    <TextBox Text="{Binding YearText, UpdateSourceTrigger=PropertyChanged}" Width="70" />
+                </StackPanel>
+
+                <TextBlock Grid.Row="4" Text="Tür:" />
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Genre, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Grid.Row="5" Text="Açıklama:" VerticalAlignment="Top" Margin="0,6,12,8" />
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True" TextWrapping="Wrap" Height="64" VerticalScrollBarVisibility="Auto" />
+            </Grid>
+
+            <!-- Cover -->
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="Kapak resmi" Margin="0,0,0,6" />
+                <Border Width="150" Height="150" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
+                        Background="{DynamicResource PanelBrush}" ToolTip="{Binding CoverImagePath}">
+                    <Grid>
+                        <TextBlock Text="Kapak yok" Foreground="{DynamicResource MutedTextBrush}" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                        <Image Source="{Binding CoverImagePath, Converter={StaticResource ImagePath}}" Stretch="Uniform" Margin="2" />
+                    </Grid>
+                </Border>
+                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                    <Button Content="Seç…" Command="{Binding ChooseCoverCommand}" ToolTip="JPEG ya da PNG; kare bir resim (ör. 1400×1400) önerilir." />
+                    <Button Content="Kaldır" Command="{Binding ClearCoverCommand}" Margin="0" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}" Margin="0,8,0,0" />
+
+        <DockPanel Margin="0,12,0,0">
+            <Button DockPanel.Dock="Right" Content="Kapat" IsCancel="True" IsDefault="True" MinWidth="90" Margin="0" />
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Son kayda yaz" Command="{Binding WriteToLastRecordingCommand}"
+                        ToolTip="Bu bilgileri bu oturumdaki son kayda yeniden yazar; o kaydın bölüm numarası korunur." />
+                <Button Content="Dosyaya yaz…" Command="{Binding WriteToFileCommand}"
+                        ToolTip="Bir ses dosyası seçin; bu bilgiler ona yazılır." />
+            </StackPanel>
+        </DockPanel>
+    </StackPanel>
+</Window>

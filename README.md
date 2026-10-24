@@ -22,6 +22,7 @@ Windows için podcast kayıt uygulaması. Mikrofonu, çalma listesindeki şarkı
 - Canlı yayın: kayda giden ses (Master) bir Icecast sunucusuna MP3 olarak gönderilir; kayıttan bağımsız açılıp kapanır. Bağlantı koparsa 3 saniye arayla 10 kez yeniden bağlanmayı dener.
 - Klavye kısayolları (uygulamada F1 ile listelenir)
 - **Koyu tema:** Durum çubuğundaki "Tema" kutusundan Sistem (Windows'a göre), Açık ya da Koyu; denetimler WPF Fluent temasıyla çizilir
+- **Dosya bilgileri:** Başlık, sunucu, program, bölüm no, yıl, tür, açıklama ve kapak resmi her kayda (ve ayrı izlere) yazılır
 - **Yapay zeka:** kayıtlardan transkript ve altyazı (yerel Whisper, OpenAI, Azure OpenAI / Foundry, Azure AI Speech), metinden anons ve jingle sesi (Windows sesleri, OpenAI, Azure)
 
 Mikrofon varsayılan olarak kulaklığa verilmez (konuşurken kendi sesinizi gecikmeli duymamanız için) ama her zaman kayda girer.
@@ -43,6 +44,15 @@ Mikrofon varsayılan olarak kulaklığa verilmez (konuşurken kendi sesinizi gec
 
 Anahtarlar ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Yeni bir servis eklemek için `PodcastRecorder.Speech` projesinde `ISpeechToText` ya da `ITextToSpeech` arayüzünü uygulayıp `SpeechProviders` listesine ekleyin.
 
+### Dosya bilgileri
+
+Alttaki durum çubuğunda **Dosya bilgileri…** düğmesi açar. Başlık (boşsa dosya adı), Sunucu / Sanatçı, Program / Albüm, Bölüm no, Yıl, Tür (varsayılan "Podcast"), Açıklama ve Kapak resmi (JPEG ya da PNG) kayıt bitince dosyaya yazılır; WMA çevirme ve normalizasyondan sonra, son dosyaya. Ayrı izler aynı bilgileri alır, başlığın sonuna iz adı eklenir (ör. "Bölüm 12 - Mikrofon 1"). Bölüm no her kayıttan sonra bir artar; sunucu, program, tür, kapak ve sıradaki bölüm no ayarlarda saklanır.
+
+- **Son kayda yaz:** Bir yazım hatasını düzeltip bilgileri son kayda yeniden yazar; o kaydın bölüm numarası korunur.
+- **Dosyaya yaz…:** Seçilen herhangi bir ses dosyasına yazar.
+
+Biçimler: MP3'te ID3v2.3 (Windows Gezgini ve çoğu çalar bunu okur), FLAC'ta Vorbis yorumları, WMA'da ASF, WAV'da RIFF INFO ve ID3v2.3. Yazma işi [TagLib#](https://github.com/mono/taglib-sharp) ile yapılır (`Recording/RecordingTags.cs`).
+
 ### Klavye kısayolları
 
 | Tuş | İşlem |
@@ -61,7 +71,7 @@ Durdurma tuşları kazara basılmasın diye Shift ister.
 
 ### Canlı yayın
 
-"Canlı yayın" panelindeki **Ayarlar…** ile sunucu, port, mount (ör. `/canli`), kullanıcı (Icecast'te genelde `source`), şifre ve kaliteyi girin. Yayın Icecast 2.4+ kaynak protokolüyle (HTTP PUT) gönderilir; çalma listesinde şarkı değişince dinleyicilerin gördüğü başlık güncellenir. Bağlantı yavaşlarsa ses kuyrukta birikmez, bir kısmı atlanır ve panelde uyarı görünür; bağlantı koparsa yayın kapanır (otomatik yeniden bağlanma yok).
+"Canlı yayın" panelindeki **Ayarlar…** ile sunucu, port, mount (ör. `/canli`), kullanıcı (Icecast'te genelde `source`), şifre ve kaliteyi girin. Yayın Icecast 2.4+ kaynak protokolüyle (HTTP PUT) gönderilir; çalma listesinde şarkı değişince dinleyicilerin gördüğü başlık güncellenir. Bağlantı yavaşlarsa ses kuyrukta birikmez, bir kısmı atlanır ve panelde uyarı görünür; bağlantı koparsa 3 saniye arayla 10 kez yeniden bağlanmayı dener.
 
 ### WMA
 

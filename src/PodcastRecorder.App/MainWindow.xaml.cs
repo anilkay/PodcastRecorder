@@ -94,6 +94,14 @@ public partial class MainWindow : Window
             if (ServiceSettings.IsExpanded) ServiceSettings.BringIntoView();
         }, DispatcherPriority.Loaded);
 
+    private void RecordingTags_Click(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainViewModel vm)
+        {
+            new RecordingTagsWindow { Owner = this, DataContext = vm.Tags }.ShowDialog();
+        }
+    }
+
     /// <summary>Shows the shortcut list in a monospace font so the key column lines up (MessageBox cannot).</summary>
     private void Help_Executed(object sender, ExecutedRoutedEventArgs e)
     {

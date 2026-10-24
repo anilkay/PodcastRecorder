@@ -64,6 +64,8 @@ public sealed class AppSettings
 
     public AiSettings Ai { get; set; } = new();
 
+    public RecordingTagsSettings Tags { get; set; } = new();
+
     public AppTheme Theme { get; set; } = AppTheme.System;
 }
 
@@ -114,6 +116,23 @@ public sealed class AiSettings
 
     /// <summary>Last voice used with each synthesis provider.</summary>
     public Dictionary<string, string> Voices { get; set; } = [];
+}
+
+/// <summary>
+/// File information that stays the same from episode to episode, plus the next episode number.
+/// Title, year and description are per recording and not kept.
+/// </summary>
+public sealed class RecordingTagsSettings
+{
+    public string Artist { get; set; } = "";
+
+    public string Album { get; set; } = "";
+
+    public string Genre { get; set; } = "Podcast";
+
+    public string? CoverImagePath { get; set; }
+
+    public uint NextEpisode { get; set; } = 1;
 }
 
 public sealed class MicrophoneSettings

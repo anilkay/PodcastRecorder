@@ -45,6 +45,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         MasterMeter = new LevelMeterViewModel(_engine.Mixer.MasterMeter);
         Live = new LiveStreamViewModel(_engine.Live, _settings.Live, liveDialog, () => _engine.IsOutputRunning, _ui);
         Ai = new AiViewModel(_settings.Ai, () => RecordingFolder, Playlist, Jingles, dialogs);
+        Tags = new RecordingTagsViewModel(_settings.Tags, dialogs, () => LastRecordingPath, message => StatusMessage = message);
         SelectedTheme = ThemeService.Options.FirstOrDefault(o => o.Theme == _settings.Theme) ?? ThemeService.Options[0];
         Playlist.PropertyChanged += (_, e) =>
         {
@@ -66,6 +67,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public LiveStreamViewModel Live { get; }
 
     public AiViewModel Ai { get; }
+
+    /// <summary>"Dosya bilgileri" written into each finished recording.</summary>
+    public RecordingTagsViewModel Tags { get; }
 
     public static IReadOnlyList<ThemeOption> Themes => ThemeService.Options;
 
@@ -419,11 +423,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         var pending = _pendingNormalization;
         _pendingNormalization = null;
+        var stems = _engine.Recorder.StemPaths;
         if (pending is null)
         {
             RecordingState = _engine.Recorder.State;
             LastRecordingPath = path;
             StatusMessage = path is null ? null : $"Kayıt kaydedildi: {path}";
+            if (path is not null) await WriteTagsAsync(path, stems);
             TranscribeIfEnabled(path);
             return;
         }
@@ -439,6 +445,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             File.Delete(pending.CapturePath);
             LastRecordingPath = pending.Final.Path;
             StatusMessage = $"Kayıt kaydedildi: {pending.Final.Path} ({FormatLufs(measured)} → {Normalizer.PodcastTargetLufs} LUFS, {gain:+0.0;-0.0} dB)";
+            await WriteTagsAsync(pending.Final.Path, stems);
             TranscribeIfEnabled(pending.Final.Path);
         }
         catch (Exception ex)
@@ -450,6 +457,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             IsNormalizing = false;
         }
+    }
+
+    /// <summary>Writes "Dosya bilgileri" into the finished file (after WMA conversion and normalizing) and its tracks.</summary>
+    private async Task WriteTagsAsync(string path, IReadOnlyList<string> stems)
+    {
+        if (!File.Exists(path)) return;
+        var saved = StatusMessage;
+        var result = await Tags.ApplyToRecordingAsync(path, stems);
+        StatusMessage = $"{saved} · {result}";
     }
 
     /// <summary>Starts the transcript in the background; its progress shows in the AI panel.</summary>
@@ -591,6 +607,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _settings.LimiterEnabled = LimiterEnabled;
         _settings.Playlist = Playlist.Items.Select(i => i.FilePath).ToList();
         Ai.SaveTo(_settings.Ai);
+        Tags.SaveTo(_settings.Tags);
         _settings.Theme = SelectedTheme.Theme;
         _settings.Jingles = null;
         _settings.JingleBanks = Jingles.Banks

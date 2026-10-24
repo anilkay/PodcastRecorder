@@ -9,6 +9,9 @@ public interface IFileDialogs
     IReadOnlyList<string> PickAudioFiles(bool multiple);
 
     string? PickFolder(string? initialFolder);
+
+    /// <summary>A JPEG or PNG picture, for a recording's cover.</summary>
+    string? PickImage();
 }
 
 public sealed class FileDialogs : IFileDialogs
@@ -31,5 +34,11 @@ public sealed class FileDialogs : IFileDialogs
         }
 
         return dialog.ShowDialog() == true ? dialog.FolderName : null;
+    }
+
+    public string? PickImage()
+    {
+        var dialog = new OpenFileDialog { Filter = "Resimler (JPEG, PNG)|*.jpg;*.jpeg;*.png" };
+        return dialog.ShowDialog() == true ? dialog.FileName : null;
     }
 }
