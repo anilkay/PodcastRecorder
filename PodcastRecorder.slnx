@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PodcastRecorder.App/PodcastRecorder.App.csproj" />
+    <Project Path="src/PodcastRecorder.Audio/PodcastRecorder.Audio.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PodcastRecorder.Audio.Tests/PodcastRecorder.Audio.Tests.csproj" />
+  </Folder>
+</Solution>
