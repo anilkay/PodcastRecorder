@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:PodcastRecorder.App.ViewModels"
+        xmlns:services="clr-namespace:PodcastRecorder.App.Services"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         Title="Podcast Recorder" Height="820" Width="1280" MinHeight="640" MinWidth="1000"
@@ -96,8 +97,9 @@
             </DockPanel>
         </Border>
 
-        <!-- Devices -->
-        <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="4,10,0,10">
+        <!-- Devices and AI tools -->
+        <StackPanel Grid.Row="1">
+        <WrapPanel Orientation="Horizontal" Margin="4,10,0,6">
             <TextBlock Text="Mikrofon ekle:" VerticalAlignment="Center" Margin="0,0,6,0" />
             <ComboBox ItemsSource="{Binding InputDevices}" SelectedItem="{Binding InputToAdd}" DisplayMemberPath="Name"
                       Width="260" IsEnabled="{Binding IsIdle}" Margin="0,0,6,0" />
@@ -133,6 +135,155 @@
                 </Ellipse>
             </StackPanel>
         </WrapPanel>
+
+        <Expander Margin="0,0,0,10" DataContext="{Binding Ai}">
+            <Expander.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Yapay zeka: yazıya çevirme ve seslendirme" FontWeight="SemiBold" />
+                    <TextBlock Text="  · transkript çıkarılıyor…" Foreground="{StaticResource MutedTextBrush}"
+                               Visibility="{Binding IsTranscribing, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+            </Expander.Header>
+            <Border Style="{StaticResource PanelBorder}" Margin="0,6,0,0">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Speech to text -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Konuşmayı yazıya çevir (transkript)" Style="{StaticResource PanelTitle}" />
+                            <WrapPanel>
+                                <TextBlock Text="Servis:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <ComboBox ItemsSource="{x:Static vm:AiViewModel.TranscriptionProviders}" DisplayMemberPath="Name"
+                                          SelectedValuePath="Id" SelectedValue="{Binding TranscriptionProvider}" Width="210" Margin="0,0,12,0" />
+                                <TextBlock Text="Dil:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBox Text="{Binding Language, UpdateSourceTrigger=PropertyChanged}" Width="40"
+                                         ToolTip="tr, en, de… Boş bırakılırsa dil otomatik algılanır." />
+                            </WrapPanel>
+                            <WrapPanel Margin="0,6,0,0">
+                                <CheckBox Content="Kayıt bitince otomatik çıkar" IsChecked="{Binding TranscribeOnStop}"
+                                          VerticalAlignment="Center" Margin="0,0,12,0"
+                                          ToolTip="Kayıt dosyasının yanına aynı adla .txt (zaman damgalı metin) ve .srt (altyazı) yazılır." />
+                                <Button Content="Dosya seç ve çevir…" Command="{Binding TranscribeFileCommand}" />
+                                <Button Content="İptal" Command="{Binding CancelTranscriptionCommand}" />
+                                <Button Content="Transkripti aç" Command="{Binding OpenTranscriptCommand}" />
+                            </WrapPanel>
+                            <ProgressBar Height="6" Minimum="0" Maximum="1" Value="{Binding TranscriptionProgress, Mode=OneWay}"
+                                         Foreground="{StaticResource AccentBrush}" BorderThickness="0" Margin="0,6,0,0"
+                                         Visibility="{Binding IsTranscribing, Converter={StaticResource BoolToVisibility}}" />
+                            <TextBlock Text="{Binding TranscriptionStatus}" TextWrapping="Wrap" Margin="0,4,0,0"
+                                       Foreground="{StaticResource MutedTextBrush}" />
+                        </StackPanel>
+
+                        <!-- Text to speech -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Metinden ses (anons, jingle)" Style="{StaticResource PanelTitle}" />
+                            <WrapPanel>
+                                <TextBlock Text="Servis:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <ComboBox ItemsSource="{x:Static vm:AiViewModel.SynthesisProviders}" DisplayMemberPath="Name"
+                                          SelectedValuePath="Id" SelectedValue="{Binding SynthesisProvider}" Width="210" Margin="0,0,12,0" />
+                                <TextBlock Text="Ses:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <ComboBox ItemsSource="{Binding VoiceSuggestions}" Text="{Binding Voice, UpdateSourceTrigger=LostFocus}"
+                                          IsEditable="True" Width="210"
+                                          ToolTip="Listeden seçin ya da servisteki bir sesin adını yazın." />
+                            </WrapPanel>
+                            <TextBox Text="{Binding SpeechText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True"
+                                     TextWrapping="Wrap" Height="52" Margin="0,6,0,0" VerticalScrollBarVisibility="Auto"
+                                     ToolTip="Seslendirilecek metin, ör. &quot;Şimdi kısa bir reklam arası veriyoruz.&quot;" />
+                            <WrapPanel Margin="0,6,0,0">
+                                <Button Content="Sesi oluştur" Command="{Binding SynthesizeCommand}" FontWeight="SemiBold"
+                                        ToolTip="Dosya, kayıt klasöründeki Anonslar klasörüne yazılır." />
+                                <Button Content="Çalma listesine ekle" Command="{Binding AddSpeechToPlaylistCommand}" />
+                                <Button Content="Boş jingle hücresine ata" Command="{Binding AssignSpeechToJingleCommand}" />
+                            </WrapPanel>
+                            <TextBlock Text="{Binding SynthesisStatus}" TextWrapping="Wrap" Margin="0,4,0,0"
+                                       Foreground="{StaticResource MutedTextBrush}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Expander Header="Servis ayarları (API anahtarları, modeller)" Margin="0,10,0,0">
+                        <TabControl Margin="0,6,0,0">
+                            <TabItem Header="Whisper (bu bilgisayarda)">
+                                <StackPanel Margin="8">
+                                    <WrapPanel>
+                                        <TextBlock Text="Model:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <ComboBox ItemsSource="{x:Static vm:AiViewModel.WhisperModels}" DisplayMemberPath="DisplayName"
+                                                  SelectedValuePath="Id" SelectedValue="{Binding WhisperModel}" Width="260" />
+                                    </WrapPanel>
+                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{StaticResource MutedTextBrush}">
+                                        <Run Text="Ücretsiz ve internetsiz çalışır, ama işlemcide bulut servislerinden yavaştır. Model ilk kullanımda indirilir:" />
+                                        <Run Text="{x:Static vm:AiViewModel.WhisperModelFolder}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </TabItem>
+                            <TabItem Header="OpenAI">
+                                <StackPanel Margin="8">
+                                    <WrapPanel>
+                                        <TextBlock Text="API anahtarı:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <PasswordBox services:PasswordBoxAssist.Password="{Binding OpenAiKey}" Width="260" Margin="0,0,12,0" />
+                                        <TextBlock Text="Adres:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBox Text="{Binding OpenAiBaseUrl, UpdateSourceTrigger=PropertyChanged}" Width="240"
+                                                 ToolTip="OpenAI uyumlu başka bir servis kullanıyorsanız adresini yazın." />
+                                    </WrapPanel>
+                                    <WrapPanel Margin="0,6,0,0">
+                                        <TextBlock Text="Yazıya çevirme modeli:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <ComboBox ItemsSource="{x:Static vm:AiViewModel.OpenAiTranscriptionModels}" IsEditable="True"
+                                                  Text="{Binding OpenAiTranscriptionModel, UpdateSourceTrigger=LostFocus}" Width="190" Margin="0,0,12,0"
+                                                  ToolTip="Zaman damgalı altyazı yalnızca whisper-1 ile çıkar; gpt-4o modelleri daha doğru ama her 10 dakikayı tek parça verir." />
+                                        <TextBlock Text="Seslendirme modeli:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <ComboBox ItemsSource="{x:Static vm:AiViewModel.OpenAiSpeechModels}" IsEditable="True"
+                                                  Text="{Binding OpenAiSpeechModel, UpdateSourceTrigger=LostFocus}" Width="170" />
+                                    </WrapPanel>
+                                </StackPanel>
+                            </TabItem>
+                            <TabItem Header="Azure OpenAI / Foundry">
+                                <StackPanel Margin="8">
+                                    <WrapPanel>
+                                        <TextBlock Text="Uç nokta:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBox Text="{Binding AzureOpenAiEndpoint, UpdateSourceTrigger=PropertyChanged}" Width="300" Margin="0,0,12,0"
+                                                 ToolTip="ör. https://kaynak-adi.openai.azure.com ya da https://kaynak-adi.services.ai.azure.com" />
+                                        <TextBlock Text="API anahtarı:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <PasswordBox services:PasswordBoxAssist.Password="{Binding AzureOpenAiKey}" Width="240" />
+                                    </WrapPanel>
+                                    <WrapPanel Margin="0,6,0,0">
+                                        <TextBlock Text="Yazıya çevirme dağıtımı:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBox Text="{Binding AzureOpenAiTranscriptionDeployment, UpdateSourceTrigger=PropertyChanged}" Width="160" Margin="0,0,12,0" />
+                                        <TextBlock Text="Seslendirme dağıtımı:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBox Text="{Binding AzureOpenAiSpeechDeployment, UpdateSourceTrigger=PropertyChanged}" Width="160" />
+                                    </WrapPanel>
+                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{StaticResource MutedTextBrush}"
+                                               Text="Foundry portalında whisper ya da gpt-4o-transcribe ve tts ya da gpt-4o-mini-tts modellerini dağıtın; burada dağıtım (deployment) adlarını yazın." />
+                                </StackPanel>
+                            </TabItem>
+                            <TabItem Header="Azure AI Speech (Foundry)">
+                                <StackPanel Margin="8">
+                                    <WrapPanel>
+                                        <TextBlock Text="Bölge:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBox Text="{Binding AzureSpeechRegion, UpdateSourceTrigger=PropertyChanged}" Width="140" Margin="0,0,12,0"
+                                                 ToolTip="ör. westeurope, swedencentral" />
+                                        <TextBlock Text="Anahtar:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <PasswordBox services:PasswordBoxAssist.Password="{Binding AzureSpeechKey}" Width="240" />
+                                    </WrapPanel>
+                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{StaticResource MutedTextBrush}"
+                                               Text="Speech kaynağının &quot;Keys and Endpoint&quot; sayfasındaki anahtar ve bölge. Türkçe için tr-TR-EmelNeural ve tr-TR-AhmetNeural sesleri hazır gelir." />
+                                </StackPanel>
+                            </TabItem>
+                            <TabItem Header="Windows sesleri">
+                                <TextBlock Margin="8" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"
+                                           Text="İnternetsiz ve ücretsizdir. Türkçe ses için Windows Ayarlar › Saat ve dil › Konuşma bölümünden Türkçe konuşma paketini ekleyin; ses listesi uygulama açılırken okunur." />
+                            </TabItem>
+                        </TabControl>
+                    </Expander>
+                    <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"
+                               Text="API anahtarları ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Bulut servislerine gönderilen ses ve metin için ilgili servisin ücret ve gizlilik koşulları geçerlidir." />
+                </StackPanel>
+            </Border>
+        </Expander>
+        </StackPanel>
 
         <!-- Folder browser, playlist, jingle pad -->
         <Grid Grid.Row="2">

@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json.Serialization;
 using PodcastRecorder.Audio;
+using PodcastRecorder.Speech.Providers;
 
 namespace PodcastRecorder.App.Services;
 
@@ -60,6 +61,8 @@ public sealed class AppSettings
     public List<JingleSlot>? Jingles { get; set; }
 
     public LiveStreamSettings Live { get; set; } = new();
+
+    public AiSettings Ai { get; set; } = new();
 }
 
 public sealed class JingleBankSettings
@@ -71,6 +74,44 @@ public sealed class JingleBankSettings
     public int Columns { get; set; } = 4;
 
     public List<JingleSlot> Slots { get; set; } = [];
+}
+
+/// <summary>Speech to text and text to speech services. Keys are encrypted for the current Windows user.</summary>
+public sealed class AiSettings
+{
+    public string TranscriptionProvider { get; set; } = SpeechProviders.LocalWhisper;
+
+    public string SynthesisProvider { get; set; } = SpeechProviders.Windows;
+
+    /// <summary>ISO code such as "tr"; empty lets the service detect it.</summary>
+    public string Language { get; set; } = "tr";
+
+    public bool TranscribeOnStop { get; set; }
+
+    public string WhisperModel { get; set; } = "base";
+
+    public string OpenAiBaseUrl { get; set; } = OpenAiEndpoint.DefaultOpenAiUrl;
+
+    public string? OpenAiProtectedKey { get; set; }
+
+    public string OpenAiTranscriptionModel { get; set; } = "whisper-1";
+
+    public string OpenAiSpeechModel { get; set; } = "gpt-4o-mini-tts";
+
+    public string AzureOpenAiEndpoint { get; set; } = "";
+
+    public string? AzureOpenAiProtectedKey { get; set; }
+
+    public string AzureOpenAiTranscriptionDeployment { get; set; } = "whisper";
+
+    public string AzureOpenAiSpeechDeployment { get; set; } = "gpt-4o-mini-tts";
+
+    public string AzureSpeechRegion { get; set; } = "westeurope";
+
+    public string? AzureSpeechProtectedKey { get; set; }
+
+    /// <summary>Last voice used with each synthesis provider.</summary>
+    public Dictionary<string, string> Voices { get; set; } = [];
 }
 
 public sealed class MicrophoneSettings

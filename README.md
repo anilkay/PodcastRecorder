@@ -21,8 +21,26 @@ Windows için podcast kayıt uygulaması. Mikrofonu, çalma listesindeki şarkı
 - **Jingle sekmeleri:** Her program için ayrı sekme; sekme adı ve ızgara boyutu (2x2 ile 8x8 arası) değiştirilebilir.
 - Canlı yayın: kayda giden ses (Master) bir Icecast sunucusuna MP3 olarak gönderilir; kayıttan bağımsız açılıp kapanır. Bağlantı koparsa 3 saniye arayla 10 kez yeniden bağlanmayı dener.
 - Klavye kısayolları (uygulamada F1 ile listelenir)
+- **Yapay zeka:** kayıtlardan transkript ve altyazı (yerel Whisper, OpenAI, Azure OpenAI / Foundry, Azure AI Speech), metinden anons ve jingle sesi (Windows sesleri, OpenAI, Azure)
 
 Mikrofon varsayılan olarak kulaklığa verilmez (konuşurken kendi sesinizi gecikmeli duymamanız için) ama her zaman kayda girer.
+
+### Yapay zeka: yazıya çevirme ve seslendirme
+
+"Yapay zeka" bölümü iki iş yapar:
+
+- **Transkript:** Bir kaydı (ya da seçtiğiniz herhangi bir ses dosyasını) yazıya çevirir ve dosyanın yanına aynı adla `.txt` (zaman damgalı metin) ve `.srt` (altyazı) yazar. "Kayıt bitince otomatik çıkar" işaretliyse her kayıttan sonra kendiliğinden başlar. Uzun kayıtlar 10 dakikalık parçalar hâlinde, sessiz yerlerden bölünerek gönderilir.
+- **Metinden ses:** Yazdığınız anons ya da jingle metnini seslendirir; dosya kayıt klasöründeki `Anonslar` klasörüne yazılır. Tek tıkla çalma listesine eklenir ya da açık sekmedeki ilk boş jingle hücresine atanır.
+
+| Servis | Yazıya çevirme | Seslendirme | Gereken |
+| --- | --- | --- | --- |
+| Whisper (bu bilgisayarda) | ✓ | – | Hiçbir şey; model ilk kullanımda Hugging Face'ten indirilir (Tiny 75 MB … Large v3 Turbo 1,6 GB) |
+| Windows sesleri | – | ✓ | Türkçe için Windows'ta Türkçe konuşma paketi |
+| OpenAI | whisper-1, gpt-4o-transcribe, gpt-4o-mini-transcribe | gpt-4o-mini-tts, tts-1, tts-1-hd | API anahtarı |
+| Azure OpenAI / Foundry | Aynı modellerin dağıtımları | Aynı modellerin dağıtımları | Uç nokta, API anahtarı, dağıtım adları |
+| Azure AI Speech (Foundry) | Fast transcription | Neural sesler (ör. tr-TR-EmelNeural) | Bölge ve anahtar |
+
+Anahtarlar ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Yeni bir servis eklemek için `PodcastRecorder.Speech` projesinde `ISpeechToText` ya da `ITextToSpeech` arayüzünü uygulayıp `SpeechProviders` listesine ekleyin.
 
 ### Klavye kısayolları
 
@@ -79,6 +97,7 @@ git push origin v0.0.1
 | Proje | İçerik |
 | --- | --- |
 | `src/PodcastRecorder.Audio` | Ses motoru: mikser, kaynaklar (mikrofon, çalma listesi, jingle), kayıt ve encoder'lar. NAudio üzerine kurulu. |
+| `src/PodcastRecorder.Speech` | Yazıya çevirme ve seslendirme servisleri (Whisper.net, OpenAI / Azure REST, Windows sesleri) |
 | `src/PodcastRecorder.App` | WPF arayüzü (MVVM, CommunityToolkit.Mvvm) |
 | `tests/PodcastRecorder.Audio.Tests` | Ses motoru birim testleri (xUnit) |
 

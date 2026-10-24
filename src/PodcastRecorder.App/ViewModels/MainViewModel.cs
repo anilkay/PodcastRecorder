@@ -44,6 +44,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Browser = new FolderBrowserViewModel(dialogs, path => Playlist.AddFiles([path]));
         MasterMeter = new LevelMeterViewModel(_engine.Mixer.MasterMeter);
         Live = new LiveStreamViewModel(_engine.Live, _settings.Live, liveDialog, () => _engine.IsOutputRunning, _ui);
+        Ai = new AiViewModel(_settings.Ai, () => RecordingFolder, Playlist, Jingles, dialogs);
         Playlist.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(PlaylistViewModel.CurrentItem)) Live.SetNowPlaying(Playlist.CurrentItem?.Title);
@@ -62,6 +63,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public PlaylistViewModel Playlist { get; }
 
     public LiveStreamViewModel Live { get; }
+
+    public AiViewModel Ai { get; }
 
     public JinglePadViewModel Jingles { get; }
 
@@ -413,6 +416,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             RecordingState = _engine.Recorder.State;
             LastRecordingPath = path;
             StatusMessage = path is null ? null : $"Kayıt kaydedildi: {path}";
+            TranscribeIfEnabled(path);
             return;
         }
 
@@ -427,6 +431,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             File.Delete(pending.CapturePath);
             LastRecordingPath = pending.Final.Path;
             StatusMessage = $"Kayıt kaydedildi: {pending.Final.Path} ({FormatLufs(measured)} → {Normalizer.PodcastTargetLufs} LUFS, {gain:+0.0;-0.0} dB)";
+            TranscribeIfEnabled(pending.Final.Path);
         }
         catch (Exception ex)
         {
@@ -436,6 +441,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
         finally
         {
             IsNormalizing = false;
+        }
+    }
+
+    /// <summary>Starts the transcript in the background; its progress shows in the AI panel.</summary>
+    private void TranscribeIfEnabled(string? path)
+    {
+        if (Ai.TranscribeOnStop && path is not null && File.Exists(path))
+        {
+            _ = Ai.TranscribeAsync(path);
         }
     }
 
@@ -538,6 +552,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
         }
 
+        Ai.Dispose();
         SaveSettings();
         _engine.Dispose();
         _devices.Dispose();
@@ -567,6 +582,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _settings.VoiceThresholdDb = VoiceThresholdDb;
         _settings.LimiterEnabled = LimiterEnabled;
         _settings.Playlist = Playlist.Items.Select(i => i.FilePath).ToList();
+        Ai.SaveTo(_settings.Ai);
         _settings.Jingles = null;
         _settings.JingleBanks = Jingles.Banks
             .Select(b => new JingleBankSettings

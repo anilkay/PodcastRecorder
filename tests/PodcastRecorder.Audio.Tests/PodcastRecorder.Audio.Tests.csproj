@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PodcastRecorder.Audio\PodcastRecorder.Audio.csproj" />
+    <ProjectReference Include="..\..\src\PodcastRecorder.Speech\PodcastRecorder.Speech.csproj" />
   </ItemGroup>
 
 </Project>
