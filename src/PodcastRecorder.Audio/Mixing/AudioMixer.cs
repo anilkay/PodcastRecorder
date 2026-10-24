@@ -1,5 +1,8 @@
 namespace PodcastRecorder.Audio.Mixing;
 
+/// <summary>Receives each channel's post-fader block during a mix, e.g. for multitrack recording.</summary>
+public delegate void ChannelSink(MixerChannel channel, ReadOnlySpan<float> samples);
+
 /// <summary>
 /// Sums all channels into two buses: the program bus (what gets recorded) and the
 /// monitor bus (what the host hears).
@@ -51,7 +54,7 @@ public sealed class AudioMixer
     /// Fills both buses with the same number of interleaved samples. Channels that run short
     /// are padded with silence, so the mixer always produces a continuous stream.
     /// </summary>
-    public void Mix(Span<float> program, Span<float> monitor)
+    public void Mix(Span<float> program, Span<float> monitor, ChannelSink? channelSink = null)
     {
         if (program.Length != monitor.Length)
         {
@@ -73,6 +76,12 @@ public sealed class AudioMixer
         foreach (var channel in channels)
         {
             int read = channel.Read(_scratch, 0, count);
+            if (channelSink is not null)
+            {
+                _scratch.AsSpan(read, count - read).Clear();
+                channelSink(channel, _scratch.AsSpan(0, count));
+            }
+
             var source = _scratch.AsSpan(0, read);
             for (int i = 0; i < read; i++) program[i] += source[i];
             if (channel.MonitorEnabled)

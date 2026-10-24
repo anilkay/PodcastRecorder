@@ -9,6 +9,7 @@ namespace PodcastRecorder.Audio.Mixing;
 /// </summary>
 public sealed class OutputBus(AudioMixer mixer, Recorder recorder) : ISampleProvider
 {
+    private readonly ChannelSink _stemSink = recorder.WriteStem;
     private float[] _program = [];
     private float[] _monitor = [];
 
@@ -24,7 +25,7 @@ public sealed class OutputBus(AudioMixer mixer, Recorder recorder) : ISampleProv
 
         var program = _program.AsSpan(0, count);
         var monitor = _monitor.AsSpan(0, count);
-        mixer.Mix(program, monitor);
+        mixer.Mix(program, monitor, recorder.IsRecordingStems ? _stemSink : null);
         recorder.Write(program);
         monitor.CopyTo(buffer.AsSpan(offset, count));
         return count;

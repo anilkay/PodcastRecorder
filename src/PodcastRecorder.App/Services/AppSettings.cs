@@ -5,6 +5,10 @@ namespace PodcastRecorder.App.Services;
 
 public sealed class AppSettings
 {
+    public List<MicrophoneSettings> Microphones { get; set; } = [];
+
+    /// <summary>Single microphone from the first versions; read once and moved into <see cref="Microphones"/>.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? InputDeviceId { get; set; }
 
     public string? OutputDeviceId { get; set; }
@@ -17,6 +21,9 @@ public sealed class AppSettings
     public string? BrowseFolder { get; set; }
 
     public double MicrophoneVolume { get; set; } = 1;
+
+    /// <summary>Also write every channel to its own file.</summary>
+    public bool RecordStems { get; set; }
 
     public double MusicVolume { get; set; } = 0.8;
 
@@ -52,6 +59,15 @@ public sealed class JingleBankSettings
     public int Columns { get; set; } = 4;
 
     public List<JingleSlot> Slots { get; set; } = [];
+}
+
+public sealed class MicrophoneSettings
+{
+    public string DeviceId { get; set; } = "";
+
+    public double Volume { get; set; } = 1;
+
+    public bool MonitorEnabled { get; set; }
 }
 
 public sealed class JingleSlot

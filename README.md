@@ -4,8 +4,9 @@ Windows için podcast kayıt uygulaması. Mikrofonu, çalma listesindeki şarkı
 
 ## Özellikler
 
-- Mikrofon ve dinleme (kulaklık) cihazı seçimi (WASAPI)
-- Kaydet / duraklat / durdur, süre sayacı; MP3 128/192/320 kbps veya WAV
+- Birden fazla mikrofon: "Mikrofon ekle" ile her konuk için ayrı kanal, ✕ ile kaldırma; dinleme (kulaklık) cihazı seçimi (WASAPI)
+- Kaydet / duraklat / durdur, süre sayacı; MP3 128/192/320 kbps, WAV veya FLAC (kayıpsız)
+- **Ayrı izler (multitrack):** Karışıma ek olarak her kanal (her mikrofon, müzik, jingle) `podcast-TARİH izler` klasörüne ayrı dosya olarak kaydedilir; kurguda konuşmacıları ayrı ayrı düzeltmek için
 - Mikser: Mikrofon, Müzik, Jingle kanalları; seviye, sessiz, "kulaklıkta duy", VU metre ve clip uyarısı; Master (kayıt) ve Kulaklık seviyesi
 - Jingle paneli: 4x4 hücre, sürükle-bırak ya da sağ tık ile dosya ata, tıkla çal/durdur
 - Çalma listesi: ekle, sırala, çal, sonraki, bitince otomatik sonrakine geç
@@ -67,4 +68,5 @@ Tüm kaynaklar 48 kHz stereo float formatına çevrilir. Çıkış cihazının s
 
 ## Yol haritası
 
-- **M3:** Çoklu mikrofon, FLAC ve multitrack kayıt
+- Konuşunca otomatik ducking (ses algılamalı)
+- Kayıt sonrası ses seviyesi normalizasyonu (LUFS)

@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Threading.Channels;
+using PodcastRecorder.Audio.Mixing;
 
 namespace PodcastRecorder.Audio.Recording;
 
@@ -10,16 +11,19 @@ public enum RecorderState
     Paused,
 }
 
+/// <summary>A file to record into and the encoder that writes it.</summary>
+public sealed record RecordingTarget(string Path, IAudioEncoder Encoder);
+
 /// <summary>
-/// Receives the program bus on the audio thread and hands it to the encoder on a background
-/// task, so slow encoding or disk writes never stall playback.
+/// Receives the program bus (and optionally each channel on its own, for multitrack) on the
+/// audio thread and hands it to the encoders on background tasks, so slow encoding or disk
+/// writes never stall playback.
 /// </summary>
 public sealed class Recorder
 {
     private readonly Lock _gate = new();
-    private Channel<Block>? _queue;
-    private Task? _writer;
-    private IAudioEncoder? _encoder;
+    private Track? _mix;
+    private Dictionary<MixerChannel, Track> _stems = [];
     private long _frames;
     private volatile RecorderState _state = RecorderState.Idle;
 
@@ -27,13 +31,23 @@ public sealed class Recorder
 
     public string? OutputPath { get; private set; }
 
+    /// <summary>Files of the separate channel tracks of the current or last recording.</summary>
+    public IReadOnlyList<string> StemPaths { get; private set; } = [];
+
+    public bool IsRecordingStems => _stems.Count > 0;
+
     /// <summary>Length of audio written so far, excluding paused time.</summary>
     public TimeSpan Elapsed => AudioFormat.FramesToTime(Interlocked.Read(ref _frames));
 
-    /// <summary>Raised on a background thread if the encoder fails; recording stops writing.</summary>
+    /// <summary>Raised on a background thread if an encoder fails; that file stops being written.</summary>
     public event EventHandler<Exception>? Faulted;
 
-    public void Start(string path, IAudioEncoder encoder)
+    public void Start(string path, IAudioEncoder encoder) => Start(new RecordingTarget(path, encoder));
+
+    /// <summary>
+    /// Starts recording the mix, plus one file per channel given in <paramref name="stems"/>.
+    /// </summary>
+    public void Start(RecordingTarget mix, IReadOnlyDictionary<MixerChannel, RecordingTarget>? stems = null)
     {
         lock (_gate)
         {
@@ -42,12 +56,14 @@ public sealed class Recorder
                 throw new InvalidOperationException("A recording is already running.");
             }
 
-            encoder.Open(path, AudioFormat.Mix);
-            var queue = Channel.CreateUnbounded<Block>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = true });
-            _encoder = encoder;
-            _queue = queue;
-            _writer = Task.Run(() => WriteLoopAsync(queue.Reader, encoder));
-            OutputPath = path;
+            var targets = new List<RecordingTarget> { mix };
+            if (stems is not null) targets.AddRange(stems.Values);
+            OpenAll(targets);
+
+            _mix = new Track(mix, OnFaulted);
+            _stems = stems?.ToDictionary(s => s.Key, s => new Track(s.Value, OnFaulted)) ?? [];
+            OutputPath = mix.Path;
+            StemPaths = stems?.Values.Select(t => t.Path).ToList() ?? [];
             Interlocked.Exchange(ref _frames, 0);
             _state = RecorderState.Recording;
         }
@@ -63,11 +79,10 @@ public sealed class Recorder
         if (_state == RecorderState.Paused) _state = RecorderState.Recording;
     }
 
-    /// <summary>Stops recording, waits for queued audio to be written and closes the file.</summary>
+    /// <summary>Stops recording, waits for queued audio to be written and closes the files.</summary>
     public async Task<string?> StopAsync()
     {
-        Task? writer;
-        IAudioEncoder? encoder;
+        List<Track> tracks;
         lock (_gate)
         {
             if (_state == RecorderState.Idle)
@@ -76,57 +91,115 @@ public sealed class Recorder
             }
 
             _state = RecorderState.Idle;
-            _queue?.Writer.TryComplete();
-            _queue = null;
-            writer = _writer;
-            encoder = _encoder;
-            _writer = null;
-            _encoder = null;
+            tracks = [.. _stems.Values];
+            if (_mix is not null) tracks.Insert(0, _mix);
+            _mix = null;
+            _stems = [];
         }
 
-        if (writer is not null) await writer.ConfigureAwait(false);
-        encoder?.Dispose();
+        foreach (var track in tracks) track.Complete();
+        foreach (var track in tracks) await track.CloseAsync().ConfigureAwait(false);
         return OutputPath;
     }
 
     /// <summary>Called by the output bus with each block of the program mix.</summary>
     public void Write(ReadOnlySpan<float> samples)
     {
-        var queue = _queue;
-        if (_state != RecorderState.Recording || queue is null || samples.IsEmpty)
+        var mix = _mix;
+        if (_state != RecorderState.Recording || mix is null || samples.IsEmpty)
         {
             return;
         }
 
-        var buffer = ArrayPool<float>.Shared.Rent(samples.Length);
-        samples.CopyTo(buffer);
-        if (queue.Writer.TryWrite(new Block(buffer, samples.Length)))
+        if (mix.TryWrite(samples))
         {
             Interlocked.Add(ref _frames, samples.Length / AudioFormat.Channels);
         }
-        else
+    }
+
+    /// <summary>Called by the mixer with one channel's block, for multitrack recording.</summary>
+    public void WriteStem(MixerChannel channel, ReadOnlySpan<float> samples)
+    {
+        if (_state == RecorderState.Recording && _stems.TryGetValue(channel, out var track))
         {
-            ArrayPool<float>.Shared.Return(buffer);
+            track.TryWrite(samples);
         }
     }
 
-    private async Task WriteLoopAsync(ChannelReader<Block> reader, IAudioEncoder encoder)
+    private static void OpenAll(List<RecordingTarget> targets)
     {
-        bool failed = false;
-        await foreach (var block in reader.ReadAllAsync().ConfigureAwait(false))
+        var opened = new List<IAudioEncoder>();
+        try
         {
-            try
+            foreach (var target in targets)
             {
-                if (!failed) encoder.Write(block.Samples, 0, block.Length);
+                target.Encoder.Open(target.Path, AudioFormat.Mix);
+                opened.Add(target.Encoder);
             }
-            catch (Exception ex)
+        }
+        catch
+        {
+            foreach (var encoder in opened) encoder.Dispose();
+            throw;
+        }
+    }
+
+    private void OnFaulted(Exception ex) => Faulted?.Invoke(this, ex);
+
+    /// <summary>One output file with its queue and writer task.</summary>
+    private sealed class Track
+    {
+        private readonly Channel<Block> _queue =
+            Channel.CreateUnbounded<Block>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = true });
+
+        private readonly IAudioEncoder _encoder;
+        private readonly Task _writer;
+
+        public Track(RecordingTarget target, Action<Exception> onFault)
+        {
+            _encoder = target.Encoder;
+            _writer = Task.Run(() => WriteLoopAsync(onFault));
+        }
+
+        public bool TryWrite(ReadOnlySpan<float> samples)
+        {
+            var buffer = ArrayPool<float>.Shared.Rent(samples.Length);
+            samples.CopyTo(buffer);
+            if (_queue.Writer.TryWrite(new Block(buffer, samples.Length)))
             {
-                failed = true;
-                Faulted?.Invoke(this, ex);
+                return true;
             }
-            finally
+
+            ArrayPool<float>.Shared.Return(buffer);
+            return false;
+        }
+
+        public void Complete() => _queue.Writer.TryComplete();
+
+        public async Task CloseAsync()
+        {
+            await _writer.ConfigureAwait(false);
+            _encoder.Dispose();
+        }
+
+        private async Task WriteLoopAsync(Action<Exception> onFault)
+        {
+            bool failed = false;
+            await foreach (var block in _queue.Reader.ReadAllAsync().ConfigureAwait(false))
             {
-                ArrayPool<float>.Shared.Return(block.Samples);
+                try
+                {
+                    if (!failed) _encoder.Write(block.Samples, 0, block.Length);
+                }
+                catch (Exception ex)
+                {
+                    failed = true;
+                    onFault(ex);
+                }
+                finally
+                {
+                    ArrayPool<float>.Shared.Return(block.Samples);
+                }
             }
         }
     }

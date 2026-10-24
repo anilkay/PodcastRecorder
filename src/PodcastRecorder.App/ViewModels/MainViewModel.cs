@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using PodcastRecorder.App.Services;
 using PodcastRecorder.Audio;
 using PodcastRecorder.Audio.Devices;
+using PodcastRecorder.Audio.Mixing;
 using PodcastRecorder.Audio.Recording;
 using PodcastRecorder.Audio.Sources;
 
@@ -21,7 +22,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IFileDialogs _dialogs;
     private readonly SynchronizationContext _ui;
     private readonly DispatcherTimer _timer;
-    private ChannelStripViewModel? _microphoneStrip;
+    private readonly List<ChannelStripViewModel> _microphoneStrips = [];
     private bool _initialized;
 
     public MainViewModel(SettingsStore settingsStore, IFileDialogs dialogs)
@@ -62,8 +63,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public IReadOnlyList<EncoderOption> Encoders => EncoderCatalog.All;
 
+    /// <summary>The device picked in the "add microphone" box.</summary>
     [ObservableProperty]
-    public partial AudioDevice? SelectedInput { get; set; }
+    [NotifyCanExecuteChangedFor(nameof(AddMicrophoneCommand))]
+    public partial AudioDevice? InputToAdd { get; set; }
+
+    /// <summary>Also write every mixer channel to its own file (multitrack).</summary>
+    [ObservableProperty]
+    public partial bool RecordStems { get; set; }
 
     [ObservableProperty]
     public partial AudioDevice? SelectedOutput { get; set; }
@@ -94,7 +101,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle), nameof(IsRecording), nameof(IsPaused), nameof(StateText), nameof(PauseButtonText))]
-    [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand), nameof(AddMicrophoneCommand))]
     public partial RecorderState RecordingState { get; set; }
 
     [ObservableProperty]
@@ -142,6 +149,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Playlist.CrossfadeSeconds = _settings.CrossfadeSeconds;
         SelectedEncoder = EncoderCatalog.Find(_settings.EncoderId);
         RecordingFolder = _settings.RecordingFolder;
+        RecordStems = _settings.RecordStems;
 
         Playlist.AddFiles(_settings.Playlist.Where(File.Exists));
         LoadJingleBanks();
@@ -152,7 +160,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         _initialized = true;
         SelectedOutput = Pick(OutputDevices, _settings.OutputDeviceId, _devices.DefaultOutputId);
-        SelectedInput = Pick(InputDevices, _settings.InputDeviceId, _devices.DefaultInputId);
+        LoadMicrophones();
+        InputToAdd = InputDevices.FirstOrDefault(d => _microphoneStrips.All(m => m.DeviceId != d.Id));
         _timer.Start();
     }
 
@@ -170,34 +179,81 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
-    partial void OnSelectedInputChanged(AudioDevice? value)
+    [RelayCommand(CanExecute = nameof(CanAddMicrophone))]
+    private void AddMicrophone()
     {
-        if (!_initialized) return;
+        if (InputToAdd is { } device) AddMicrophone(device, new MicrophoneSettings { DeviceId = device.Id });
+        InputToAdd = null;
+    }
 
-        double volume = _microphoneStrip?.Volume ?? _settings.MicrophoneVolume;
-        if (_microphoneStrip is not null)
-        {
-            _engine.RemoveMicrophone(_microphoneStrip.Channel);
-            Channels.Remove(_microphoneStrip);
-            _microphoneStrip = null;
-        }
+    private bool CanAddMicrophone() => IsIdle && InputToAdd is { } device && _microphoneStrips.All(m => m.DeviceId != device.Id);
 
-        if (value is null) return;
-
+    private void AddMicrophone(AudioDevice device, MicrophoneSettings saved)
+    {
         try
         {
-            var microphone = new MicrophoneSource(_devices.GetDevice(value.Id));
+            var microphone = new MicrophoneSource(_devices.GetDevice(device.Id));
             microphone.Stopped += (_, ex) =>
             {
-                if (ex is not null) _ui.Post(_ => StatusMessage = $"Mikrofon durdu: {ex.Message}", null);
+                if (ex is not null) _ui.Post(_ => StatusMessage = $"Mikrofon durdu ({device.Name}): {ex.Message}", null);
             };
-            var channel = _engine.AddMicrophone(microphone, "Mikrofon");
-            _microphoneStrip = new ChannelStripViewModel(channel) { Volume = volume };
-            Channels.Insert(0, _microphoneStrip);
+            var channel = _engine.AddMicrophone(microphone, NextMicrophoneName());
+            var strip = new ChannelStripViewModel(channel, device.Name, RemoveMicrophone)
+            {
+                DeviceId = device.Id,
+                Volume = saved.Volume,
+                MonitorEnabled = saved.MonitorEnabled,
+            };
+            _microphoneStrips.Add(strip);
+            Channels.Insert(_microphoneStrips.Count - 1, strip);
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Mikrofon açılamadı: {ex.Message}";
+            StatusMessage = $"Mikrofon açılamadı ({device.Name}): {ex.Message}";
+        }
+
+        AddMicrophoneCommand.NotifyCanExecuteChanged();
+    }
+
+    private void RemoveMicrophone(ChannelStripViewModel strip)
+    {
+        if (!IsIdle)
+        {
+            StatusMessage = "Kayıt sürerken mikrofon kaldırılamaz.";
+            return;
+        }
+
+        _engine.RemoveMicrophone(strip.Channel);
+        _microphoneStrips.Remove(strip);
+        Channels.Remove(strip);
+        AddMicrophoneCommand.NotifyCanExecuteChanged();
+    }
+
+    private string NextMicrophoneName()
+    {
+        for (int n = 1; ; n++)
+        {
+            var name = $"Mikrofon {n}";
+            if (_microphoneStrips.All(m => m.Name != name)) return name;
+        }
+    }
+
+    private void LoadMicrophones()
+    {
+        var saved = _settings.Microphones;
+        if (saved.Count == 0)
+        {
+            // Settings from the first versions had one microphone; a fresh install uses the default device.
+            var id = _settings.InputDeviceId ?? _devices.DefaultInputId;
+            if (id is not null) saved = [new MicrophoneSettings { DeviceId = id, Volume = _settings.MicrophoneVolume }];
+        }
+
+        foreach (var microphone in saved)
+        {
+            if (InputDevices.FirstOrDefault(d => d.Id == microphone.DeviceId) is { } device)
+            {
+                AddMicrophone(device, microphone);
+            }
         }
     }
 
@@ -226,10 +282,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         try
         {
             Directory.CreateDirectory(RecordingFolder);
+            var name = $"podcast-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
             var encoder = SelectedEncoder.Create();
-            var path = Path.Combine(RecordingFolder, $"podcast-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}{encoder.FileExtension}");
-            _engine.Recorder.Start(path, encoder);
-            StatusMessage = $"Kaydediliyor: {path}";
+            var mix = new RecordingTarget(Path.Combine(RecordingFolder, name + encoder.FileExtension), encoder);
+            var stems = RecordStems ? StemTargets(Path.Combine(RecordingFolder, name + " izler")) : null;
+            _engine.Recorder.Start(mix, stems);
+            StatusMessage = $"Kaydediliyor: {mix.Path}" + (stems is null ? "" : $" (+{stems.Count} ayrı iz)");
         }
         catch (Exception ex)
         {
@@ -268,6 +326,21 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var target = LastRecordingPath is { } last && File.Exists(last) ? $"/select,\"{last}\"" : $"\"{RecordingFolder}\"";
         Directory.CreateDirectory(RecordingFolder);
         Process.Start(new ProcessStartInfo("explorer.exe", target) { UseShellExecute = true });
+    }
+
+    /// <summary>One file per mixer channel, named after the channel, in its own folder.</summary>
+    private Dictionary<MixerChannel, RecordingTarget> StemTargets(string folder)
+    {
+        Directory.CreateDirectory(folder);
+        var invalid = Path.GetInvalidFileNameChars();
+        return _engine.Mixer.Channels.ToDictionary(
+            channel => channel,
+            channel =>
+            {
+                var encoder = SelectedEncoder.Create();
+                var fileName = new string(channel.Name.Select(c => invalid.Contains(c) ? '_' : c).ToArray());
+                return new RecordingTarget(Path.Combine(folder, fileName + encoder.FileExtension), encoder);
+            });
     }
 
     private bool CanPause() => !IsIdle;
@@ -324,12 +397,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void SaveSettings()
     {
-        _settings.InputDeviceId = SelectedInput?.Id;
+        _settings.InputDeviceId = null;
+        _settings.Microphones = _microphoneStrips
+            .Select(m => new MicrophoneSettings { DeviceId = m.DeviceId!, Volume = m.Volume, MonitorEnabled = m.MonitorEnabled })
+            .ToList();
+        _settings.RecordStems = RecordStems;
         _settings.OutputDeviceId = SelectedOutput?.Id;
         _settings.EncoderId = SelectedEncoder.Id;
         _settings.RecordingFolder = RecordingFolder;
         _settings.BrowseFolder = Browser.CurrentFolder;
-        _settings.MicrophoneVolume = _microphoneStrip?.Volume ?? _settings.MicrophoneVolume;
         _settings.MusicVolume = _engine.MusicChannel.Volume;
         _settings.JingleVolume = _engine.JingleChannel.Volume;
         _settings.MasterVolume = MasterVolume;

@@ -11,6 +11,7 @@ public static class EncoderCatalog
         new("mp3-192", "MP3 192 kbps", () => new Mp3Encoder(192)),
         new("mp3-320", "MP3 320 kbps", () => new Mp3Encoder(320)),
         new("wav", "WAV 16-bit", () => new WavEncoder()),
+        new("flac", "FLAC (kayıpsız)", () => new FlacEncoder()),
     ];
 
     public static EncoderOption Default => All[1];

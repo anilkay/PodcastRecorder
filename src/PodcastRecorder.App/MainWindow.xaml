@@ -51,7 +51,10 @@
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Format:" VerticalAlignment="Center" Margin="0,0,6,0" />
                     <ComboBox ItemsSource="{Binding Encoders}" SelectedItem="{Binding SelectedEncoder}"
-                              DisplayMemberPath="DisplayName" Width="130" IsEnabled="{Binding IsIdle}" Margin="0,0,16,0" />
+                              DisplayMemberPath="DisplayName" Width="130" IsEnabled="{Binding IsIdle}" Margin="0,0,8,0" />
+                    <CheckBox Content="Ayrı izler" IsChecked="{Binding RecordStems}" IsEnabled="{Binding IsIdle}"
+                              VerticalAlignment="Center" Margin="0,0,16,0"
+                              ToolTip="Karışıma ek olarak her kanalı (her mikrofon, müzik, jingle) ayrı dosyaya da kaydeder. Kurgu için WAV veya FLAC önerilir." />
                     <TextBlock Text="Kayıt klasörü:" VerticalAlignment="Center" Margin="0,0,6,0" />
                     <TextBlock Text="{Binding RecordingFolder}" VerticalAlignment="Center" MaxWidth="240"
                                TextTrimming="CharacterEllipsis" ToolTip="{Binding RecordingFolder}" Margin="0,0,6,0" />
@@ -63,9 +66,10 @@
 
         <!-- Devices -->
         <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="4,10,0,10">
-            <TextBlock Text="Mikrofon:" VerticalAlignment="Center" Margin="0,0,6,0" />
-            <ComboBox ItemsSource="{Binding InputDevices}" SelectedItem="{Binding SelectedInput}" DisplayMemberPath="Name"
-                      Width="300" IsEnabled="{Binding IsIdle}" Margin="0,0,20,0" />
+            <TextBlock Text="Mikrofon ekle:" VerticalAlignment="Center" Margin="0,0,6,0" />
+            <ComboBox ItemsSource="{Binding InputDevices}" SelectedItem="{Binding InputToAdd}" DisplayMemberPath="Name"
+                      Width="260" IsEnabled="{Binding IsIdle}" Margin="0,0,6,0" />
+            <Button Content="Ekle" Command="{Binding AddMicrophoneCommand}" Margin="0,0,20,0" />
             <TextBlock Text="Dinleme çıkışı (kulaklık):" VerticalAlignment="Center" Margin="0,0,6,0" />
             <ComboBox ItemsSource="{Binding OutputDevices}" SelectedItem="{Binding SelectedOutput}" DisplayMemberPath="Name"
                       Width="300" IsEnabled="{Binding IsIdle}" Margin="0,0,20,0" />
@@ -260,17 +264,18 @@
             </Border>
         </Grid>
 
-        <!-- Mixer -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,12,0,0" Height="230">
-            <ItemsControl ItemsSource="{Binding Channels}" ItemTemplate="{StaticResource ChannelStripTemplate}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
+        <!-- Mixer: channel strips scroll sideways when there are many microphones -->
+        <DockPanel Grid.Row="3" Margin="0,12,0,0" Height="250">
+            <Border DockPanel.Dock="Right" Style="{StaticResource PanelBorder}" Width="120" Margin="8,0,0,0" Padding="8"
+                    ToolTip="Kulaklıkta duyulan sesin seviyesi. Mikrofon varsayılan olarak kulaklığa verilmez (gecikmeli yankı olmasın diye), ama her zaman kayda girer.">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Kulaklık" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <Slider Orientation="Vertical" Minimum="0" Maximum="1.5" Value="{Binding MonitorVolume}"
+                            SmallChange="0.05" LargeChange="0.1" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                </DockPanel>
+            </Border>
 
-            <Border Style="{StaticResource PanelBorder}" Width="140" Margin="8,0,8,0" Padding="8"
+            <Border DockPanel.Dock="Right" Style="{StaticResource PanelBorder}" Width="140" Margin="8,0,0,0" Padding="8"
                     BorderBrush="{StaticResource AccentBrush}" ToolTip="Kayda giden toplam ses">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="Master (kayıt)" FontWeight="SemiBold" HorizontalAlignment="Center" />
@@ -286,15 +291,16 @@
                 </DockPanel>
             </Border>
 
-            <Border Style="{StaticResource PanelBorder}" Width="120" Padding="8"
-                    ToolTip="Kulaklıkta duyulan sesin seviyesi. Mikrofon varsayılan olarak kulaklığa verilmez (gecikmeli yankı olmasın diye), ama her zaman kayda girer.">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Kulaklık" FontWeight="SemiBold" HorizontalAlignment="Center" />
-                    <Slider Orientation="Vertical" Minimum="0" Maximum="1.5" Value="{Binding MonitorVolume}"
-                            SmallChange="0.05" LargeChange="0.1" HorizontalAlignment="Center" Margin="0,6,0,0" />
-                </DockPanel>
-            </Border>
-        </StackPanel>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding Channels}" ItemTemplate="{StaticResource ChannelStripTemplate}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
 
         <!-- Status -->
         <TextBlock Grid.Row="4" Text="{Binding StatusMessage}" Foreground="{StaticResource MutedTextBrush}"
