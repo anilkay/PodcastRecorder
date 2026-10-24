@@ -21,7 +21,7 @@ public class SourceTests
     public void Deck_plays_a_file_to_the_end_and_reports_it()
     {
         using var wav = TempWav.Create(TimeSpan.FromMilliseconds(100));
-        var deck = new PlaybackDeck(OpenWav);
+        using var deck = new PlaybackDeck(OpenWav);
         string? ended = null;
         deck.PlaybackEnded += (_, path) => ended = path;
         deck.Play(wav.Path);
@@ -44,7 +44,7 @@ public class SourceTests
     {
         using var first = TempWav.Create(TimeSpan.FromSeconds(1), 0.25f);
         using var second = TempWav.Create(TimeSpan.FromSeconds(1), 0.25f);
-        var jingles = new JinglePlayer(OpenWav);
+        using var jingles = new JinglePlayer(OpenWav);
         jingles.Play("a", first.Path);
         jingles.Play("b", second.Path);
         var buffer = new float[960];
@@ -63,7 +63,7 @@ public class SourceTests
     public void Jingle_end_is_reported_with_its_key()
     {
         using var wav = TempWav.Create(TimeSpan.FromMilliseconds(10));
-        var jingles = new JinglePlayer(OpenWav);
+        using var jingles = new JinglePlayer(OpenWav);
         string? ended = null;
         jingles.JingleEnded += (_, key) => ended = key;
         jingles.Play("pad-3", wav.Path);

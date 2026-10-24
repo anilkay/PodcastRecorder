@@ -225,8 +225,8 @@ public sealed class AudioEngine : IDisposable
     public void Dispose()
     {
         StopOutput();
-        Playlist.Stop();
-        Jingles.StopAll();
+        Playlist.Dispose();
+        Jingles.Dispose();
         foreach (var channel in _microphones.Keys.ToList())
         {
             RemoveMicrophone(channel);

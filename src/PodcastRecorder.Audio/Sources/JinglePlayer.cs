@@ -5,7 +5,7 @@ namespace PodcastRecorder.Audio.Sources;
 /// <summary>
 /// Plays jingles from the cart panel. Each pad has a key; several pads can sound at once.
 /// </summary>
-public sealed class JinglePlayer(AudioFileOpener? opener = null) : ISampleProvider
+public sealed class JinglePlayer(AudioFileOpener? opener = null) : ISampleProvider, IDisposable
 {
     private readonly AudioFileOpener _open = opener ?? AudioFiles.Open;
     private readonly Lock _gate = new();
@@ -53,6 +53,9 @@ public sealed class JinglePlayer(AudioFileOpener? opener = null) : ISampleProvid
 
         foreach (var voice in voices) voice.Dispose();
     }
+
+    /// <summary>Stops every jingle and closes the open files.</summary>
+    public void Dispose() => StopAll();
 
     public int Read(float[] buffer, int offset, int count)
     {

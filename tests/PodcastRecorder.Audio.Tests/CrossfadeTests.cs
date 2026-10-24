@@ -12,7 +12,7 @@ public class CrossfadeTests
     {
         using var first = TempWav.Create(TimeSpan.FromSeconds(2), 0.5f);
         using var second = TempWav.Create(TimeSpan.FromSeconds(2), 0.25f);
-        var deck = new PlaybackDeck(OpenWav) { CrossfadeDuration = TimeSpan.FromMilliseconds(100) };
+        using var deck = new PlaybackDeck(OpenWav) { CrossfadeDuration = TimeSpan.FromMilliseconds(100) };
         var buffer = new float[9600];
 
         deck.Play(first.Path);
@@ -33,7 +33,7 @@ public class CrossfadeTests
     {
         using var first = TempWav.Create(TimeSpan.FromSeconds(1), 0.5f);
         using var second = TempWav.Create(TimeSpan.FromSeconds(1), 0.25f);
-        var deck = new PlaybackDeck(OpenWav);
+        using var deck = new PlaybackDeck(OpenWav);
         var buffer = new float[9600];
 
         deck.Play(first.Path);
@@ -48,7 +48,7 @@ public class CrossfadeTests
     public void Track_ending_is_raised_once_when_the_crossfade_window_starts()
     {
         using var wav = TempWav.Create(TimeSpan.FromMilliseconds(500));
-        var deck = new PlaybackDeck(OpenWav) { CrossfadeDuration = TimeSpan.FromMilliseconds(200) };
+        using var deck = new PlaybackDeck(OpenWav) { CrossfadeDuration = TimeSpan.FromMilliseconds(200) };
         var raised = 0;
         deck.TrackEnding += (_, _) => raised++;
         deck.Play(wav.Path);

@@ -7,7 +7,7 @@ namespace PodcastRecorder.Audio.Sources;
 /// Plays the playlist: one current file, plus any earlier files still fading out during a
 /// crossfade. Outputs silence while idle so it can stay connected to the mixer permanently.
 /// </summary>
-public sealed class PlaybackDeck(AudioFileOpener? opener = null) : ISampleProvider
+public sealed class PlaybackDeck(AudioFileOpener? opener = null) : ISampleProvider, IDisposable
 {
     private readonly AudioFileOpener _open = opener ?? AudioFiles.Open;
     private readonly Lock _gate = new();
@@ -105,6 +105,9 @@ public sealed class PlaybackDeck(AudioFileOpener? opener = null) : ISampleProvid
 
         foreach (var voice in stopped) voice.Voice.Dispose();
     }
+
+    /// <summary>Stops playback and closes the open files.</summary>
+    public void Dispose() => Stop();
 
     public int Read(float[] buffer, int offset, int count)
     {
