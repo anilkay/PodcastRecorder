@@ -13,6 +13,9 @@ public partial class JingleCellViewModel(int index, JinglePadViewModel pad) : Ob
 
     public string Key => $"pad-{Index}";
 
+    /// <summary>The keyboard key that plays this pad, shown in its corner.</summary>
+    public string Shortcut => JinglePadViewModel.ShortcutKeys[Index].ToString();
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Title), nameof(HasFile))]
     public partial string? FilePath { get; set; }
@@ -53,6 +56,9 @@ public partial class JinglePadViewModel : ObservableObject
 {
     public const int Rows = 4;
     public const int Columns = 4;
+
+    /// <summary>One key per pad, laid out like the grid on the left of the keyboard.</summary>
+    public const string ShortcutKeys = "1234QWERASDFZXCV";
 
     private readonly JinglePlayer _player;
     private readonly IFileDialogs _dialogs;

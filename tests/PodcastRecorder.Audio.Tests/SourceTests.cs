@@ -57,6 +57,9 @@ public class SourceTests
         Assert.Equal(0.25f, buffer[500], 2);
         Assert.False(jingles.IsPlaying("a"));
         Assert.True(jingles.IsPlaying("b"));
+
+        // Release the file so the temporary WAV can be deleted (Windows keeps open files locked).
+        jingles.StopAll();
     }
 
     [Fact]

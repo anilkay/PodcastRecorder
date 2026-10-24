@@ -4,12 +4,13 @@ using NAudio.Wave.SampleProviders;
 using PodcastRecorder.Audio.Mixing;
 using PodcastRecorder.Audio.Recording;
 using PodcastRecorder.Audio.Sources;
+using PodcastRecorder.Audio.Streaming;
 
 namespace PodcastRecorder.Audio;
 
 /// <summary>
 /// Wires the sources, mixer, recorder and output device together. The output device's clock
-/// drives everything: each buffer it asks for is mixed, recorded and played.
+/// drives everything: each buffer it asks for is mixed, recorded, streamed and played.
 /// </summary>
 public sealed class AudioEngine : IDisposable
 {
@@ -24,12 +25,15 @@ public sealed class AudioEngine : IDisposable
         JingleChannel = new MixerChannel("Jingle", Jingles);
         Mixer.Add(MusicChannel);
         Mixer.Add(JingleChannel);
-        Bus = new OutputBus(Mixer, Recorder);
+        Bus = new OutputBus(Mixer, Recorder, Live);
     }
 
     public AudioMixer Mixer { get; } = new();
 
     public Recorder Recorder { get; } = new();
+
+    /// <summary>Sends the same program mix the recorder gets to an Icecast server.</summary>
+    public LiveStreamer Live { get; } = new();
 
     public PlaybackDeck Playlist { get; }
 
@@ -85,6 +89,7 @@ public sealed class AudioEngine : IDisposable
     public void Dispose()
     {
         StopOutput();
+        Live.StopAsync().GetAwaiter().GetResult();
         Playlist.Stop();
         Jingles.StopAll();
         foreach (var channel in _microphones.Keys.ToList())

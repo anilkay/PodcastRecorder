@@ -1,13 +1,12 @@
 using NAudio.Wave;
-using PodcastRecorder.Audio.Recording;
 
 namespace PodcastRecorder.Audio.Mixing;
 
 /// <summary>
 /// The provider the output device pulls from: mixes both buses, sends the program bus to the
-/// recorder and returns the monitor bus for playback.
+/// recorder and the live stream, and returns the monitor bus for playback.
 /// </summary>
-public sealed class OutputBus(AudioMixer mixer, Recorder recorder) : ISampleProvider
+public sealed class OutputBus(AudioMixer mixer, params IReadOnlyList<IProgramSink> sinks) : ISampleProvider
 {
     private float[] _program = [];
     private float[] _monitor = [];
@@ -25,7 +24,7 @@ public sealed class OutputBus(AudioMixer mixer, Recorder recorder) : ISampleProv
         var program = _program.AsSpan(0, count);
         var monitor = _monitor.AsSpan(0, count);
         mixer.Mix(program, monitor);
-        recorder.Write(program);
+        foreach (var sink in sinks) sink.Write(program);
         monitor.CopyTo(buffer.AsSpan(offset, count));
         return count;
     }

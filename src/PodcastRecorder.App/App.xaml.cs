@@ -12,7 +12,7 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        _viewModel = new MainViewModel(new SettingsStore(), new FileDialogs());
+        _viewModel = new MainViewModel(new SettingsStore(), new FileDialogs(), new LiveSettingsDialog());
         var window = new MainWindow { DataContext = _viewModel };
         window.Show();
         _viewModel.Initialize();

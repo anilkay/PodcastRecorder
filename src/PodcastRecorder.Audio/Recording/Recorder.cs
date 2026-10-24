@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Threading.Channels;
+using PodcastRecorder.Audio.Mixing;
 
 namespace PodcastRecorder.Audio.Recording;
 
@@ -14,7 +15,7 @@ public enum RecorderState
 /// Receives the program bus on the audio thread and hands it to the encoder on a background
 /// task, so slow encoding or disk writes never stall playback.
 /// </summary>
-public sealed class Recorder
+public sealed class Recorder : IProgramSink
 {
     private readonly Lock _gate = new();
     private Channel<Block>? _queue;

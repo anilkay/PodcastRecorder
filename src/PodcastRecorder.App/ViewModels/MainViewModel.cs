@@ -24,7 +24,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private ChannelStripViewModel? _microphoneStrip;
     private bool _initialized;
 
-    public MainViewModel(SettingsStore settingsStore, IFileDialogs dialogs)
+    public MainViewModel(SettingsStore settingsStore, IFileDialogs dialogs, ILiveSettingsDialog liveDialog)
     {
         _settingsStore = settingsStore;
         _settings = settingsStore.Load();
@@ -35,6 +35,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Jingles = new JinglePadViewModel(_engine.Jingles, dialogs, _ui);
         Browser = new FolderBrowserViewModel(dialogs, path => Playlist.AddFiles([path]));
         MasterMeter = new LevelMeterViewModel(_engine.Mixer.MasterMeter);
+        Live = new LiveStreamViewModel(_engine.Live, _settings.Live, liveDialog, () => _engine.IsOutputRunning, _ui);
+        Playlist.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(PlaylistViewModel.CurrentItem)) Live.SetNowPlaying(Playlist.CurrentItem?.Title);
+        };
 
         _engine.Recorder.Faulted += (_, ex) => _ui.Post(_ => StatusMessage = $"Kayıt hatası: {ex.Message}", null);
         _engine.OutputStopped += (_, ex) =>
@@ -47,6 +52,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     public PlaylistViewModel Playlist { get; }
+
+    public LiveStreamViewModel Live { get; }
 
     public JinglePadViewModel Jingles { get; }
 
@@ -228,10 +235,34 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand(CanExecute = nameof(CanStop))]
     private async Task StopRecording()
     {
-        var path = await _engine.Recorder.StopAsync();
+        StatusMessage = "Kayıt dosyası kapatılıyor…";
+        try
+        {
+            // Off the UI thread: closing can take a while (WMA converts the whole file at the end).
+            var path = await Task.Run(_engine.Recorder.StopAsync);
+            LastRecordingPath = path;
+            StatusMessage = path is null ? null : $"Kayıt kaydedildi: {path}";
+        }
+        catch (Exception ex) when (ex is IOException or InvalidOperationException or UnauthorizedAccessException)
+        {
+            StatusMessage = ex.Message;
+        }
+
         RecordingState = _engine.Recorder.State;
-        LastRecordingPath = path;
-        StatusMessage = path is null ? null : $"Kayıt kaydedildi: {path}";
+    }
+
+    /// <summary>Mutes or unmutes the microphone strip (Ctrl+M).</summary>
+    [RelayCommand]
+    private void ToggleMicrophoneMute()
+    {
+        if (_microphoneStrip is null)
+        {
+            StatusMessage = "Mikrofon seçili değil.";
+            return;
+        }
+
+        _microphoneStrip.IsMuted = !_microphoneStrip.IsMuted;
+        StatusMessage = _microphoneStrip.IsMuted ? "Mikrofon kapatıldı (Ctrl+M ile aç)." : "Mikrofon açık.";
     }
 
     [RelayCommand]
@@ -257,6 +288,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         foreach (var channel in Channels) channel.Meter.Refresh();
         MasterMeter.Refresh();
         Playlist.Refresh();
+        Live.Refresh();
         ElapsedText = _engine.Recorder.Elapsed.ToString(@"hh\:mm\:ss");
     }
 
@@ -270,7 +302,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _timer.Stop();
         if (!IsIdle)
         {
-            _engine.Recorder.StopAsync().GetAwaiter().GetResult();
+            try
+            {
+                _engine.Recorder.StopAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception ex) when (ex is IOException or InvalidOperationException or UnauthorizedAccessException)
+            {
+                // The app is closing; the encoder already kept what it could (WMA falls back to WAV).
+            }
         }
 
         SaveSettings();

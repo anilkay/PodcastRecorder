@@ -8,6 +8,22 @@
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         Title="Podcast Recorder" Height="820" Width="1280" MinHeight="640" MinWidth="1000"
         Background="{StaticResource WindowBrush}" FontSize="13">
+    <!-- Keyboard shortcuts. Jingle pad keys (1-4, Q-R, A-F, Z-V) are added in code-behind. -->
+    <Window.InputBindings>
+        <KeyBinding Gesture="Ctrl+R" Command="{Binding StartRecordingCommand}" />
+        <KeyBinding Gesture="Ctrl+P" Command="{Binding TogglePauseCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+R" Command="{Binding StopRecordingCommand}" />
+        <KeyBinding Gesture="Ctrl+M" Command="{Binding ToggleMicrophoneMuteCommand}" />
+        <KeyBinding Gesture="Ctrl+L" Command="{Binding Live.StartCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+L" Command="{Binding Live.StopCommand}" />
+        <KeyBinding Key="F5" Command="{Binding Playlist.PlayCommand}" />
+        <KeyBinding Key="F6" Command="{Binding Playlist.StopCommand}" />
+        <KeyBinding Key="F7" Command="{Binding Playlist.NextCommand}" />
+        <KeyBinding Key="Escape" Command="{Binding Jingles.StopAllCommand}" />
+    </Window.InputBindings>
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Help" Executed="Help_Executed" />
+    </Window.CommandBindings>
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -31,14 +47,16 @@
             </Border.Style>
             <DockPanel LastChildFill="False">
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Style="{StaticResource TransportButton}" Command="{Binding StartRecordingCommand}">
+                    <Button Style="{StaticResource TransportButton}" Command="{Binding StartRecordingCommand}" ToolTip="Kaydı başlat (Ctrl+R)">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="12" Height="12" Fill="{StaticResource RecordBrush}" Margin="0,0,8,0" />
                             <TextBlock Text="Kaydet" FontWeight="SemiBold" />
                         </StackPanel>
                     </Button>
-                    <Button Style="{StaticResource TransportButton}" Command="{Binding TogglePauseCommand}" Content="{Binding PauseButtonText}" />
-                    <Button Style="{StaticResource TransportButton}" Command="{Binding StopRecordingCommand}" Content="Durdur" />
+                    <Button Style="{StaticResource TransportButton}" Command="{Binding TogglePauseCommand}" Content="{Binding PauseButtonText}"
+                            ToolTip="Duraklat / devam (Ctrl+P)" />
+                    <Button Style="{StaticResource TransportButton}" Command="{Binding StopRecordingCommand}" Content="Durdur"
+                            ToolTip="Kaydı durdur ve dosyayı kaydet (Ctrl+Shift+R)" />
                     <TextBlock Text="{Binding ElapsedText}" FontFamily="Consolas" FontSize="28" FontWeight="SemiBold"
                                VerticalAlignment="Center" Margin="16,0,12,0" />
                     <TextBlock Text="{Binding StateText}" VerticalAlignment="Center" FontWeight="SemiBold"
@@ -113,9 +131,9 @@
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="Çalma listesi" Style="{StaticResource PanelTitle}" />
                     <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
-                        <Button Content="▶ Çal" Command="{Binding PlayCommand}" />
-                        <Button Content="■ Durdur" Command="{Binding StopCommand}" />
-                        <Button Content="⏭ Sonraki" Command="{Binding NextCommand}" />
+                        <Button Content="▶ Çal" Command="{Binding PlayCommand}" ToolTip="Seçili şarkıyı çal (F5)" />
+                        <Button Content="■ Durdur" Command="{Binding StopCommand}" ToolTip="Müziği durdur (F6)" />
+                        <Button Content="⏭ Sonraki" Command="{Binding NextCommand}" ToolTip="Sonraki şarkı (F7)" />
                         <Button Content="Ekle…" Command="{Binding BrowseCommand}" />
                         <Button Content="↑" Command="{Binding MoveUpCommand}" ToolTip="Yukarı taşı" />
                         <Button Content="↓" Command="{Binding MoveDownCommand}" ToolTip="Aşağı taşı" />
@@ -164,12 +182,13 @@
             <Border Grid.Column="4" Style="{StaticResource PanelBorder}" DataContext="{Binding Jingles}">
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top">
-                        <Button DockPanel.Dock="Right" Content="Tümünü durdur" Command="{Binding StopAllCommand}" Margin="0" />
+                        <Button DockPanel.Dock="Right" Content="Tümünü durdur" Command="{Binding StopAllCommand}" Margin="0"
+                                ToolTip="Çalan bütün jingle'ları durdur (Esc)" />
                         <TextBlock Text="Jingle paneli" Style="{StaticResource PanelTitle}" />
                     </DockPanel>
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
                     <TextBlock DockPanel.Dock="Bottom" Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
-                               Text="Tıkla: çal / durdur. Dosyayı hücreye sürükleyin; sağ tık ile dosya seçin veya temizleyin." />
+                               Text="Tıkla ya da köşedeki tuşa bas: çal / durdur. Dosyayı hücreye sürükleyin; sağ tık ile dosya seçin veya temizleyin." />
                     <ItemsControl ItemsSource="{Binding Cells}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -190,8 +209,13 @@
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="Cell" CornerRadius="6" BorderThickness="1"
                                                     BorderBrush="{StaticResource BorderBrush}" Background="{StaticResource PanelBrush}" Padding="6">
-                                                <TextBlock x:Name="Label" Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
-                                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                <Grid>
+                                                    <TextBlock x:Name="KeyLabel" Text="{Binding Shortcut}" FontSize="10" FontWeight="SemiBold"
+                                                               HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,-4,0,0"
+                                                               Foreground="{StaticResource MutedTextBrush}" />
+                                                    <TextBlock x:Name="Label" Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
+                                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                </Grid>
                                             </Border>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
@@ -204,6 +228,7 @@
                                                     <Setter TargetName="Cell" Property="Background" Value="{StaticResource AccentBrush}" />
                                                     <Setter TargetName="Cell" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
                                                     <Setter TargetName="Label" Property="Foreground" Value="White" />
+                                                    <Setter TargetName="KeyLabel" Property="Foreground" Value="White" />
                                                     <Setter TargetName="Label" Property="FontWeight" Value="SemiBold" />
                                                 </DataTrigger>
                                             </ControlTemplate.Triggers>
@@ -251,10 +276,46 @@
                             SmallChange="0.05" LargeChange="0.1" HorizontalAlignment="Center" Margin="0,6,0,0" />
                 </DockPanel>
             </Border>
+
+            <!-- Live stream -->
+            <Border Width="320" Margin="8,0,0,0" DataContext="{Binding Live}">
+                <Border.Style>
+                    <Style TargetType="Border" BasedOn="{StaticResource PanelBorder}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsLive}" Value="True">
+                                <Setter Property="Background" Value="{StaticResource RecordSoftBrush}" />
+                                <Setter Property="BorderBrush" Value="{StaticResource RecordBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Canlı yayın" Style="{StaticResource PanelTitle}" />
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                        <Ellipse Width="10" Height="10" Fill="{StaticResource RecordBrush}" Margin="0,0,8,0" VerticalAlignment="Center"
+                                 Visibility="{Binding IsLive, Converter={StaticResource BoolToVisibility}}" />
+                        <TextBlock Text="{Binding StateText}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,12,0" />
+                        <TextBlock Text="{Binding ElapsedText}" FontFamily="Consolas" FontSize="18" VerticalAlignment="Center"
+                                   Visibility="{Binding IsLive, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding TargetText}" Foreground="{StaticResource MutedTextBrush}"
+                               TextTrimming="CharacterEllipsis" ToolTip="{Binding TargetText}" Margin="0,4,0,8" />
+                    <WrapPanel DockPanel.Dock="Top">
+                        <Button Content="Yayına başla" Command="{Binding StartCommand}" FontWeight="SemiBold"
+                                ToolTip="Master sesini Icecast sunucusuna gönder (Ctrl+L)" />
+                        <Button Content="Yayını durdur" Command="{Binding StopCommand}" ToolTip="Ctrl+Shift+L" />
+                        <Button Content="Ayarlar…" Command="{Binding EditSettingsCommand}" Margin="0" />
+                    </WrapPanel>
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource MutedTextBrush}" />
+                </DockPanel>
+            </Border>
         </StackPanel>
 
         <!-- Status -->
-        <TextBlock Grid.Row="4" Text="{Binding StatusMessage}" Foreground="{StaticResource MutedTextBrush}"
-                   TextTrimming="CharacterEllipsis" Margin="4,10,0,0" />
+        <DockPanel Grid.Row="4" Margin="4,10,0,0">
+            <Button DockPanel.Dock="Right" Content="Kısayollar (F1)" Command="ApplicationCommands.Help" Margin="0" />
+            <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource MutedTextBrush}"
+                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+        </DockPanel>
     </Grid>
 </Window>
