@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Windows;
 using PodcastRecorder.App.Services;
 using PodcastRecorder.App.ViewModels;
@@ -13,7 +14,8 @@ public partial class App : Application
         base.OnStartup(e);
 
         _viewModel = new MainViewModel(new SettingsStore(), new FileDialogs());
-        var window = new MainWindow { DataContext = _viewModel };
+        var version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+        var window = new MainWindow { DataContext = _viewModel, Title = $"Podcast Recorder {version}" };
         window.Show();
         _viewModel.Initialize();
     }

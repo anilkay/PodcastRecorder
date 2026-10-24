@@ -34,6 +34,15 @@ Testler:
 dotnet test
 ```
 
+## Sürüm çıkarmak
+
+Sürüm numarası `Directory.Build.props` içindeki `<Version>` alanındadır. `v` ile başlayan bir tag push edildiğinde GitHub Actions testleri çalıştırır, uygulamayı .NET kurulumu gerektirmeyen (self-contained) win-x64 olarak yayınlar ve zip'i GitHub Releases'a ekler:
+
+```powershell
+git tag v0.0.1
+git push origin v0.0.1
+```
+
 ## Proje yapısı
 
 | Proje | İçerik |
