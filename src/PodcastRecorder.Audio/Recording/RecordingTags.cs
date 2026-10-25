@@ -81,7 +81,7 @@ public static class TagWriter
         catch (Exception ex) when (ex is TagLib.CorruptFileException or TagLib.UnsupportedFormatException
                                        or IOException or UnauthorizedAccessException or NotSupportedException)
         {
-            throw new IOException($"Dosya bilgileri yazılamadı ({Path.GetFileName(path)}): {ex.Message}", ex);
+            throw new IOException(Texts.Format("Tags_WriteFailed", Path.GetFileName(path), ex.Message), ex);
         }
     }
 

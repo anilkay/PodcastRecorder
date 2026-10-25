@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Ai_AddedToPlaylist" xml:space="preserve"><value>Added to the playlist: {0}</value></data>
+  <data name="Ai_AnnouncementFilePrefix" xml:space="preserve"><value>announcement</value></data>
+  <data name="Ai_AnnouncementsFolder" xml:space="preserve"><value>Announcements</value></data>
+  <data name="Ai_AssignedToPad" xml:space="preserve"><value>Assigned to a jingle pad.</value></data>
+  <data name="Ai_AssignedToPadKey" xml:space="preserve"><value>Assigned to a jingle pad (key: {0}).</value></data>
+  <data name="Ai_NoEmptyPad" xml:space="preserve"><value>This jingle tab has no empty pad. You can drag the file from the Announcements folder onto a pad.</value></data>
+  <data name="Ai_NoSpeech" xml:space="preserve"><value>No speech was found in the recording. Empty transcript: {0}</value></data>
+  <data name="Ai_Preparing" xml:space="preserve"><value>Preparing: {0}</value></data>
+  <data name="Ai_Progress" xml:space="preserve"><value>{0}… {1:0}%</value></data>
+  <data name="Ai_SpeechReady" xml:space="preserve"><value>Ready: {0}</value></data>
+  <data name="Ai_SynthesisFailed" xml:space="preserve"><value>Could not generate speech: {0}</value></data>
+  <data name="Ai_Synthesizing" xml:space="preserve"><value>Generating speech…</value></data>
+  <data name="Ai_TextTooLong" xml:space="preserve"><value>The text is too long: this service accepts at most {0} characters.</value></data>
+  <data name="Ai_TranscriptBusy" xml:space="preserve"><value>Wait for the current transcript to finish before starting another.</value></data>
+  <data name="Ai_TranscriptCanceled" xml:space="preserve"><value>Transcript canceled.</value></data>
+  <data name="Ai_TranscriptFailed" xml:space="preserve"><value>Could not create the transcript: {0}</value></data>
+  <data name="Ai_TranscriptSaved" xml:space="preserve"><value>Transcript saved: {0} (+ .srt subtitles)</value></data>
+  <data name="Browser_ReadFailed" xml:space="preserve"><value>Could not read the folder: {0}</value></data>
+  <data name="Channel_Jingle" xml:space="preserve"><value>Jingles</value></data>
+  <data name="Channel_Music" xml:space="preserve"><value>Music</value></data>
+  <data name="Default_Mount" xml:space="preserve"><value>/live</value></data>
+  <data name="Default_RecordingFolder" xml:space="preserve"><value>Podcast Recordings</value></data>
+  <data name="Dialog_AllFiles" xml:space="preserve"><value>All files</value></data>
+  <data name="Dialog_AudioFiles" xml:space="preserve"><value>Audio files</value></data>
+  <data name="Dialog_Images" xml:space="preserve"><value>Images (JPEG, PNG)</value></data>
+  <data name="Ducking_WhileMicLive" xml:space="preserve"><value>While the mic is on</value></data>
+  <data name="Ducking_WhileSpeaking" xml:space="preserve"><value>When speaking (auto)</value></data>
+  <data name="Help_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Help_Shortcuts" xml:space="preserve"><value>Recording
+  Ctrl+R          Start recording
+  Ctrl+P          Pause / resume
+  Ctrl+Shift+R    Stop recording and save
+  Ctrl+M          Microphone off / on
+
+Live stream
+  Ctrl+L          Go live
+  Ctrl+Shift+L    Stop the stream
+
+Playlist
+  F5              Play the selected song
+  F6              Stop the music
+  F7              Next song
+
+Jingle pads (open tab; keys match the pads&apos; positions,
+shown in each pad&apos;s corner)
+  1 2 3 4 5 6 7 8
+  Q W E R T Y U I
+  A S D F G H J K
+  Z X C V B N M   Play / stop a jingle
+  Esc             Stop all jingles</value></data>
+  <data name="Help_Title" xml:space="preserve"><value>Keyboard shortcuts</value></data>
+  <data name="Live_CanliYayinAyarlari" xml:space="preserve"><value>Live stream settings</value></data>
+  <data name="Live_ConnectionLostReconnecting" xml:space="preserve"><value>Connection lost, reconnecting…</value></data>
+  <data name="Live_DinleyicilerinGorduguAdIstegeBagli" xml:space="preserve"><value>The name listeners see (optional)</value></data>
+  <data name="Live_IcecastTeGeneldeSource" xml:space="preserve"><value>Usually &quot;source&quot; on Icecast</value></data>
+  <data name="Live_Kalite" xml:space="preserve"><value>Quality:</value></data>
+  <data name="Live_KaydaGidenSesMasterBir" xml:space="preserve"><value>The recorded sound (Master) is sent to an Icecast server as MP3. Get these details from your streaming server.</value></data>
+  <data name="Live_Kaydet" xml:space="preserve"><value>Save</value></data>
+  <data name="Live_Kullanici" xml:space="preserve"><value>User:</value></data>
+  <data name="Live_Mount" xml:space="preserve"><value>Mount:</value></data>
+  <data name="Live_NeedOutput" xml:space="preserve"><value>Choose a listening output first; that device&apos;s clock drives the audio.</value></data>
+  <data name="Live_NoServer" xml:space="preserve"><value>No server set up</value></data>
+  <data name="Live_OrCanli" xml:space="preserve"><value>e.g. /live</value></data>
+  <data name="Live_OrYayinExampleComHttp" xml:space="preserve"><value>e.g. stream.example.com (without http://)</value></data>
+  <data name="Live_PasswordUnreadable" xml:space="preserve"><value>The saved password could not be read; enter it again in the settings.</value></data>
+  <data name="Live_Port" xml:space="preserve"><value>Port:</value></data>
+  <data name="Live_Reconnected" xml:space="preserve"><value>Reconnected; the stream continues.</value></data>
+  <data name="Live_Sifre" xml:space="preserve"><value>Password:</value></data>
+  <data name="Live_SlowConnection" xml:space="preserve"><value>Slow connection: some of the audio did not reach listeners.</value></data>
+  <data name="Live_Started" xml:space="preserve"><value>Stream started: {0}</value></data>
+  <data name="Live_StateConnecting" xml:space="preserve"><value>Connecting…</value></data>
+  <data name="Live_StateLive" xml:space="preserve"><value>ON AIR</value></data>
+  <data name="Live_StateOff" xml:space="preserve"><value>Off</value></data>
+  <data name="Live_StateReconnecting" xml:space="preserve"><value>Reconnecting…</value></data>
+  <data name="Live_Stopped" xml:space="preserve"><value>Stream stopped.</value></data>
+  <data name="Live_Sunucu" xml:space="preserve"><value>Server:</value></data>
+  <data name="Live_WindowsKullanicinizaSifrelenmisOlara" xml:space="preserve"><value>Stored encrypted for your Windows user</value></data>
+  <data name="Live_YayinAdi" xml:space="preserve"><value>Stream name:</value></data>
+  <data name="LiveSettings_PortNumber" xml:space="preserve"><value>Port must be a number.</value></data>
+  <data name="Main_16LufsENormalizeEt" xml:space="preserve"><value>Normalize to -16 LUFS: when the recording ends its loudness is measured and the file is brought to the podcast standard of -16 LUFS. A temporary WAV file is kept while recording.</value></data>
+  <data name="Main_Ad" xml:space="preserve"><value>Name:</value></data>
+  <data name="Main_Adres" xml:space="preserve"><value>Address:</value></data>
+  <data name="Main_Anahtar" xml:space="preserve"><value>Key:</value></data>
+  <data name="Main_Anlik" xml:space="preserve"><value>Momentary:</value></data>
+  <data name="Main_ApiAnahtari" xml:space="preserve"><value>API key:</value></data>
+  <data name="Main_ApiAnahtarlariAyarDosyasindaWindows" xml:space="preserve"><value>API keys are encrypted in the settings file for your Windows user. The pricing and privacy terms of each cloud service apply to the audio and text sent to it.</value></data>
+  <data name="Main_AraclarAsagidaKlasorGezginiVe" xml:space="preserve"><value>The tools are open below, in place of the folder browser and the lists. Click the header again to close them.</value></data>
+  <data name="Main_AsagiTasi" xml:space="preserve"><value>Move down</value></data>
+  <data name="Main_Ayarlar" xml:space="preserve"><value>Settings</value></data>
+  <data name="Main_Ayarlar2" xml:space="preserve"><value>Settings…</value></data>
+  <data name="Main_AyriIzler" xml:space="preserve"><value>Separate tracks</value></data>
+  <data name="Main_BitinceSonrakineGec" xml:space="preserve"><value>Play next when done</value></data>
+  <data name="Main_Bolge" xml:space="preserve"><value>Region:</value></data>
+  <data name="Main_BosJingleHucresineAta" xml:space="preserve"><value>Assign to an empty pad</value></data>
+  <data name="Main_Cal" xml:space="preserve"><value>Play</value></data>
+  <data name="Main_CalanButunJingleLariDurdur" xml:space="preserve"><value>Stop every playing jingle (Esc)</value></data>
+  <data name="Main_CalmaListesi" xml:space="preserve"><value>Playlist</value></data>
+  <data name="Main_CalmaListesineEkle" xml:space="preserve"><value>Add to playlist</value></data>
+  <data name="Main_CanliYayin" xml:space="preserve"><value>Live stream</value></data>
+  <data name="Main_CannotRemoveMic" xml:space="preserve"><value>A microphone cannot be removed while recording.</value></data>
+  <data name="Main_CiftTikKlasoreGirYa" xml:space="preserve"><value>Double-click: open a folder or add to the list. Drag files onto the list or a jingle pad.</value></data>
+  <data name="Main_Closing" xml:space="preserve"><value>Closing the recording file…</value></data>
+  <data name="Main_Crossfade" xml:space="preserve"><value>Crossfade:</value></data>
+  <data name="Main_Dil" xml:space="preserve"><value>Language:</value></data>
+  <data name="Main_DinlemeCikisiKulaklik" xml:space="preserve"><value>Headphone output:</value></data>
+  <data name="Main_DosyaBilgileri" xml:space="preserve"><value>File info…</value></data>
+  <data name="Main_DosyaKayitKlasorundekiAnonslarKlasor" xml:space="preserve"><value>The file is written to the Announcements folder in the recording folder.</value></data>
+  <data name="Main_DosyaSec" xml:space="preserve"><value>Choose file…</value></data>
+  <data name="Main_DosyaSecVeCevir" xml:space="preserve"><value>Transcribe file…</value></data>
+  <data name="Main_Ducking" xml:space="preserve"><value>Ducking</value></data>
+  <data name="Main_DuraklatDevamCtrlP" xml:space="preserve"><value>Pause / resume (Ctrl+P)</value></data>
+  <data name="Main_Durdur" xml:space="preserve"><value>Stop</value></data>
+  <data name="Main_Ekle" xml:space="preserve"><value>Add</value></data>
+  <data name="Main_Ekle2" xml:space="preserve"><value>Add…</value></data>
+  <data name="Main_Esik" xml:space="preserve"><value>Threshold:</value></data>
+  <data name="Main_Format" xml:space="preserve"><value>Format:</value></data>
+  <data name="Main_FoundryPortalindaWhisperYaDa" xml:space="preserve"><value>Deploy whisper or gpt-4o-transcribe and tts or gpt-4o-mini-tts in the Foundry portal; enter the deployment names here.</value></data>
+  <data name="Main_GorunumAcikKoyuYaDa" xml:space="preserve"><value>Appearance: light, dark or follow Windows</value></data>
+  <data name="Main_InternetsizVeUcretsizdirTurkceSes" xml:space="preserve"><value>Free and offline. For more languages add speech packs in Windows Settings › Time &amp; language › Speech; the voice list is read when the app starts.</value></data>
+  <data name="Main_Iptal" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Main_JinglePaneli" xml:space="preserve"><value>Jingle pads ⓘ</value></data>
+  <data name="Main_Kaldir" xml:space="preserve"><value>Remove</value></data>
+  <data name="Main_KapaliykenMikrofonKaydaGirmezAcikken" xml:space="preserve"><value>When off, the microphone is not recorded. When on (with ducking enabled) the music is lowered. (Ctrl+M)</value></data>
+  <data name="Main_KarisimaEkOlarakHerKanali" xml:space="preserve"><value>Besides the mix, also records each channel (every microphone, music, jingles) to its own file. WAV or FLAC is recommended for editing.</value></data>
+  <data name="Main_KaydaGidenToplamSes" xml:space="preserve"><value>The total sound going to the recording</value></data>
+  <data name="Main_KaydaYazilacakBaslikSunucuProgram" xml:space="preserve"><value>Title, host, show, episode number, genre and cover written into the recording</value></data>
+  <data name="Main_KaydiBaslatCtrlR" xml:space="preserve"><value>Start recording (Ctrl+R)</value></data>
+  <data name="Main_KaydiDurdurVeDosyayiKaydet" xml:space="preserve"><value>Stop recording and save the file (Ctrl+Shift+R)</value></data>
+  <data name="Main_Kayit" xml:space="preserve"><value>Recording:</value></data>
+  <data name="Main_Kayit1DbYiGecmesin" xml:space="preserve"><value>Instantly lowers peaks so the recording never goes above -1 dB. Orange: limiting now.</value></data>
+  <data name="Main_KayitBitinceOtomatikCikar" xml:space="preserve"><value>Transcribe when recording ends</value></data>
+  <data name="Main_KayitDosyasininYaninaAyniAdla" xml:space="preserve"><value>A .txt (timestamped text) and an .srt (subtitles) with the same name are written next to the recording.</value></data>
+  <data name="Main_KayitKlasoru" xml:space="preserve"><value>Recording folder:</value></data>
+  <data name="Main_KayitKlasorunuDegistir" xml:space="preserve"><value>Change the recording folder</value></data>
+  <data name="Main_KirpilmaClip" xml:space="preserve"><value>Clipping</value></data>
+  <data name="Main_KisayollarF1" xml:space="preserve"><value>Shortcuts (F1)</value></data>
+  <data name="Main_KlasorGezgini" xml:space="preserve"><value>Folder browser</value></data>
+  <data name="Main_KlasorSec" xml:space="preserve"><value>Choose folder…</value></data>
+  <data name="Main_KlasoruAc" xml:space="preserve"><value>Open folder</value></data>
+  <data name="Main_KonusmaAlgilandi" xml:space="preserve"><value>Speech detected</value></data>
+  <data name="Main_KonusmayiYaziyaCevirTranskript" xml:space="preserve"><value>Speech to text (transcript)</value></data>
+  <data name="Main_Kulaklik" xml:space="preserve"><value>Headphones</value></data>
+  <data name="Main_KulakliktaDuyulanSesinSeviyesiMikrof" xml:space="preserve"><value>Level of what you hear in the headphones. Microphones are not sent to the headphones by default (to avoid a delayed echo), but they are always recorded.</value></data>
+  <data name="Main_LanguageTip" xml:space="preserve"><value>Interface language; System follows the Windows display language</value></data>
+  <data name="Main_Limiter" xml:space="preserve"><value>Limiter</value></data>
+  <data name="Main_ListedenSecinYaDaServisteki" xml:space="preserve"><value>Pick from the list or type the name of a voice of the service.</value></data>
+  <data name="Main_MasterKayit" xml:space="preserve"><value>Master (recording)</value></data>
+  <data name="Main_MasterSesiniIcecastSunucusunaGonder" xml:space="preserve"><value>Send the master audio to an Icecast server (Ctrl+L)</value></data>
+  <data name="Main_MetindenSesAnonsJingle" xml:space="preserve"><value>Text to speech (announcements, jingles)</value></data>
+  <data name="Main_MicName" xml:space="preserve"><value>Mic {0}</value></data>
+  <data name="Main_MicOff" xml:space="preserve"><value>Mic OFF</value></data>
+  <data name="Main_MicOn" xml:space="preserve"><value>Mic ON</value></data>
+  <data name="Main_MicOpenFailed" xml:space="preserve"><value>Could not open the microphone ({0}): {1}</value></data>
+  <data name="Main_MicStopped" xml:space="preserve"><value>Microphone stopped ({0}): {1}</value></data>
+  <data name="Main_MikrofonAcikkenMuziginSeviyesi" xml:space="preserve"><value>Music level while the mic is on</value></data>
+  <data name="Main_MikrofonAcikkenYaDaKonusunca" xml:space="preserve"><value>Lower the music while the mic is on (or while speaking)</value></data>
+  <data name="Main_MikrofonBuSeviyeyiGecinceKonusma" xml:space="preserve"><value>Speech is detected when the microphone goes above this level. Raise the threshold if room noise lowers the music.</value></data>
+  <data name="Main_MikrofonEkle" xml:space="preserve"><value>Add microphone:</value></data>
+  <data name="Main_Model" xml:space="preserve"><value>Model:</value></data>
+  <data name="Main_MuzigiDurdurF6" xml:space="preserve"><value>Stop the music (F6)</value></data>
+  <data name="Main_NeedOutputToRecord" xml:space="preserve"><value>Choose an output device before recording.</value></data>
+  <data name="Main_NormalizeEt" xml:space="preserve"><value>Normalize</value></data>
+  <data name="Main_NormalizeFailed" xml:space="preserve"><value>Could not normalize; the raw recording is kept: {0} ({1})</value></data>
+  <data name="Main_Normalizing" xml:space="preserve"><value>Normalizing… {0:0}%</value></data>
+  <data name="Main_OpenaiUyumluBaskaBirServis" xml:space="preserve"><value>Enter the address if you use another OpenAI-compatible service.</value></data>
+  <data name="Main_OrHttpsKaynakAdiOpenai" xml:space="preserve"><value>e.g. https://resource-name.openai.azure.com or https://resource-name.services.ai.azure.com</value></data>
+  <data name="Main_OrWesteuropeSwedencentral" xml:space="preserve"><value>e.g. westeurope, swedencentral</value></data>
+  <data name="Main_OutputOpenFailed" xml:space="preserve"><value>Could not open the output device: {0}</value></data>
+  <data name="Main_OutputStopped" xml:space="preserve"><value>Audio output stopped: {0}</value></data>
+  <data name="Main_Pause" xml:space="preserve"><value>Pause</value></data>
+  <data name="Main_Record" xml:space="preserve"><value>Record</value></data>
+  <data name="Main_RecordingButton" xml:space="preserve"><value>Recording</value></data>
+  <data name="Main_RecordingError" xml:space="preserve"><value>Recording error: {0}</value></data>
+  <data name="Main_RecordingStems" xml:space="preserve"><value> (+{0} separate tracks)</value></data>
+  <data name="Main_RecordingTo" xml:space="preserve"><value>Recording: {0}</value></data>
+  <data name="Main_Resume" xml:space="preserve"><value>Resume</value></data>
+  <data name="Main_SarkilarArasindaBindirmeSuresi0" xml:space="preserve"><value>Overlap between songs. 0 switches instantly.</value></data>
+  <data name="Main_Satir" xml:space="preserve"><value>Rows:</value></data>
+  <data name="Main_Saved" xml:space="preserve"><value>Recording saved: {0}</value></data>
+  <data name="Main_SavedNormalized" xml:space="preserve"><value>Recording saved: {0} ({1} → {2} LUFS, {3:+0.0;-0.0} dB)</value></data>
+  <data name="Main_SeciliSarkiyiCalF5" xml:space="preserve"><value>Play the selected song (F5)</value></data>
+  <data name="Main_SeciliServisinAnahtarVeModel" xml:space="preserve"><value>Open the key and model settings of the selected service</value></data>
+  <data name="Main_SecondsFormat" xml:space="preserve"><value>{0:0.0} s</value></data>
+  <data name="Main_Sekme" xml:space="preserve"><value>Tab</value></data>
+  <data name="Main_SekmeyiSil" xml:space="preserve"><value>Delete the tab</value></data>
+  <data name="Main_Servis" xml:space="preserve"><value>Service:</value></data>
+  <data name="Main_ServisAyarlariApiAnahtarlariModeller" xml:space="preserve"><value>Service settings (API keys, models)</value></data>
+  <data name="Main_Ses" xml:space="preserve"><value>Voice:</value></data>
+  <data name="Main_SesiOlustur" xml:space="preserve"><value>Generate speech</value></data>
+  <data name="Main_SeslendirilecekMetinOrSimdiKisa" xml:space="preserve"><value>Text to speak, e.g. &quot;We&apos;ll be right back after a short break.&quot;</value></data>
+  <data name="Main_SeslendirmeDagitimi" xml:space="preserve"><value>Speech deployment:</value></data>
+  <data name="Main_SeslendirmeModeli" xml:space="preserve"><value>Speech model:</value></data>
+  <data name="Main_SesYuksekligiEbuR128Anlik" xml:space="preserve"><value>Loudness (EBU R128). Momentary: the last 0.4 s. Recording: the whole recording. A common podcast target is -16 LUFS.</value></data>
+  <data name="Main_Sil" xml:space="preserve"><value>Delete</value></data>
+  <data name="Main_Sonraki" xml:space="preserve"><value>Next</value></data>
+  <data name="Main_SonrakiSarkiF7" xml:space="preserve"><value>Next song (F7)</value></data>
+  <data name="Main_SpeechKaynagininKeysAndEndpoint" xml:space="preserve"><value>The key and region from the &quot;Keys and Endpoint&quot; page of the Speech resource. Turkish voices such as tr-TR-EmelNeural and tr-TR-AhmetNeural are included.</value></data>
+  <data name="Main_StartFailed" xml:space="preserve"><value>Could not start recording: {0}</value></data>
+  <data name="Main_StatePaused" xml:space="preserve"><value>PAUSED</value></data>
+  <data name="Main_StateReady" xml:space="preserve"><value>Ready</value></data>
+  <data name="Main_StateRecording" xml:space="preserve"><value>RECORDING</value></data>
+  <data name="Main_StemsFolderSuffix" xml:space="preserve"><value>tracks</value></data>
+  <data name="Main_Sutun" xml:space="preserve"><value>Columns:</value></data>
+  <data name="Main_Tema" xml:space="preserve"><value>Theme:</value></data>
+  <data name="Main_Temizle" xml:space="preserve"><value>Clear</value></data>
+  <data name="Main_TiklaYaDaKosedekiTusa" xml:space="preserve"><value>Click or press the key in the corner: play / stop. Drag a file onto a pad; right-click to choose or clear a file.</value></data>
+  <data name="Main_TranskriptCikariliyor" xml:space="preserve"><value>  · transcribing…</value></data>
+  <data name="Main_TranskriptiAc" xml:space="preserve"><value>Open transcript</value></data>
+  <data name="Main_TrEnDeBosBirakilirsa" xml:space="preserve"><value>tr, en, de… Leave empty to detect the language automatically.</value></data>
+  <data name="Main_TumunuDurdur" xml:space="preserve"><value>Stop all</value></data>
+  <data name="Main_UcNokta" xml:space="preserve"><value>Endpoint:</value></data>
+  <data name="Main_UcretsizVeInternetsizCalisirAma" xml:space="preserve"><value>Free and works offline, but slower on the CPU than the cloud services. The model is downloaded on first use:</value></data>
+  <data name="Main_UstKlasor" xml:space="preserve"><value>Up</value></data>
+  <data name="Main_WhisperBuBilgisayarda" xml:space="preserve"><value>Whisper (on this computer)</value></data>
+  <data name="Main_WindowsSesleri" xml:space="preserve"><value>Windows voices</value></data>
+  <data name="Main_YapayZekaYaziyaCevirmeVe" xml:space="preserve"><value>AI: transcription and speech (Whisper, OpenAI, Foundry)</value></data>
+  <data name="Main_YayinaBasla" xml:space="preserve"><value>Go live</value></data>
+  <data name="Main_YayiniDurdur" xml:space="preserve"><value>Stop stream</value></data>
+  <data name="Main_YaziyaCevirmeDagitimi" xml:space="preserve"><value>Transcription deployment:</value></data>
+  <data name="Main_YaziyaCevirmeModeli" xml:space="preserve"><value>Transcription model:</value></data>
+  <data name="Main_YeniJingleSekmesi" xml:space="preserve"><value>New jingle tab</value></data>
+  <data name="Main_YukariTasi" xml:space="preserve"><value>Move up</value></data>
+  <data name="Main_ZamanDamgaliAltyaziYalnizcaWhisper" xml:space="preserve"><value>Timestamped subtitles only come from whisper-1; the gpt-4o models are more accurate but return each 10 minutes as one piece.</value></data>
+  <data name="Pad_DefaultTab" xml:space="preserve"><value>General</value></data>
+  <data name="Pad_Empty" xml:space="preserve"><value>Empty</value></data>
+  <data name="Pad_PlayFailed" xml:space="preserve"><value>Could not play the jingle: {0} ({1})</value></data>
+  <data name="Pad_TabName" xml:space="preserve"><value>Tab {0}</value></data>
+  <data name="Playlist_PlayFailed" xml:space="preserve"><value>Could not play: {0} ({1})</value></data>
+  <data name="Provider_AzureOpenAi" xml:space="preserve"><value>Azure OpenAI / Foundry</value></data>
+  <data name="Provider_AzureSpeech" xml:space="preserve"><value>Azure AI Speech (Foundry)</value></data>
+  <data name="Provider_LocalWhisper" xml:space="preserve"><value>Whisper (on this computer)</value></data>
+  <data name="Provider_OpenAi" xml:space="preserve"><value>OpenAI</value></data>
+  <data name="Provider_Windows" xml:space="preserve"><value>Windows voices (on this computer)</value></data>
+  <data name="Strip_KanaliSustur" xml:space="preserve"><value>Mute the channel</value></data>
+  <data name="Strip_KulakliktaDuyKapaliykenDeKayda" xml:space="preserve"><value>Hear in the headphones. It is recorded either way; when off it is only not heard in the headphones.</value></data>
+  <data name="Strip_MikrofonuKaldir" xml:space="preserve"><value>Remove the microphone</value></data>
+  <data name="Strip_SesSeviyesi" xml:space="preserve"><value>Volume</value></data>
+  <data name="Strip_Sessiz" xml:space="preserve"><value>Mute</value></data>
+  <data name="Tags_Aciklama" xml:space="preserve"><value>Description:</value></data>
+  <data name="Tags_Baslik" xml:space="preserve"><value>Title:</value></data>
+  <data name="Tags_BirSesDosyasiSecinBu" xml:space="preserve"><value>Choose an audio file to write this information into.</value></data>
+  <data name="Tags_BolumNo" xml:space="preserve"><value>Episode:</value></data>
+  <data name="Tags_BosBirakilirsaDosyaAdiKullanilir" xml:space="preserve"><value>If empty, the file name is used.</value></data>
+  <data name="Tags_BuBilgileriBuOturumdakiSon" xml:space="preserve"><value>Writes this information into the last recording of this session again; that recording keeps its episode number.</value></data>
+  <data name="Tags_DosyaBilgileri" xml:space="preserve"><value>File info</value></data>
+  <data name="Tags_DosyayaYaz" xml:space="preserve"><value>Write to file…</value></data>
+  <data name="Tags_JpegYaDaPngKare" xml:space="preserve"><value>JPEG or PNG; a square picture (e.g. 1400×1400) is recommended.</value></data>
+  <data name="Tags_KapakResmi" xml:space="preserve"><value>Cover image</value></data>
+  <data name="Tags_KapakYok" xml:space="preserve"><value>No cover</value></data>
+  <data name="Tags_Kapat" xml:space="preserve"><value>Close</value></data>
+  <data name="Tags_KayitBitinceBuBilgilerDosyaya" xml:space="preserve"><value>When a recording ends this information is written into the file (and the separate tracks); music players and Windows Explorer show it. The episode number goes up by one after each recording.</value></data>
+  <data name="Tags_NoRecordingYet" xml:space="preserve"><value>Nothing has been recorded in this session yet.</value></data>
+  <data name="Tags_ProgramAlbum" xml:space="preserve"><value>Show / Album:</value></data>
+  <data name="Tags_Sec" xml:space="preserve"><value>Choose…</value></data>
+  <data name="Tags_SonKaydaYaz" xml:space="preserve"><value>Write to last recording</value></data>
+  <data name="Tags_SonrakiKaydinBolumNumarasiHer" xml:space="preserve"><value>The episode number of the next recording; it goes up by one after each recording. Leave empty to leave it out.</value></data>
+  <data name="Tags_SunucuSanatci" xml:space="preserve"><value>Host / Artist:</value></data>
+  <data name="Tags_Tur" xml:space="preserve"><value>Genre:</value></data>
+  <data name="Tags_Written" xml:space="preserve"><value>File info written.</value></data>
+  <data name="Tags_WrittenEpisode" xml:space="preserve"><value>File info written (episode {0}).</value></data>
+  <data name="Tags_WrittenTo" xml:space="preserve"><value>File info written: {0}</value></data>
+  <data name="Tags_Yil" xml:space="preserve"><value>Year:</value></data>
+  <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
+  <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>
+  <data name="Theme_System" xml:space="preserve"><value>System</value></data>
+</root>

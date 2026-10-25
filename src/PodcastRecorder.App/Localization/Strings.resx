@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Ai_AddedToPlaylist" xml:space="preserve"><value>Çalma listesine eklendi: {0}</value></data>
+  <data name="Ai_AnnouncementFilePrefix" xml:space="preserve"><value>anons</value></data>
+  <data name="Ai_AnnouncementsFolder" xml:space="preserve"><value>Anonslar</value></data>
+  <data name="Ai_AssignedToPad" xml:space="preserve"><value>Jingle hücresine atandı.</value></data>
+  <data name="Ai_AssignedToPadKey" xml:space="preserve"><value>Jingle hücresine atandı (tuş: {0}).</value></data>
+  <data name="Ai_NoEmptyPad" xml:space="preserve"><value>Bu jingle sekmesinde boş hücre yok. Dosyayı Anonslar klasöründen bir hücreye sürükleyebilirsiniz.</value></data>
+  <data name="Ai_NoSpeech" xml:space="preserve"><value>Kayıtta konuşma bulunamadı. Boş transkript: {0}</value></data>
+  <data name="Ai_Preparing" xml:space="preserve"><value>Hazırlanıyor: {0}</value></data>
+  <data name="Ai_Progress" xml:space="preserve"><value>{0}… %{1:0}</value></data>
+  <data name="Ai_SpeechReady" xml:space="preserve"><value>Hazır: {0}</value></data>
+  <data name="Ai_SynthesisFailed" xml:space="preserve"><value>Ses oluşturulamadı: {0}</value></data>
+  <data name="Ai_Synthesizing" xml:space="preserve"><value>Ses oluşturuluyor…</value></data>
+  <data name="Ai_TextTooLong" xml:space="preserve"><value>Metin çok uzun: bu servis en fazla {0} karakter kabul ediyor.</value></data>
+  <data name="Ai_TranscriptBusy" xml:space="preserve"><value>Önceki transkript bitmeden yenisi başlatılamaz.</value></data>
+  <data name="Ai_TranscriptCanceled" xml:space="preserve"><value>Transkript iptal edildi.</value></data>
+  <data name="Ai_TranscriptFailed" xml:space="preserve"><value>Transkript çıkarılamadı: {0}</value></data>
+  <data name="Ai_TranscriptSaved" xml:space="preserve"><value>Transkript kaydedildi: {0} (+ .srt altyazı)</value></data>
+  <data name="Browser_ReadFailed" xml:space="preserve"><value>Klasör okunamadı: {0}</value></data>
+  <data name="Channel_Jingle" xml:space="preserve"><value>Jingle</value></data>
+  <data name="Channel_Music" xml:space="preserve"><value>Müzik</value></data>
+  <data name="Default_Mount" xml:space="preserve"><value>/canli</value></data>
+  <data name="Default_RecordingFolder" xml:space="preserve"><value>Podcast Kayıtları</value></data>
+  <data name="Dialog_AllFiles" xml:space="preserve"><value>Tüm dosyalar</value></data>
+  <data name="Dialog_AudioFiles" xml:space="preserve"><value>Ses dosyaları</value></data>
+  <data name="Dialog_Images" xml:space="preserve"><value>Resimler (JPEG, PNG)</value></data>
+  <data name="Ducking_WhileMicLive" xml:space="preserve"><value>Mikrofon açıkken</value></data>
+  <data name="Ducking_WhileSpeaking" xml:space="preserve"><value>Konuşunca (otomatik)</value></data>
+  <data name="Help_Ok" xml:space="preserve"><value>Tamam</value></data>
+  <data name="Help_Shortcuts" xml:space="preserve"><value>Kayıt
+  Ctrl+R          Kaydı başlat
+  Ctrl+P          Duraklat / devam
+  Ctrl+Shift+R    Kaydı durdur ve kaydet
+  Ctrl+M          Mikrofonu kapat / aç
+
+Canlı yayın
+  Ctrl+L          Yayına başla
+  Ctrl+Shift+L    Yayını durdur
+
+Çalma listesi
+  F5              Seçili şarkıyı çal
+  F6              Müziği durdur
+  F7              Sonraki şarkı
+
+Jingle paneli (açık sekme; tuşlar paneldeki yerleriyle aynı,
+her hücrenin köşesinde yazar)
+  1 2 3 4 5 6 7 8
+  Q W E R T Y U I
+  A S D F G H J K
+  Z X C V B N M   Jingle çal / durdur
+  Esc             Bütün jingle&apos;ları durdur</value></data>
+  <data name="Help_Title" xml:space="preserve"><value>Klavye kısayolları</value></data>
+  <data name="Live_CanliYayinAyarlari" xml:space="preserve"><value>Canlı yayın ayarları</value></data>
+  <data name="Live_ConnectionLostReconnecting" xml:space="preserve"><value>Bağlantı koptu, yeniden bağlanılıyor…</value></data>
+  <data name="Live_DinleyicilerinGorduguAdIstegeBagli" xml:space="preserve"><value>Dinleyicilerin gördüğü ad (isteğe bağlı)</value></data>
+  <data name="Live_IcecastTeGeneldeSource" xml:space="preserve"><value>Icecast&apos;te genelde &quot;source&quot;</value></data>
+  <data name="Live_Kalite" xml:space="preserve"><value>Kalite:</value></data>
+  <data name="Live_KaydaGidenSesMasterBir" xml:space="preserve"><value>Kayda giden ses (Master) bir Icecast sunucusuna MP3 olarak gönderilir. Bilgileri yayın sunucunuzdan alın.</value></data>
+  <data name="Live_Kaydet" xml:space="preserve"><value>Kaydet</value></data>
+  <data name="Live_Kullanici" xml:space="preserve"><value>Kullanıcı:</value></data>
+  <data name="Live_Mount" xml:space="preserve"><value>Mount:</value></data>
+  <data name="Live_NeedOutput" xml:space="preserve"><value>Yayın için önce bir dinleme çıkışı seçin; sesi o cihazın saati yürütür.</value></data>
+  <data name="Live_NoServer" xml:space="preserve"><value>Sunucu ayarlanmadı</value></data>
+  <data name="Live_OrCanli" xml:space="preserve"><value>ör. /canli</value></data>
+  <data name="Live_OrYayinExampleComHttp" xml:space="preserve"><value>ör. yayin.example.com (http:// olmadan)</value></data>
+  <data name="Live_PasswordUnreadable" xml:space="preserve"><value>Kayıtlı şifre okunamadı; ayarlardan şifreyi yeniden girin.</value></data>
+  <data name="Live_Port" xml:space="preserve"><value>Port:</value></data>
+  <data name="Live_Reconnected" xml:space="preserve"><value>Bağlantı yeniden kuruldu, yayın sürüyor.</value></data>
+  <data name="Live_Sifre" xml:space="preserve"><value>Şifre:</value></data>
+  <data name="Live_SlowConnection" xml:space="preserve"><value>Bağlantı yavaş: sesin bir kısmı dinleyicilere ulaşmadı.</value></data>
+  <data name="Live_Started" xml:space="preserve"><value>Yayın başladı: {0}</value></data>
+  <data name="Live_StateConnecting" xml:space="preserve"><value>Bağlanıyor…</value></data>
+  <data name="Live_StateLive" xml:space="preserve"><value>YAYINDA</value></data>
+  <data name="Live_StateOff" xml:space="preserve"><value>Kapalı</value></data>
+  <data name="Live_StateReconnecting" xml:space="preserve"><value>Yeniden bağlanıyor…</value></data>
+  <data name="Live_Stopped" xml:space="preserve"><value>Yayın kapatıldı.</value></data>
+  <data name="Live_Sunucu" xml:space="preserve"><value>Sunucu:</value></data>
+  <data name="Live_WindowsKullanicinizaSifrelenmisOlara" xml:space="preserve"><value>Windows kullanıcınıza şifrelenmiş olarak saklanır</value></data>
+  <data name="Live_YayinAdi" xml:space="preserve"><value>Yayın adı:</value></data>
+  <data name="LiveSettings_PortNumber" xml:space="preserve"><value>Port bir sayı olmalı.</value></data>
+  <data name="Main_16LufsENormalizeEt" xml:space="preserve"><value>-16 LUFS&apos;e normalize et: kayıt bitince ses yüksekliği ölçülür ve dosya podcast standardı -16 LUFS&apos;e getirilir. Kayıt sırasında geçici bir WAV dosyası tutulur.</value></data>
+  <data name="Main_Ad" xml:space="preserve"><value>Ad:</value></data>
+  <data name="Main_Adres" xml:space="preserve"><value>Adres:</value></data>
+  <data name="Main_Anahtar" xml:space="preserve"><value>Anahtar:</value></data>
+  <data name="Main_Anlik" xml:space="preserve"><value>Anlık:</value></data>
+  <data name="Main_ApiAnahtari" xml:space="preserve"><value>API anahtarı:</value></data>
+  <data name="Main_ApiAnahtarlariAyarDosyasindaWindows" xml:space="preserve"><value>API anahtarları ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Bulut servislerine gönderilen ses ve metin için ilgili servisin ücret ve gizlilik koşulları geçerlidir.</value></data>
+  <data name="Main_AraclarAsagidaKlasorGezginiVe" xml:space="preserve"><value>Araçlar aşağıda, klasör gezgini ve listelerin yerinde açık. Kapatmak için başlığa yeniden tıklayın.</value></data>
+  <data name="Main_AsagiTasi" xml:space="preserve"><value>Aşağı taşı</value></data>
+  <data name="Main_Ayarlar" xml:space="preserve"><value>Ayarlar</value></data>
+  <data name="Main_Ayarlar2" xml:space="preserve"><value>Ayarlar…</value></data>
+  <data name="Main_AyriIzler" xml:space="preserve"><value>Ayrı izler</value></data>
+  <data name="Main_BitinceSonrakineGec" xml:space="preserve"><value>Bitince sonrakine geç</value></data>
+  <data name="Main_Bolge" xml:space="preserve"><value>Bölge:</value></data>
+  <data name="Main_BosJingleHucresineAta" xml:space="preserve"><value>Boş jingle hücresine ata</value></data>
+  <data name="Main_Cal" xml:space="preserve"><value>Çal</value></data>
+  <data name="Main_CalanButunJingleLariDurdur" xml:space="preserve"><value>Çalan bütün jingle&apos;ları durdur (Esc)</value></data>
+  <data name="Main_CalmaListesi" xml:space="preserve"><value>Çalma listesi</value></data>
+  <data name="Main_CalmaListesineEkle" xml:space="preserve"><value>Çalma listesine ekle</value></data>
+  <data name="Main_CanliYayin" xml:space="preserve"><value>Canlı yayın</value></data>
+  <data name="Main_CannotRemoveMic" xml:space="preserve"><value>Kayıt sürerken mikrofon kaldırılamaz.</value></data>
+  <data name="Main_CiftTikKlasoreGirYa" xml:space="preserve"><value>Çift tık: klasöre gir ya da listeye ekle. Dosyaları listeye veya jingle hücresine sürükleyin.</value></data>
+  <data name="Main_Closing" xml:space="preserve"><value>Kayıt dosyası kapatılıyor…</value></data>
+  <data name="Main_Crossfade" xml:space="preserve"><value>Crossfade:</value></data>
+  <data name="Main_Dil" xml:space="preserve"><value>Dil:</value></data>
+  <data name="Main_DinlemeCikisiKulaklik" xml:space="preserve"><value>Dinleme çıkışı (kulaklık):</value></data>
+  <data name="Main_DosyaBilgileri" xml:space="preserve"><value>Dosya bilgileri…</value></data>
+  <data name="Main_DosyaKayitKlasorundekiAnonslarKlasor" xml:space="preserve"><value>Dosya, kayıt klasöründeki Anonslar klasörüne yazılır.</value></data>
+  <data name="Main_DosyaSec" xml:space="preserve"><value>Dosya seç…</value></data>
+  <data name="Main_DosyaSecVeCevir" xml:space="preserve"><value>Dosya seç ve çevir…</value></data>
+  <data name="Main_Ducking" xml:space="preserve"><value>Ducking</value></data>
+  <data name="Main_DuraklatDevamCtrlP" xml:space="preserve"><value>Duraklat / devam (Ctrl+P)</value></data>
+  <data name="Main_Durdur" xml:space="preserve"><value>Durdur</value></data>
+  <data name="Main_Ekle" xml:space="preserve"><value>Ekle</value></data>
+  <data name="Main_Ekle2" xml:space="preserve"><value>Ekle…</value></data>
+  <data name="Main_Esik" xml:space="preserve"><value>Eşik:</value></data>
+  <data name="Main_Format" xml:space="preserve"><value>Format:</value></data>
+  <data name="Main_FoundryPortalindaWhisperYaDa" xml:space="preserve"><value>Foundry portalında whisper ya da gpt-4o-transcribe ve tts ya da gpt-4o-mini-tts modellerini dağıtın; burada dağıtım (deployment) adlarını yazın.</value></data>
+  <data name="Main_GorunumAcikKoyuYaDa" xml:space="preserve"><value>Görünüm: açık, koyu ya da Windows&apos;a göre</value></data>
+  <data name="Main_InternetsizVeUcretsizdirTurkceSes" xml:space="preserve"><value>İnternetsiz ve ücretsizdir. Türkçe ses için Windows Ayarlar › Saat ve dil › Konuşma bölümünden Türkçe konuşma paketini ekleyin; ses listesi uygulama açılırken okunur.</value></data>
+  <data name="Main_Iptal" xml:space="preserve"><value>İptal</value></data>
+  <data name="Main_JinglePaneli" xml:space="preserve"><value>Jingle paneli ⓘ</value></data>
+  <data name="Main_Kaldir" xml:space="preserve"><value>Kaldır</value></data>
+  <data name="Main_KapaliykenMikrofonKaydaGirmezAcikken" xml:space="preserve"><value>Kapalıyken mikrofon kayda girmez. Açıkken (ducking etkinse) müzik kısılır. (Ctrl+M)</value></data>
+  <data name="Main_KarisimaEkOlarakHerKanali" xml:space="preserve"><value>Karışıma ek olarak her kanalı (her mikrofon, müzik, jingle) ayrı dosyaya da kaydeder. Kurgu için WAV veya FLAC önerilir.</value></data>
+  <data name="Main_KaydaGidenToplamSes" xml:space="preserve"><value>Kayda giden toplam ses</value></data>
+  <data name="Main_KaydaYazilacakBaslikSunucuProgram" xml:space="preserve"><value>Kayda yazılacak başlık, sunucu, program, bölüm no, tür ve kapak resmi</value></data>
+  <data name="Main_KaydiBaslatCtrlR" xml:space="preserve"><value>Kaydı başlat (Ctrl+R)</value></data>
+  <data name="Main_KaydiDurdurVeDosyayiKaydet" xml:space="preserve"><value>Kaydı durdur ve dosyayı kaydet (Ctrl+Shift+R)</value></data>
+  <data name="Main_Kayit" xml:space="preserve"><value>Kayıt:</value></data>
+  <data name="Main_Kayit1DbYiGecmesin" xml:space="preserve"><value>Kayıt -1 dB&apos;yi geçmesin diye tepe seviyeleri anlık kısar. Turuncu: şu an kısıyor.</value></data>
+  <data name="Main_KayitBitinceOtomatikCikar" xml:space="preserve"><value>Kayıt bitince otomatik çıkar</value></data>
+  <data name="Main_KayitDosyasininYaninaAyniAdla" xml:space="preserve"><value>Kayıt dosyasının yanına aynı adla .txt (zaman damgalı metin) ve .srt (altyazı) yazılır.</value></data>
+  <data name="Main_KayitKlasoru" xml:space="preserve"><value>Kayıt klasörü:</value></data>
+  <data name="Main_KayitKlasorunuDegistir" xml:space="preserve"><value>Kayıt klasörünü değiştir</value></data>
+  <data name="Main_KirpilmaClip" xml:space="preserve"><value>Kırpılma (clip)</value></data>
+  <data name="Main_KisayollarF1" xml:space="preserve"><value>Kısayollar (F1)</value></data>
+  <data name="Main_KlasorGezgini" xml:space="preserve"><value>Klasör gezgini</value></data>
+  <data name="Main_KlasorSec" xml:space="preserve"><value>Klasör seç…</value></data>
+  <data name="Main_KlasoruAc" xml:space="preserve"><value>Klasörü aç</value></data>
+  <data name="Main_KonusmaAlgilandi" xml:space="preserve"><value>Konuşma algılandı</value></data>
+  <data name="Main_KonusmayiYaziyaCevirTranskript" xml:space="preserve"><value>Konuşmayı yazıya çevir (transkript)</value></data>
+  <data name="Main_Kulaklik" xml:space="preserve"><value>Kulaklık</value></data>
+  <data name="Main_KulakliktaDuyulanSesinSeviyesiMikrof" xml:space="preserve"><value>Kulaklıkta duyulan sesin seviyesi. Mikrofon varsayılan olarak kulaklığa verilmez (gecikmeli yankı olmasın diye), ama her zaman kayda girer.</value></data>
+  <data name="Main_LanguageTip" xml:space="preserve"><value>Arayüz dili; Sistem, Windows&apos;un dilini kullanır</value></data>
+  <data name="Main_Limiter" xml:space="preserve"><value>Limiter</value></data>
+  <data name="Main_ListedenSecinYaDaServisteki" xml:space="preserve"><value>Listeden seçin ya da servisteki bir sesin adını yazın.</value></data>
+  <data name="Main_MasterKayit" xml:space="preserve"><value>Master (kayıt)</value></data>
+  <data name="Main_MasterSesiniIcecastSunucusunaGonder" xml:space="preserve"><value>Master sesini Icecast sunucusuna gönder (Ctrl+L)</value></data>
+  <data name="Main_MetindenSesAnonsJingle" xml:space="preserve"><value>Metinden ses (anons, jingle)</value></data>
+  <data name="Main_MicName" xml:space="preserve"><value>Mikrofon {0}</value></data>
+  <data name="Main_MicOff" xml:space="preserve"><value>Mikrofon KAPALI</value></data>
+  <data name="Main_MicOn" xml:space="preserve"><value>Mikrofon AÇIK</value></data>
+  <data name="Main_MicOpenFailed" xml:space="preserve"><value>Mikrofon açılamadı ({0}): {1}</value></data>
+  <data name="Main_MicStopped" xml:space="preserve"><value>Mikrofon durdu ({0}): {1}</value></data>
+  <data name="Main_MikrofonAcikkenMuziginSeviyesi" xml:space="preserve"><value>Mikrofon açıkken müziğin seviyesi</value></data>
+  <data name="Main_MikrofonAcikkenYaDaKonusunca" xml:space="preserve"><value>Mikrofon açıkken (ya da konuşunca) müziği kıs</value></data>
+  <data name="Main_MikrofonBuSeviyeyiGecinceKonusma" xml:space="preserve"><value>Mikrofon bu seviyeyi geçince konuşma algılanır. Ortam gürültüsü müziği kısıyorsa eşiği yükseltin.</value></data>
+  <data name="Main_MikrofonEkle" xml:space="preserve"><value>Mikrofon ekle:</value></data>
+  <data name="Main_Model" xml:space="preserve"><value>Model:</value></data>
+  <data name="Main_MuzigiDurdurF6" xml:space="preserve"><value>Müziği durdur (F6)</value></data>
+  <data name="Main_NeedOutputToRecord" xml:space="preserve"><value>Kayıt için önce bir çıkış cihazı seçin.</value></data>
+  <data name="Main_NormalizeEt" xml:space="preserve"><value>Normalize et</value></data>
+  <data name="Main_NormalizeFailed" xml:space="preserve"><value>Normalize edilemedi, ham kayıt duruyor: {0} ({1})</value></data>
+  <data name="Main_Normalizing" xml:space="preserve"><value>Normalize ediliyor… %{0:0}</value></data>
+  <data name="Main_OpenaiUyumluBaskaBirServis" xml:space="preserve"><value>OpenAI uyumlu başka bir servis kullanıyorsanız adresini yazın.</value></data>
+  <data name="Main_OrHttpsKaynakAdiOpenai" xml:space="preserve"><value>ör. https://kaynak-adi.openai.azure.com ya da https://kaynak-adi.services.ai.azure.com</value></data>
+  <data name="Main_OrWesteuropeSwedencentral" xml:space="preserve"><value>ör. westeurope, swedencentral</value></data>
+  <data name="Main_OutputOpenFailed" xml:space="preserve"><value>Çıkış cihazı açılamadı: {0}</value></data>
+  <data name="Main_OutputStopped" xml:space="preserve"><value>Ses çıkışı durdu: {0}</value></data>
+  <data name="Main_Pause" xml:space="preserve"><value>Duraklat</value></data>
+  <data name="Main_Record" xml:space="preserve"><value>Kaydet</value></data>
+  <data name="Main_RecordingButton" xml:space="preserve"><value>Kayıtta</value></data>
+  <data name="Main_RecordingError" xml:space="preserve"><value>Kayıt hatası: {0}</value></data>
+  <data name="Main_RecordingStems" xml:space="preserve"><value> (+{0} ayrı iz)</value></data>
+  <data name="Main_RecordingTo" xml:space="preserve"><value>Kaydediliyor: {0}</value></data>
+  <data name="Main_Resume" xml:space="preserve"><value>Devam</value></data>
+  <data name="Main_SarkilarArasindaBindirmeSuresi0" xml:space="preserve"><value>Şarkılar arasında bindirme süresi. 0 ise geçiş anında olur.</value></data>
+  <data name="Main_Satir" xml:space="preserve"><value>Satır:</value></data>
+  <data name="Main_Saved" xml:space="preserve"><value>Kayıt kaydedildi: {0}</value></data>
+  <data name="Main_SavedNormalized" xml:space="preserve"><value>Kayıt kaydedildi: {0} ({1} → {2} LUFS, {3:+0.0;-0.0} dB)</value></data>
+  <data name="Main_SeciliSarkiyiCalF5" xml:space="preserve"><value>Seçili şarkıyı çal (F5)</value></data>
+  <data name="Main_SeciliServisinAnahtarVeModel" xml:space="preserve"><value>Seçili servisin anahtar ve model ayarlarını aç</value></data>
+  <data name="Main_SecondsFormat" xml:space="preserve"><value>{0:0.0} sn</value></data>
+  <data name="Main_Sekme" xml:space="preserve"><value>Sekme</value></data>
+  <data name="Main_SekmeyiSil" xml:space="preserve"><value>Sekmeyi sil</value></data>
+  <data name="Main_Servis" xml:space="preserve"><value>Servis:</value></data>
+  <data name="Main_ServisAyarlariApiAnahtarlariModeller" xml:space="preserve"><value>Servis ayarları (API anahtarları, modeller)</value></data>
+  <data name="Main_Ses" xml:space="preserve"><value>Ses:</value></data>
+  <data name="Main_SesiOlustur" xml:space="preserve"><value>Sesi oluştur</value></data>
+  <data name="Main_SeslendirilecekMetinOrSimdiKisa" xml:space="preserve"><value>Seslendirilecek metin, ör. &quot;Şimdi kısa bir reklam arası veriyoruz.&quot;</value></data>
+  <data name="Main_SeslendirmeDagitimi" xml:space="preserve"><value>Seslendirme dağıtımı:</value></data>
+  <data name="Main_SeslendirmeModeli" xml:space="preserve"><value>Seslendirme modeli:</value></data>
+  <data name="Main_SesYuksekligiEbuR128Anlik" xml:space="preserve"><value>Ses yüksekliği (EBU R128). Anlık: son 0,4 sn. Kayıt: kaydın tamamı. Podcast&apos;ler için yaygın hedef -16 LUFS.</value></data>
+  <data name="Main_Sil" xml:space="preserve"><value>Sil</value></data>
+  <data name="Main_Sonraki" xml:space="preserve"><value>Sonraki</value></data>
+  <data name="Main_SonrakiSarkiF7" xml:space="preserve"><value>Sonraki şarkı (F7)</value></data>
+  <data name="Main_SpeechKaynagininKeysAndEndpoint" xml:space="preserve"><value>Speech kaynağının &quot;Keys and Endpoint&quot; sayfasındaki anahtar ve bölge. Türkçe için tr-TR-EmelNeural ve tr-TR-AhmetNeural sesleri hazır gelir.</value></data>
+  <data name="Main_StartFailed" xml:space="preserve"><value>Kayıt başlatılamadı: {0}</value></data>
+  <data name="Main_StatePaused" xml:space="preserve"><value>DURAKLATILDI</value></data>
+  <data name="Main_StateReady" xml:space="preserve"><value>Hazır</value></data>
+  <data name="Main_StateRecording" xml:space="preserve"><value>KAYITTA</value></data>
+  <data name="Main_StemsFolderSuffix" xml:space="preserve"><value>izler</value></data>
+  <data name="Main_Sutun" xml:space="preserve"><value>Sütun:</value></data>
+  <data name="Main_Tema" xml:space="preserve"><value>Tema:</value></data>
+  <data name="Main_Temizle" xml:space="preserve"><value>Temizle</value></data>
+  <data name="Main_TiklaYaDaKosedekiTusa" xml:space="preserve"><value>Tıkla ya da köşedeki tuşa bas: çal / durdur. Dosyayı hücreye sürükleyin; sağ tık ile dosya seçin veya temizleyin.</value></data>
+  <data name="Main_TranskriptCikariliyor" xml:space="preserve"><value>  · transkript çıkarılıyor…</value></data>
+  <data name="Main_TranskriptiAc" xml:space="preserve"><value>Transkripti aç</value></data>
+  <data name="Main_TrEnDeBosBirakilirsa" xml:space="preserve"><value>tr, en, de… Boş bırakılırsa dil otomatik algılanır.</value></data>
+  <data name="Main_TumunuDurdur" xml:space="preserve"><value>Tümünü durdur</value></data>
+  <data name="Main_UcNokta" xml:space="preserve"><value>Uç nokta:</value></data>
+  <data name="Main_UcretsizVeInternetsizCalisirAma" xml:space="preserve"><value>Ücretsiz ve internetsiz çalışır, ama işlemcide bulut servislerinden yavaştır. Model ilk kullanımda indirilir:</value></data>
+  <data name="Main_UstKlasor" xml:space="preserve"><value>Üst klasör</value></data>
+  <data name="Main_WhisperBuBilgisayarda" xml:space="preserve"><value>Whisper (bu bilgisayarda)</value></data>
+  <data name="Main_WindowsSesleri" xml:space="preserve"><value>Windows sesleri</value></data>
+  <data name="Main_YapayZekaYaziyaCevirmeVe" xml:space="preserve"><value>Yapay zeka: yazıya çevirme ve seslendirme (Whisper, OpenAI, Foundry)</value></data>
+  <data name="Main_YayinaBasla" xml:space="preserve"><value>Yayına başla</value></data>
+  <data name="Main_YayiniDurdur" xml:space="preserve"><value>Yayını durdur</value></data>
+  <data name="Main_YaziyaCevirmeDagitimi" xml:space="preserve"><value>Yazıya çevirme dağıtımı:</value></data>
+  <data name="Main_YaziyaCevirmeModeli" xml:space="preserve"><value>Yazıya çevirme modeli:</value></data>
+  <data name="Main_YeniJingleSekmesi" xml:space="preserve"><value>Yeni jingle sekmesi</value></data>
+  <data name="Main_YukariTasi" xml:space="preserve"><value>Yukarı taşı</value></data>
+  <data name="Main_ZamanDamgaliAltyaziYalnizcaWhisper" xml:space="preserve"><value>Zaman damgalı altyazı yalnızca whisper-1 ile çıkar; gpt-4o modelleri daha doğru ama her 10 dakikayı tek parça verir.</value></data>
+  <data name="Pad_DefaultTab" xml:space="preserve"><value>Genel</value></data>
+  <data name="Pad_Empty" xml:space="preserve"><value>Boş</value></data>
+  <data name="Pad_PlayFailed" xml:space="preserve"><value>Jingle çalınamadı: {0} ({1})</value></data>
+  <data name="Pad_TabName" xml:space="preserve"><value>Sekme {0}</value></data>
+  <data name="Playlist_PlayFailed" xml:space="preserve"><value>Çalınamadı: {0} ({1})</value></data>
+  <data name="Provider_AzureOpenAi" xml:space="preserve"><value>Azure OpenAI / Foundry</value></data>
+  <data name="Provider_AzureSpeech" xml:space="preserve"><value>Azure AI Speech (Foundry)</value></data>
+  <data name="Provider_LocalWhisper" xml:space="preserve"><value>Whisper (bu bilgisayarda)</value></data>
+  <data name="Provider_OpenAi" xml:space="preserve"><value>OpenAI</value></data>
+  <data name="Provider_Windows" xml:space="preserve"><value>Windows sesleri (bu bilgisayarda)</value></data>
+  <data name="Strip_KanaliSustur" xml:space="preserve"><value>Kanalı sustur</value></data>
+  <data name="Strip_KulakliktaDuyKapaliykenDeKayda" xml:space="preserve"><value>Kulaklıkta duy. Kapalıyken de kayda girer; sadece kulaklıkta duyulmaz.</value></data>
+  <data name="Strip_MikrofonuKaldir" xml:space="preserve"><value>Mikrofonu kaldır</value></data>
+  <data name="Strip_SesSeviyesi" xml:space="preserve"><value>Ses seviyesi</value></data>
+  <data name="Strip_Sessiz" xml:space="preserve"><value>Sessiz</value></data>
+  <data name="Tags_Aciklama" xml:space="preserve"><value>Açıklama:</value></data>
+  <data name="Tags_Baslik" xml:space="preserve"><value>Başlık:</value></data>
+  <data name="Tags_BirSesDosyasiSecinBu" xml:space="preserve"><value>Bir ses dosyası seçin; bu bilgiler ona yazılır.</value></data>
+  <data name="Tags_BolumNo" xml:space="preserve"><value>Bölüm no:</value></data>
+  <data name="Tags_BosBirakilirsaDosyaAdiKullanilir" xml:space="preserve"><value>Boş bırakılırsa dosya adı kullanılır.</value></data>
+  <data name="Tags_BuBilgileriBuOturumdakiSon" xml:space="preserve"><value>Bu bilgileri bu oturumdaki son kayda yeniden yazar; o kaydın bölüm numarası korunur.</value></data>
+  <data name="Tags_DosyaBilgileri" xml:space="preserve"><value>Dosya bilgileri</value></data>
+  <data name="Tags_DosyayaYaz" xml:space="preserve"><value>Dosyaya yaz…</value></data>
+  <data name="Tags_JpegYaDaPngKare" xml:space="preserve"><value>JPEG ya da PNG; kare bir resim (ör. 1400×1400) önerilir.</value></data>
+  <data name="Tags_KapakResmi" xml:space="preserve"><value>Kapak resmi</value></data>
+  <data name="Tags_KapakYok" xml:space="preserve"><value>Kapak yok</value></data>
+  <data name="Tags_Kapat" xml:space="preserve"><value>Kapat</value></data>
+  <data name="Tags_KayitBitinceBuBilgilerDosyaya" xml:space="preserve"><value>Kayıt bitince bu bilgiler dosyaya (ve ayrı izlere) yazılır; müzik çalarlar ve Windows Gezgini bunları gösterir. Bölüm no her kayıttan sonra bir artar.</value></data>
+  <data name="Tags_NoRecordingYet" xml:space="preserve"><value>Henüz bu oturumda kaydedilmiş bir dosya yok.</value></data>
+  <data name="Tags_ProgramAlbum" xml:space="preserve"><value>Program / Albüm:</value></data>
+  <data name="Tags_Sec" xml:space="preserve"><value>Seç…</value></data>
+  <data name="Tags_SonKaydaYaz" xml:space="preserve"><value>Son kayda yaz</value></data>
+  <data name="Tags_SonrakiKaydinBolumNumarasiHer" xml:space="preserve"><value>Sonraki kaydın bölüm numarası; her kayıttan sonra bir artar. Boş bırakılırsa yazılmaz.</value></data>
+  <data name="Tags_SunucuSanatci" xml:space="preserve"><value>Sunucu / Sanatçı:</value></data>
+  <data name="Tags_Tur" xml:space="preserve"><value>Tür:</value></data>
+  <data name="Tags_Written" xml:space="preserve"><value>Dosya bilgileri yazıldı.</value></data>
+  <data name="Tags_WrittenEpisode" xml:space="preserve"><value>Dosya bilgileri yazıldı (bölüm {0}).</value></data>
+  <data name="Tags_WrittenTo" xml:space="preserve"><value>Dosya bilgileri yazıldı: {0}</value></data>
+  <data name="Tags_Yil" xml:space="preserve"><value>Yıl:</value></data>
+  <data name="Theme_Dark" xml:space="preserve"><value>Koyu</value></data>
+  <data name="Theme_Light" xml:space="preserve"><value>Açık</value></data>
+  <data name="Theme_System" xml:space="preserve"><value>Sistem</value></data>
+</root>

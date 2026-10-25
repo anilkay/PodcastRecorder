@@ -1,6 +1,7 @@
 using System.Windows;
 using PodcastRecorder.App.Services;
 using PodcastRecorder.Audio.Streaming;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App;
 
@@ -31,7 +32,7 @@ public partial class LiveSettingsWindow : Window
     {
         if (!int.TryParse(PortBox.Text.Trim(), out int port))
         {
-            ErrorText.Text = "Port bir sayı olmalı.";
+            ErrorText.Text = Loc.T("LiveSettings_PortNumber");
             return;
         }
 

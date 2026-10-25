@@ -85,7 +85,7 @@ public sealed class LiveStreamer : IProgramSink
         {
             if (_state != LiveState.Offline)
             {
-                throw new InvalidOperationException("Yayın zaten açık.");
+                throw new InvalidOperationException(Texts.Get("Live_AlreadyLive"));
             }
 
             _state = LiveState.Connecting;
@@ -127,11 +127,11 @@ public sealed class LiveStreamer : IProgramSink
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
-                throw new IcecastException($"Sunucu {ConnectTimeout.TotalSeconds:0} saniye içinde yanıt vermedi.");
+                throw new IcecastException(Texts.Format("Live_Timeout", ConnectTimeout.TotalSeconds));
             }
             catch (SocketException ex)
             {
-                throw new IcecastException($"Sunucuya bağlanılamadı: {ex.Message}");
+                throw new IcecastException(Texts.Format("Live_ConnectFailed", ex.Message));
             }
 
             var stream = client.GetStream();
@@ -332,7 +332,7 @@ public sealed class LiveStreamer : IProgramSink
         }
 
         Faulted?.Invoke(this, new IcecastException(
-            $"Yayın bağlantısı koptu ve {MaxReconnectAttempts} denemede yeniden kurulamadı: {last.Message}"));
+            Texts.Format("Live_ReconnectGaveUp", MaxReconnectAttempts, last.Message)));
     }
 
     private readonly record struct Block(float[] Samples, int Length);

@@ -13,11 +13,11 @@ public sealed class SpeechException(string message, Exception? inner = null) : E
         var detail = ExtractMessage(body);
         var summary = response.StatusCode switch
         {
-            HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden => "API anahtarı geçersiz ya da bu kaynağa izni yok.",
-            HttpStatusCode.NotFound => "Adres, model ya da dağıtım (deployment) bulunamadı.",
-            HttpStatusCode.TooManyRequests => "Hız sınırı ya da kota aşıldı; biraz sonra yeniden deneyin.",
-            HttpStatusCode.RequestEntityTooLarge => "Gönderilen ses dosyası servisin sınırından büyük.",
-            _ => $"Servis hata döndürdü ({(int)response.StatusCode}).",
+            HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden => Texts.Get("Http_Unauthorized"),
+            HttpStatusCode.NotFound => Texts.Get("Http_NotFound"),
+            HttpStatusCode.TooManyRequests => Texts.Get("Http_TooManyRequests"),
+            HttpStatusCode.RequestEntityTooLarge => Texts.Get("Http_TooLarge"),
+            _ => Texts.Format("Http_Error", (int)response.StatusCode),
         };
         return new SpeechException(string.IsNullOrWhiteSpace(detail) ? summary : $"{summary} {detail}");
     }

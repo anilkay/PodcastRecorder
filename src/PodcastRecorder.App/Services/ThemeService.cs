@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using Microsoft.Win32;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.Services;
 
@@ -13,7 +14,11 @@ public enum AppTheme
     Dark,
 }
 
-public sealed record ThemeOption(AppTheme Theme, string Name);
+/// <summary>A theme choice; <see cref="Name"/> is in the current language.</summary>
+public sealed record ThemeOption(AppTheme Theme, string NameKey)
+{
+    public string Name => Loc.T(NameKey);
+}
 
 /// <summary>
 /// Switches between light and dark: the WPF Fluent control theme plus the app's own colours
@@ -29,9 +34,9 @@ public static class ThemeService
 
     public static IReadOnlyList<ThemeOption> Options { get; } =
     [
-        new(AppTheme.System, "Sistem"),
-        new(AppTheme.Light, "Açık"),
-        new(AppTheme.Dark, "Koyu"),
+        new(AppTheme.System, "Theme_System"),
+        new(AppTheme.Light, "Theme_Light"),
+        new(AppTheme.Dark, "Theme_Dark"),
     ];
 
     public static void Apply(AppTheme theme)

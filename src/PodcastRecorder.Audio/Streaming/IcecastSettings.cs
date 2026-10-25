@@ -12,17 +12,17 @@ public sealed record IcecastSettings(
 {
     public static IReadOnlyList<int> Bitrates { get; } = [64, 96, 128, 192, 256, 320];
 
-    /// <summary>Returns a short Turkish message for the first invalid field, or null.</summary>
+    /// <summary>Returns a short message (in the UI language) for the first invalid field, or null.</summary>
     public string? Validate()
     {
-        if (string.IsNullOrWhiteSpace(Host)) return "Sunucu adresi gerekli.";
-        if (Host.Contains("://")) return "Sunucu adresini http:// olmadan yazın (ör. yayin.example.com).";
-        if (Port is < 1 or > 65535) return "Port 1 ile 65535 arasında olmalı.";
+        if (string.IsNullOrWhiteSpace(Host)) return Texts.Get("Icecast_NeedHost");
+        if (Host.Contains("://")) return Texts.Get("Icecast_HostWithoutScheme");
+        if (Port is < 1 or > 65535) return Texts.Get("Icecast_PortRange");
         if (string.IsNullOrWhiteSpace(Mount) || !Mount.StartsWith('/') || Mount.Any(char.IsWhiteSpace))
-            return "Mount / ile başlamalı ve boşluk içermemeli (ör. /canli).";
-        if (string.IsNullOrEmpty(User)) return "Kullanıcı adı gerekli (Icecast'te genelde \"source\").";
-        if (string.IsNullOrEmpty(Password)) return "Şifre gerekli.";
-        if (!Bitrates.Contains(BitrateKbps)) return "Geçersiz bitrate.";
+            return Texts.Get("Icecast_MountFormat");
+        if (string.IsNullOrEmpty(User)) return Texts.Get("Icecast_NeedUser");
+        if (string.IsNullOrEmpty(Password)) return Texts.Get("Icecast_NeedPassword");
+        if (!Bitrates.Contains(BitrateKbps)) return Texts.Get("Icecast_BadBitrate");
         return null;
     }
 

@@ -25,7 +25,7 @@ public sealed record OpenAiEndpoint(Uri BaseUrl, string ApiKey, bool IsAzure)
     {
         if (!Uri.TryCreate(endpoint.Trim(), UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps)
         {
-            throw new SpeechException("Azure adresi https:// ile başlayan tam bir adres olmalı, ör. https://kaynak-adi.openai.azure.com");
+            throw new SpeechException(Texts.Get("OpenAi_BadAzureEndpoint"));
         }
 
         return new OpenAiEndpoint(new Uri($"https://{uri.Authority}/openai/v1/"), apiKey, IsAzure: true);
@@ -35,7 +35,7 @@ public sealed record OpenAiEndpoint(Uri BaseUrl, string ApiKey, bool IsAzure)
     {
         if (string.IsNullOrWhiteSpace(ApiKey))
         {
-            throw new SpeechException("API anahtarı girilmemiş.");
+            throw new SpeechException(Texts.Get("OpenAi_NoKey"));
         }
 
         var request = new HttpRequestMessage(HttpMethod.Post, new Uri(BaseUrl, path));

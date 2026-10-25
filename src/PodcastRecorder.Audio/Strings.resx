@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Channel_Jingle" xml:space="preserve"><value>Jingle</value></data>
+  <data name="Channel_Music" xml:space="preserve"><value>Müzik</value></data>
+  <data name="Encoder_Flac" xml:space="preserve"><value>FLAC (kayıpsız)</value></data>
+  <data name="Encoder_Mp3_128" xml:space="preserve"><value>MP3 128 kbps</value></data>
+  <data name="Encoder_Mp3_192" xml:space="preserve"><value>MP3 192 kbps</value></data>
+  <data name="Encoder_Mp3_320" xml:space="preserve"><value>MP3 320 kbps</value></data>
+  <data name="Encoder_Wav" xml:space="preserve"><value>WAV 16-bit</value></data>
+  <data name="Encoder_Wma_128" xml:space="preserve"><value>WMA 128 kbps</value></data>
+  <data name="Encoder_Wma_192" xml:space="preserve"><value>WMA 192 kbps</value></data>
+  <data name="Icecast_BadBitrate" xml:space="preserve"><value>Geçersiz bitrate.</value></data>
+  <data name="Icecast_BadCredentials" xml:space="preserve"><value>Sunucu kullanıcı adını ya da şifreyi kabul etmedi.</value></data>
+  <data name="Icecast_ClosedWithoutAnswer" xml:space="preserve"><value>Sunucu bağlantıyı yanıt vermeden kapattı.</value></data>
+  <data name="Icecast_HostWithoutScheme" xml:space="preserve"><value>Sunucu adresini http:// olmadan yazın (ör. yayin.example.com).</value></data>
+  <data name="Icecast_MountFormat" xml:space="preserve"><value>Mount / ile başlamalı ve boşluk içermemeli (ör. /canli).</value></data>
+  <data name="Icecast_MountRefused" xml:space="preserve"><value>Sunucu bu mount&apos;a yayına izin vermedi (mount kullanımda ya da kapalı olabilir).</value></data>
+  <data name="Icecast_NeedHost" xml:space="preserve"><value>Sunucu adresi gerekli.</value></data>
+  <data name="Icecast_NeedPassword" xml:space="preserve"><value>Şifre gerekli.</value></data>
+  <data name="Icecast_NeedUser" xml:space="preserve"><value>Kullanıcı adı gerekli (Icecast&apos;te genelde &quot;source&quot;).</value></data>
+  <data name="Icecast_NotFound" xml:space="preserve"><value>Sunucu bu adreste bir Icecast yayın noktası bulamadı.</value></data>
+  <data name="Icecast_PortRange" xml:space="preserve"><value>Port 1 ile 65535 arasında olmalı.</value></data>
+  <data name="Icecast_Refused" xml:space="preserve"><value>Sunucu yayını reddetti: {0}</value></data>
+  <data name="Live_AlreadyLive" xml:space="preserve"><value>Yayın zaten açık.</value></data>
+  <data name="Live_ConnectFailed" xml:space="preserve"><value>Sunucuya bağlanılamadı: {0}</value></data>
+  <data name="Live_ReconnectGaveUp" xml:space="preserve"><value>Yayın bağlantısı koptu ve {0} denemede yeniden kurulamadı: {1}</value></data>
+  <data name="Live_Timeout" xml:space="preserve"><value>Sunucu {0:0} saniye içinde yanıt vermedi.</value></data>
+  <data name="Tags_WriteFailed" xml:space="preserve"><value>Dosya bilgileri yazılamadı ({0}): {1}</value></data>
+  <data name="Wma_ConvertFailed" xml:space="preserve"><value>WMA&apos;ya çevrilemedi, kayıt WAV olarak saklandı: {0}</value></data>
+  <data name="Wma_NoEncoder" xml:space="preserve"><value>Bu bilgisayarda WMA kodlayıcısı bulunamadı.</value></data>
+</root>

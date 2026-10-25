@@ -14,12 +14,12 @@ public sealed record AzureSpeechEndpoint(string Region, string Key)
     {
         if (string.IsNullOrWhiteSpace(Region))
         {
-            throw new SpeechException("Azure Speech bölgesi girilmemiş (ör. westeurope).");
+            throw new SpeechException(Texts.Get("Azure_NoRegion"));
         }
 
         if (string.IsNullOrWhiteSpace(Key))
         {
-            throw new SpeechException("Azure Speech anahtarı girilmemiş.");
+            throw new SpeechException(Texts.Get("Azure_NoKey"));
         }
 
         var request = new HttpRequestMessage(HttpMethod.Post, url);

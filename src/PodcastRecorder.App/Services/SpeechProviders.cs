@@ -2,10 +2,15 @@ using System.IO;
 using System.Net.Http;
 using PodcastRecorder.Speech;
 using PodcastRecorder.Speech.Providers;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.Services;
 
-public sealed record SpeechProviderOption(string Id, string Name);
+/// <summary>A speech service; <see cref="Name"/> is in the current language.</summary>
+public sealed record SpeechProviderOption(string Id, string NameKey)
+{
+    public string Name => Loc.T(NameKey);
+}
 
 /// <summary>The speech services the user can pick, and how to build each from the settings.</summary>
 public static class SpeechProviders
@@ -18,18 +23,18 @@ public static class SpeechProviders
 
     public static IReadOnlyList<SpeechProviderOption> Transcription { get; } =
     [
-        new(LocalWhisper, "Whisper (bu bilgisayarda)"),
-        new(OpenAi, "OpenAI"),
-        new(AzureOpenAi, "Azure OpenAI / Foundry"),
-        new(AzureSpeech, "Azure AI Speech (Foundry)"),
+        new(LocalWhisper, "Provider_LocalWhisper"),
+        new(OpenAi, "Provider_OpenAi"),
+        new(AzureOpenAi, "Provider_AzureOpenAi"),
+        new(AzureSpeech, "Provider_AzureSpeech"),
     ];
 
     public static IReadOnlyList<SpeechProviderOption> Synthesis { get; } =
     [
-        new(Windows, "Windows sesleri (bu bilgisayarda)"),
-        new(OpenAi, "OpenAI"),
-        new(AzureOpenAi, "Azure OpenAI / Foundry"),
-        new(AzureSpeech, "Azure AI Speech (Foundry)"),
+        new(Windows, "Provider_Windows"),
+        new(OpenAi, "Provider_OpenAi"),
+        new(AzureOpenAi, "Provider_AzureOpenAi"),
+        new(AzureSpeech, "Provider_AzureSpeech"),
     ];
 
     public static string WhisperModelFolder { get; } =

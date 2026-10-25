@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PodcastRecorder.App.Services;
 using PodcastRecorder.Audio.Recording;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.ViewModels;
 
@@ -93,7 +94,7 @@ public partial class RecordingTagsViewModel : ObservableObject
         }
 
         if (tags.Track is { } episode) EpisodeText = (episode + 1).ToString();
-        return Status = tags.Track is { } track ? $"Dosya bilgileri yazıldı (bölüm {track})." : "Dosya bilgileri yazıldı.";
+        return Status = tags.Track is { } track ? Loc.F("Tags_WrittenEpisode", track) : Loc.T("Tags_Written");
     }
 
     private bool HasLastRecording() => _lastRecording() is { } path && File.Exists(path);
@@ -107,7 +108,7 @@ public partial class RecordingTagsViewModel : ObservableObject
     {
         if (!HasLastRecording())
         {
-            Report("Henüz bu oturumda kaydedilmiş bir dosya yok.");
+            Report(Loc.T("Tags_NoRecordingYet"));
             return;
         }
 
@@ -148,7 +149,7 @@ public partial class RecordingTagsViewModel : ObservableObject
         try
         {
             await Task.Run(() => TagWriter.Write(path, tags));
-            Report($"Dosya bilgileri yazıldı: {Path.GetFileName(path)}");
+            Report(Loc.F("Tags_WrittenTo", Path.GetFileName(path)));
         }
         catch (IOException ex)
         {

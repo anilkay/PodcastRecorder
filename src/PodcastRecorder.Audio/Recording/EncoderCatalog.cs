@@ -1,19 +1,23 @@
 namespace PodcastRecorder.Audio.Recording;
 
-public sealed record EncoderOption(string Id, string DisplayName, Func<IAudioEncoder> Create);
+/// <summary>An output format; <see cref="DisplayName"/> is in the UI language.</summary>
+public sealed record EncoderOption(string Id, string DisplayNameKey, Func<IAudioEncoder> Create)
+{
+    public string DisplayName => Texts.Get(DisplayNameKey);
+}
 
 /// <summary>The output formats offered in the UI.</summary>
 public static class EncoderCatalog
 {
     public static IReadOnlyList<EncoderOption> All { get; } =
     [
-        new("mp3-128", "MP3 128 kbps", () => new Mp3Encoder(128)),
-        new("mp3-192", "MP3 192 kbps", () => new Mp3Encoder(192)),
-        new("mp3-320", "MP3 320 kbps", () => new Mp3Encoder(320)),
-        new("wma-128", "WMA 128 kbps", () => new WmaEncoder(128)),
-        new("wma-192", "WMA 192 kbps", () => new WmaEncoder(192)),
-        new("wav", "WAV 16-bit", () => new WavEncoder()),
-        new("flac", "FLAC (kayıpsız)", () => new FlacEncoder()),
+        new("mp3-128", "Encoder_Mp3_128", () => new Mp3Encoder(128)),
+        new("mp3-192", "Encoder_Mp3_192", () => new Mp3Encoder(192)),
+        new("mp3-320", "Encoder_Mp3_320", () => new Mp3Encoder(320)),
+        new("wma-128", "Encoder_Wma_128", () => new WmaEncoder(128)),
+        new("wma-192", "Encoder_Wma_192", () => new WmaEncoder(192)),
+        new("wav", "Encoder_Wav", () => new WavEncoder()),
+        new("flac", "Encoder_Flac", () => new FlacEncoder()),
     ];
 
     public static EncoderOption Default => All[1];

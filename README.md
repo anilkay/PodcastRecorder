@@ -2,6 +2,8 @@
 
 Windows için podcast kayıt uygulaması. Mikrofonu, çalma listesindeki şarkıları ve jingle panelini uygulamanın kendi mikserinde birleştirir ve tek bir MP3, WMA, FLAC veya WAV dosyasına kaydeder; isterseniz aynı anda Icecast sunucusuna canlı yayın yapar. Windows "Stereo Mix" ayarı gerekmez.
 
+*A podcast recorder for Windows: mixes microphones, a playlist and jingle pads, records MP3/WMA/FLAC/WAV and can stream live to Icecast. The interface is available in Turkish and English (status bar › Language).*
+
 ## Özellikler
 
 - Birden fazla mikrofon: "Mikrofon ekle" ile her konuk için ayrı kanal, ✕ ile kaldırma; dinleme (kulaklık) cihazı seçimi (WASAPI)
@@ -22,6 +24,7 @@ Windows için podcast kayıt uygulaması. Mikrofonu, çalma listesindeki şarkı
 - Canlı yayın: kayda giden ses (Master) bir Icecast sunucusuna MP3 olarak gönderilir; kayıttan bağımsız açılıp kapanır. Bağlantı koparsa 3 saniye arayla 10 kez yeniden bağlanmayı dener.
 - Klavye kısayolları (uygulamada F1 ile listelenir)
 - **Koyu tema:** Durum çubuğundaki "Tema" kutusundan Sistem (Windows'a göre), Açık ya da Koyu; denetimler WPF Fluent temasıyla çizilir
+- **Dil / Language:** Türkçe ya da English; durum çubuğundaki "Dil" kutusundan değişir ve hemen uygulanır (kayıt ve yayın kesilmez). "Sistem" Windows'un görüntü diline göre seçer.
 - **Dosya bilgileri:** Başlık, sunucu, program, bölüm no, yıl, tür, açıklama ve kapak resmi her kayda (ve ayrı izlere) yazılır
 - **Yapay zeka:** kayıtlardan transkript ve altyazı (yerel Whisper, OpenAI, Azure OpenAI / Foundry, Azure AI Speech), metinden anons ve jingle sesi (Windows sesleri, OpenAI, Azure)
 
@@ -125,3 +128,7 @@ Tüm kaynaklar 48 kHz stereo float formatına çevrilir. Çıkış cihazının s
 ### Yeni çıktı formatı eklemek
 
 `IAudioEncoder` arayüzünü uygulayın ve `EncoderCatalog.All` listesine ekleyin; arayüzdeki format listesi otomatik güncellenir.
+
+### Metinler ve diller
+
+Kullanıcıya görünen bütün metinler `.resx` dosyalarındadır: `Strings.resx` Türkçe (varsayılan dil), `Strings.en.resx` İngilizce. App'te `src/PodcastRecorder.App/Localization`, kütüphanelerde proje kökünde durur. XAML'da `{loc:T Anahtar}`, C#'ta `Loc.T("Anahtar")` ya da `Loc.F("Anahtar", değer)` kullanılır; kütüphaneler kendi `Texts` sınıfıyla okur. Dil değişince ana pencere aynı view model üzerine yeniden kurulur. Yeni bir metin eklerken iki dosyaya da yazın; `LocalizationTests` anahtarların ve `{0}` yer tutucularının iki dilde aynı olduğunu denetler. Yeni bir dil için `Strings.xx.resx` dosyalarını ekleyip `Loc.Languages` listesine yazmanız yeterli.

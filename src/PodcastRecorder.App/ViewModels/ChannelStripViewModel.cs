@@ -12,7 +12,6 @@ public partial class ChannelStripViewModel : ObservableObject
     public ChannelStripViewModel(MixerChannel channel, string? deviceName = null, Action<ChannelStripViewModel>? remove = null)
     {
         Channel = channel;
-        Name = channel.Name;
         DeviceName = deviceName;
         _remove = remove;
         Volume = channel.Volume;
@@ -22,8 +21,14 @@ public partial class ChannelStripViewModel : ObservableObject
 
     public MixerChannel Channel { get; }
 
-    public string Name { get; }
+    /// <summary>The strip's title in the current language (the channel's own name if <see cref="NameSource"/> is not set).</summary>
+    public string Name => NameSource?.Invoke() ?? Channel.Name;
 
+    /// <summary>Gives the title in the current language, so it follows a language switch.</summary>
+    public Func<string>? NameSource { get; init; }
+
+    /// <summary>The number of a microphone strip ("Mikrofon 2"); 0 for other channels.</summary>
+    public int MicrophoneNumber { get; init; }
     /// <summary>The input device behind a microphone strip.</summary>
     public string? DeviceName { get; }
 

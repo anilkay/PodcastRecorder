@@ -8,6 +8,8 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <RootNamespace>PodcastRecorder.App</RootNamespace>
     <AssemblyName>PodcastRecorder</AssemblyName>
+    <!-- Strings.resx is Turkish; Strings.en.resx becomes the en satellite assembly. -->
+    <NeutralLanguage>tr</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>

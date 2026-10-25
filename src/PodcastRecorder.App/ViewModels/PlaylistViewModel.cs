@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PodcastRecorder.App.Services;
 using PodcastRecorder.Audio.Sources;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.ViewModels;
 
@@ -82,7 +83,7 @@ public partial class PlaylistViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Çalınamadı: {item.Title} ({ex.Message})";
+            ErrorMessage = Loc.F("Playlist_PlayFailed", item.Title, ex.Message);
             SetCurrent(null);
         }
     }

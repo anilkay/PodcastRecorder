@@ -2,6 +2,7 @@ using System.IO;
 using System.Text.Json.Serialization;
 using PodcastRecorder.Audio;
 using PodcastRecorder.Speech.Providers;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.Services;
 
@@ -18,7 +19,7 @@ public sealed class AppSettings
     public string? EncoderId { get; set; }
 
     public string RecordingFolder { get; set; } =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "Podcast Kayıtları");
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), Loc.T("Default_RecordingFolder"));
 
     public string? BrowseFolder { get; set; }
 
@@ -67,6 +68,9 @@ public sealed class AppSettings
     public RecordingTagsSettings Tags { get; set; } = new();
 
     public AppTheme Theme { get; set; } = AppTheme.System;
+
+    /// <summary>"system" (follow Windows), "tr" or "en".</summary>
+    public string Language { get; set; } = Loc.System;
 }
 
 public sealed class JingleBankSettings
@@ -151,7 +155,7 @@ public sealed class LiveStreamSettings
 
     public int Port { get; set; } = 8000;
 
-    public string Mount { get; set; } = "/canli";
+    public string Mount { get; set; } = Loc.T("Default_Mount");
 
     public string User { get; set; } = "source";
 

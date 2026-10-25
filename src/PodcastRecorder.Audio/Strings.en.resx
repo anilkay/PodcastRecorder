@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Channel_Jingle" xml:space="preserve"><value>Jingles</value></data>
+  <data name="Channel_Music" xml:space="preserve"><value>Music</value></data>
+  <data name="Encoder_Flac" xml:space="preserve"><value>FLAC (lossless)</value></data>
+  <data name="Encoder_Mp3_128" xml:space="preserve"><value>MP3 128 kbps</value></data>
+  <data name="Encoder_Mp3_192" xml:space="preserve"><value>MP3 192 kbps</value></data>
+  <data name="Encoder_Mp3_320" xml:space="preserve"><value>MP3 320 kbps</value></data>
+  <data name="Encoder_Wav" xml:space="preserve"><value>WAV 16-bit</value></data>
+  <data name="Encoder_Wma_128" xml:space="preserve"><value>WMA 128 kbps</value></data>
+  <data name="Encoder_Wma_192" xml:space="preserve"><value>WMA 192 kbps</value></data>
+  <data name="Icecast_BadBitrate" xml:space="preserve"><value>Invalid bitrate.</value></data>
+  <data name="Icecast_BadCredentials" xml:space="preserve"><value>The server did not accept the user name or password.</value></data>
+  <data name="Icecast_ClosedWithoutAnswer" xml:space="preserve"><value>The server closed the connection without answering.</value></data>
+  <data name="Icecast_HostWithoutScheme" xml:space="preserve"><value>Enter the server address without http:// (e.g. stream.example.com).</value></data>
+  <data name="Icecast_MountFormat" xml:space="preserve"><value>The mount must start with / and contain no spaces (e.g. /live).</value></data>
+  <data name="Icecast_MountRefused" xml:space="preserve"><value>The server did not allow streaming to this mount (it may be in use or disabled).</value></data>
+  <data name="Icecast_NeedHost" xml:space="preserve"><value>A server address is required.</value></data>
+  <data name="Icecast_NeedPassword" xml:space="preserve"><value>A password is required.</value></data>
+  <data name="Icecast_NeedUser" xml:space="preserve"><value>A user name is required (usually &quot;source&quot; on Icecast).</value></data>
+  <data name="Icecast_NotFound" xml:space="preserve"><value>The server found no Icecast mount at this address.</value></data>
+  <data name="Icecast_PortRange" xml:space="preserve"><value>The port must be between 1 and 65535.</value></data>
+  <data name="Icecast_Refused" xml:space="preserve"><value>The server refused the stream: {0}</value></data>
+  <data name="Live_AlreadyLive" xml:space="preserve"><value>The stream is already on.</value></data>
+  <data name="Live_ConnectFailed" xml:space="preserve"><value>Could not connect to the server: {0}</value></data>
+  <data name="Live_ReconnectGaveUp" xml:space="preserve"><value>The stream connection dropped and could not be restored in {0} attempts: {1}</value></data>
+  <data name="Live_Timeout" xml:space="preserve"><value>The server did not answer within {0:0} seconds.</value></data>
+  <data name="Tags_WriteFailed" xml:space="preserve"><value>Could not write the file info ({0}): {1}</value></data>
+  <data name="Wma_ConvertFailed" xml:space="preserve"><value>Could not convert to WMA; the recording was kept as WAV: {0}</value></data>
+  <data name="Wma_NoEncoder" xml:space="preserve"><value>No WMA encoder was found on this computer.</value></data>
+</root>

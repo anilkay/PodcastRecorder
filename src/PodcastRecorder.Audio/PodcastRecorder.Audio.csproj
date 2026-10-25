@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>PodcastRecorder.Audio</RootNamespace>
+    <!-- Strings.resx is Turkish; Strings.en.resx becomes the en satellite assembly. -->
+    <NeutralLanguage>tr</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PodcastRecorder.App.Services;
 using PodcastRecorder.Audio.Sources;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.ViewModels;
 
@@ -50,7 +51,7 @@ public partial class FolderBrowserViewModel(IFileDialogs dialogs, Action<string>
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            ErrorMessage = $"Klasör okunamadı: {ex.Message}";
+            ErrorMessage = Loc.F("Browser_ReadFailed", ex.Message);
         }
     }
 

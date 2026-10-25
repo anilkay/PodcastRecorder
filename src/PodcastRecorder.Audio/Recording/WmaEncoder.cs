@@ -62,7 +62,7 @@ public sealed class WmaEncoder(int bitrateKbps) : IAudioEncoder
             if (File.Exists(_path)) File.Delete(_path);
             var kept = Path.ChangeExtension(_path, ".wav");
             File.Move(_wavPath, kept, overwrite: false);
-            throw new IOException($"WMA'ya çevrilemedi, kayıt WAV olarak saklandı: {kept}", ex);
+            throw new IOException(Texts.Format("Wma_ConvertFailed", kept), ex);
         }
     }
 
@@ -70,6 +70,6 @@ public sealed class WmaEncoder(int bitrateKbps) : IAudioEncoder
     {
         MediaFoundationApi.Startup();
         return MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_WMAudioV8, pcmFormat, BitrateKbps * 1000)
-            ?? throw new InvalidOperationException("Bu bilgisayarda WMA kodlayıcısı bulunamadı.");
+            ?? throw new InvalidOperationException(Texts.Get("Wma_NoEncoder"));
     }
 }

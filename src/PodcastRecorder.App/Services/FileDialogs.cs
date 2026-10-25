@@ -1,6 +1,7 @@
 using System.IO;
 using Microsoft.Win32;
 using PodcastRecorder.Audio.Sources;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.Services;
 
@@ -16,8 +17,8 @@ public interface IFileDialogs
 
 public sealed class FileDialogs : IFileDialogs
 {
-    private static readonly string AudioFilter =
-        "Ses dosyaları|" + string.Join(';', AudioFiles.SupportedExtensions.Select(e => "*" + e)) + "|Tüm dosyalar|*.*";
+    private static string AudioFilter =>
+        Loc.T("Dialog_AudioFiles") + "|" + string.Join(';', AudioFiles.SupportedExtensions.Select(e => "*" + e)) + "|" + Loc.T("Dialog_AllFiles") + "|*.*";
 
     public IReadOnlyList<string> PickAudioFiles(bool multiple)
     {
@@ -38,7 +39,7 @@ public sealed class FileDialogs : IFileDialogs
 
     public string? PickImage()
     {
-        var dialog = new OpenFileDialog { Filter = "Resimler (JPEG, PNG)|*.jpg;*.jpeg;*.png" };
+        var dialog = new OpenFileDialog { Filter = Loc.T("Dialog_Images") + "|*.jpg;*.jpeg;*.png" };
         return dialog.ShowDialog() == true ? dialog.FileName : null;
     }
 }

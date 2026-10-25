@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PodcastRecorder.App.Services;
 using PodcastRecorder.Audio.Streaming;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.ViewModels;
 
@@ -38,8 +39,8 @@ public partial class LiveStreamViewModel : ObservableObject
         {
             State = state;
             Message = state == LiveState.Reconnecting
-                ? "Bağlantı koptu, yeniden bağlanılıyor…"
-                : "Bağlantı yeniden kuruldu, yayın sürüyor.";
+                ? Loc.T("Live_ConnectionLostReconnecting")
+                : Loc.T("Live_Reconnected");
         }, null);
     }
 
@@ -63,15 +64,15 @@ public partial class LiveStreamViewModel : ObservableObject
 
     public string StateText => State switch
     {
-        LiveState.Live => "YAYINDA",
-        LiveState.Connecting => "Bağlanıyor…",
-        LiveState.Reconnecting => "Yeniden bağlanıyor…",
-        _ => "Kapalı",
+        LiveState.Live => Loc.T("Live_StateLive"),
+        LiveState.Connecting => Loc.T("Live_StateConnecting"),
+        LiveState.Reconnecting => Loc.T("Live_StateReconnecting"),
+        _ => Loc.T("Live_StateOff"),
     };
 
     public string TargetText => _settings.IsConfigured
         ? $"{_settings.Host}:{_settings.Port}{_settings.Mount} · MP3 {_settings.BitrateKbps} kbps"
-        : "Sunucu ayarlanmadı";
+        : Loc.T("Live_NoServer");
 
     [RelayCommand(CanExecute = nameof(IsOffline))]
     private async Task Start()
@@ -84,13 +85,13 @@ public partial class LiveStreamViewModel : ObservableObject
         OnPropertyChanged(nameof(TargetText));
         if (!_isOutputRunning())
         {
-            Message = "Yayın için önce bir dinleme çıkışı seçin; sesi o cihazın saati yürütür.";
+            Message = Loc.T("Live_NeedOutput");
             return;
         }
 
         if (Secrets.Unprotect(_settings.ProtectedPassword) is not { } password)
         {
-            Message = "Kayıtlı şifre okunamadı; ayarlardan şifreyi yeniden girin.";
+            Message = Loc.T("Live_PasswordUnreadable");
             return;
         }
 
@@ -103,7 +104,7 @@ public partial class LiveStreamViewModel : ObservableObject
         try
         {
             await _streamer.StartAsync(target);
-            Message = $"Yayın başladı: {target}";
+            Message = Loc.F("Live_Started", target);
             if (_title is not null) _ = _streamer.UpdateTitleAsync(_title);
         }
         catch (Exception ex) when (ex is IOException or ArgumentException or InvalidOperationException)
@@ -119,7 +120,7 @@ public partial class LiveStreamViewModel : ObservableObject
     {
         await _streamer.StopAsync();
         State = _streamer.State;
-        Message = "Yayın kapatıldı.";
+        Message = Loc.T("Live_Stopped");
     }
 
     [RelayCommand(CanExecute = nameof(IsOffline))]
@@ -148,7 +149,7 @@ public partial class LiveStreamViewModel : ObservableObject
         if (dropped > _reportedDrops)
         {
             _reportedDrops = dropped;
-            Message = "Bağlantı yavaş: sesin bir kısmı dinleyicilere ulaşmadı.";
+            Message = Loc.T("Live_SlowConnection");
         }
     }
 }

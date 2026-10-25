@@ -27,7 +27,7 @@ public static class Transcriber
         foreach (var chunk in SpeechAudio.ReadChunks(audio, service.ChunkLength))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            progress?.Report(new TranscriptionProgress("Yazıya çevriliyor", Math.Min(chunk.Offset.TotalSeconds / total, 1)));
+            progress?.Report(new TranscriptionProgress(Texts.Get("Stage_Transcribing"), Math.Min(chunk.Offset.TotalSeconds / total, 1)));
 
             var part = await service.TranscribeChunkAsync(chunk, language, cancellationToken);
             foreach (var segment in part)
@@ -40,7 +40,7 @@ public static class Transcriber
             }
         }
 
-        progress?.Report(new TranscriptionProgress("Bitti", 1));
+        progress?.Report(new TranscriptionProgress(Texts.Get("Stage_Done"), 1));
         return new Transcript(segments);
     }
 

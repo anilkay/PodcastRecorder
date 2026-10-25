@@ -1,6 +1,7 @@
 <Window x:Class="PodcastRecorder.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:PodcastRecorder.App.Localization"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:PodcastRecorder.App.ViewModels"
@@ -49,7 +50,7 @@
             <DockPanel LastChildFill="False">
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
                     <!-- Red outline with a red dot; filled red with a pulsing white dot while recording. -->
-                    <Button Style="{StaticResource RecordButton}" Command="{Binding StartRecordingCommand}" ToolTip="Kaydı başlat (Ctrl+R)">
+                    <Button Style="{StaticResource RecordButton}" Command="{Binding StartRecordingCommand}" ToolTip="{loc:T Main_KaydiBaslatCtrlR}">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="11" Height="11" Margin="0,0,8,0" VerticalAlignment="Center">
                                 <Ellipse.Style>
@@ -77,10 +78,10 @@
                             <TextBlock>
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="Text" Value="Kaydet" />
+                                        <Setter Property="Text" Value="{loc:T Main_Record}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsIdle}" Value="False">
-                                                <Setter Property="Text" Value="Kayıtta" />
+                                                <Setter Property="Text" Value="{loc:T Main_RecordingButton}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -88,7 +89,7 @@
                             </TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Command="{Binding TogglePauseCommand}" Content="{Binding PauseButtonText}" ToolTip="Duraklat / devam (Ctrl+P)">
+                    <Button Command="{Binding TogglePauseCommand}" Content="{Binding PauseButtonText}" ToolTip="{loc:T Main_DuraklatDevamCtrlP}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource TransportButton}">
                                 <Setter Property="services:ButtonAssist.Icon" Value="&#xE769;" />
@@ -101,37 +102,37 @@
                         </Button.Style>
                     </Button>
                     <Button Style="{StaticResource TransportButton}" services:ButtonAssist.Icon="&#xE71A;" Command="{Binding StopRecordingCommand}"
-                            Content="Durdur" ToolTip="Kaydı durdur ve dosyayı kaydet (Ctrl+Shift+R)" />
+                            Content="{loc:T Main_Durdur}" ToolTip="{loc:T Main_KaydiDurdurVeDosyayiKaydet}" />
                     <ToggleButton Style="{StaticResource MicrophoneToggle}" IsChecked="{Binding IsMicrophoneLive}"
                                   Content="{Binding MicrophoneButtonText}" Margin="6,0,0,0"
-                                  ToolTip="Kapalıyken mikrofon kayda girmez. Açıkken (ducking etkinse) müzik kısılır. (Ctrl+M)" />
+                                  ToolTip="{loc:T Main_KapaliykenMikrofonKaydaGirmezAcikken}" />
                     <TextBlock Text="{Binding ElapsedText}" FontFamily="Consolas" FontSize="28" FontWeight="SemiBold"
                                VerticalAlignment="Center" Margin="14,0,10,0" />
                     <TextBlock Text="{Binding StateText}" VerticalAlignment="Center" FontWeight="SemiBold"
                                Foreground="{DynamicResource MutedTextBrush}" />
                     <StackPanel VerticalAlignment="Center" Margin="14,0,16,0"
-                                ToolTip="Ses yüksekliği (EBU R128). Anlık: son 0,4 sn. Kayıt: kaydın tamamı. Podcast'ler için yaygın hedef -16 LUFS.">
+                                ToolTip="{loc:T Main_SesYuksekligiEbuR128Anlik}">
                         <TextBlock>
-                            <Run Text="Anlık:" Foreground="{DynamicResource MutedTextBrush}" />
+                            <Run Text="{loc:T Main_Anlik}" Foreground="{DynamicResource MutedTextBrush}" />
                             <Run Text="{Binding MomentaryLoudnessText, Mode=OneWay}" FontWeight="SemiBold" />
                         </TextBlock>
                         <TextBlock>
-                            <Run Text="Kayıt:" Foreground="{DynamicResource MutedTextBrush}" />
+                            <Run Text="{loc:T Main_Kayit}" Foreground="{DynamicResource MutedTextBrush}" />
                             <Run Text="{Binding IntegratedLoudnessText, Mode=OneWay}" FontWeight="SemiBold" />
                         </TextBlock>
                     </StackPanel>
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Format:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                    <TextBlock Text="{loc:T Main_Format}" VerticalAlignment="Center" Margin="0,0,6,0" />
                     <ComboBox ItemsSource="{Binding Encoders}" SelectedItem="{Binding SelectedEncoder}"
                               DisplayMemberPath="DisplayName" Width="120" IsEnabled="{Binding IsIdle}" Margin="0,0,8,0" />
-                    <CheckBox Content="Normalize et" IsChecked="{Binding NormalizeOnStop}" IsEnabled="{Binding IsIdle}"
+                    <CheckBox Content="{loc:T Main_NormalizeEt}" IsChecked="{Binding NormalizeOnStop}" IsEnabled="{Binding IsIdle}"
                               VerticalAlignment="Center" Margin="0,0,8,0" MinWidth="0"
-                              ToolTip="-16 LUFS'e normalize et: kayıt bitince ses yüksekliği ölçülür ve dosya podcast standardı -16 LUFS'e getirilir. Kayıt sırasında geçici bir WAV dosyası tutulur." />
-                    <CheckBox Content="Ayrı izler" IsChecked="{Binding RecordStems}" IsEnabled="{Binding IsIdle}"
+                              ToolTip="{loc:T Main_16LufsENormalizeEt}" />
+                    <CheckBox Content="{loc:T Main_AyriIzler}" IsChecked="{Binding RecordStems}" IsEnabled="{Binding IsIdle}"
                               VerticalAlignment="Center" MinWidth="0"
-                              ToolTip="Karışıma ek olarak her kanalı (her mikrofon, müzik, jingle) ayrı dosyaya da kaydeder. Kurgu için WAV veya FLAC önerilir." />
+                              ToolTip="{loc:T Main_KarisimaEkOlarakHerKanali}" />
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -139,28 +140,28 @@
         <!-- Devices and AI tools -->
         <StackPanel Grid.Row="1">
         <WrapPanel Orientation="Horizontal" Margin="4,10,0,6">
-            <TextBlock Text="Mikrofon ekle:" VerticalAlignment="Center" Margin="0,0,6,0" />
+            <TextBlock Text="{loc:T Main_MikrofonEkle}" VerticalAlignment="Center" Margin="0,0,6,0" />
             <ComboBox ItemsSource="{Binding InputDevices}" SelectedItem="{Binding InputToAdd}" DisplayMemberPath="Name"
                       Width="210" IsEnabled="{Binding IsIdle}" Margin="0,0,6,0" />
-            <Button Content="Ekle" services:ButtonAssist.Icon="&#xE710;" Command="{Binding AddMicrophoneCommand}" Margin="0,0,16,0" />
-            <TextBlock Text="Dinleme çıkışı (kulaklık):" VerticalAlignment="Center" Margin="0,0,6,0" />
+            <Button Content="{loc:T Main_Ekle}" services:ButtonAssist.Icon="&#xE710;" Command="{Binding AddMicrophoneCommand}" Margin="0,0,16,0" />
+            <TextBlock Text="{loc:T Main_DinlemeCikisiKulaklik}" VerticalAlignment="Center" Margin="0,0,6,0" />
             <ComboBox ItemsSource="{Binding OutputDevices}" SelectedItem="{Binding SelectedOutput}" DisplayMemberPath="Name"
                       Width="220" IsEnabled="{Binding IsIdle}" Margin="0,0,16,0" />
-            <CheckBox Content="Ducking" IsChecked="{Binding DuckingEnabled}" MinWidth="0"
-                      VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Mikrofon açıkken (ya da konuşunca) müziği kıs" />
+            <CheckBox Content="{loc:T Main_Ducking}" IsChecked="{Binding DuckingEnabled}" MinWidth="0"
+                      VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="{loc:T Main_MikrofonAcikkenYaDaKonusunca}" />
             <Slider Minimum="-30" Maximum="-3" Value="{Binding DuckLevelDb}" Width="100" VerticalAlignment="Center"
                     SmallChange="1" LargeChange="3" IsSnapToTickEnabled="True" TickFrequency="1"
-                    IsEnabled="{Binding DuckingEnabled}" ToolTip="Mikrofon açıkken müziğin seviyesi" />
+                    IsEnabled="{Binding DuckingEnabled}" ToolTip="{loc:T Main_MikrofonAcikkenMuziginSeviyesi}" />
             <TextBlock Text="{Binding DuckLevelDb, StringFormat={}{0:0} dB}" VerticalAlignment="Center" Margin="6,0,16,0" />
             <ComboBox ItemsSource="{Binding DuckingModes}" SelectedItem="{Binding SelectedDuckingMode}" DisplayMemberPath="Name"
                       Width="160" IsEnabled="{Binding DuckingEnabled}" Margin="0,0,8,0" />
             <StackPanel Orientation="Horizontal" Visibility="{Binding IsVoiceDucking, Converter={StaticResource BoolToVisibility}}"
-                        ToolTip="Mikrofon bu seviyeyi geçince konuşma algılanır. Ortam gürültüsü müziği kısıyorsa eşiği yükseltin.">
-                <TextBlock Text="Eşik:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                        ToolTip="{loc:T Main_MikrofonBuSeviyeyiGecinceKonusma}">
+                <TextBlock Text="{loc:T Main_Esik}" VerticalAlignment="Center" Margin="0,0,6,0" />
                 <Slider Minimum="-60" Maximum="-10" Value="{Binding VoiceThresholdDb}" Width="100" VerticalAlignment="Center"
                         IsSnapToTickEnabled="True" TickFrequency="1" />
                 <TextBlock Text="{Binding VoiceThresholdDb, StringFormat={}{0:0} dB}" VerticalAlignment="Center" Margin="6,0,6,0" />
-                <Ellipse Width="10" Height="10" VerticalAlignment="Center" ToolTip="Konuşma algılandı">
+                <Ellipse Width="10" Height="10" VerticalAlignment="Center" ToolTip="{loc:T Main_KonusmaAlgilandi}">
                     <Ellipse.Style>
                         <Style TargetType="Ellipse">
                             <Setter Property="Fill" Value="{DynamicResource BorderBrush}" />
@@ -178,12 +179,12 @@
         <Expander x:Name="AiExpander" Margin="0,0,0,10" DataContext="{Binding Ai}">
             <Expander.Header>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Yapay zeka: yazıya çevirme ve seslendirme (Whisper, OpenAI, Foundry)" FontWeight="SemiBold" />
-                    <TextBlock Text="  · transkript çıkarılıyor…" Foreground="{DynamicResource MutedTextBrush}"
+                    <TextBlock Text="{loc:T Main_YapayZekaYaziyaCevirmeVe}" FontWeight="SemiBold" />
+                    <TextBlock Text="{loc:T Main_TranskriptCikariliyor}" Foreground="{DynamicResource MutedTextBrush}"
                                Visibility="{Binding IsTranscribing, Converter={StaticResource BoolToVisibility}}" />
                 </StackPanel>
             </Expander.Header>
-            <TextBlock Text="Araçlar aşağıda, klasör gezgini ve listelerin yerinde açık. Kapatmak için başlığa yeniden tıklayın."
+            <TextBlock Text="{loc:T Main_AraclarAsagidaKlasorGezginiVe}"
                        Foreground="{DynamicResource MutedTextBrush}" FontSize="12" />
         </Expander>
         </StackPanel>
@@ -200,16 +201,16 @@
 
             <Border Grid.Column="0" Style="{StaticResource PanelBorder}" DataContext="{Binding Browser}">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Klasör gezgini" Style="{StaticResource PanelTitle}" />
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_KlasorGezgini}" Style="{StaticResource PanelTitle}" />
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
-                        <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE838;" Content="Klasör seç…" Command="{Binding ChooseFolderCommand}" />
-                        <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE74A;" Content="Üst klasör" Command="{Binding UpCommand}" />
+                        <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE838;" Content="{loc:T Main_KlasorSec}" Command="{Binding ChooseFolderCommand}" />
+                        <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE74A;" Content="{loc:T Main_UstKlasor}" Command="{Binding UpCommand}" />
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentFolder}" Foreground="{DynamicResource MutedTextBrush}"
                                TextTrimming="CharacterEllipsis" ToolTip="{Binding CurrentFolder}" Margin="0,0,0,6" />
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
                     <TextBlock DockPanel.Dock="Bottom" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
-                               Text="Çift tık: klasöre gir ya da listeye ekle. Dosyaları listeye veya jingle hücresine sürükleyin." />
+                               Text="{loc:T Main_CiftTikKlasoreGirYa}" />
                     <ListBox x:Name="BrowserList" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}"
                              PreviewMouseLeftButtonDown="BrowserList_PreviewMouseLeftButtonDown"
                              PreviewMouseMove="BrowserList_PreviewMouseMove">
@@ -231,33 +232,33 @@
 
             <Border Grid.Column="2" Style="{StaticResource PanelBorder}" DataContext="{Binding Playlist}">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Çalma listesi" Style="{StaticResource PanelTitle}" />
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_CalmaListesi}" Style="{StaticResource PanelTitle}" />
                     <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
                         <WrapPanel.Resources>
                             <Style TargetType="Button" BasedOn="{StaticResource GhostButton}" />
                         </WrapPanel.Resources>
-                        <Button services:ButtonAssist.Icon="&#xE768;" Content="Çal" Command="{Binding PlayCommand}" ToolTip="Seçili şarkıyı çal (F5)" />
-                        <Button services:ButtonAssist.Icon="&#xE71A;" Content="Durdur" Command="{Binding StopCommand}" ToolTip="Müziği durdur (F6)" />
-                        <Button services:ButtonAssist.Icon="&#xE893;" Content="Sonraki" Command="{Binding NextCommand}" ToolTip="Sonraki şarkı (F7)" />
-                        <Button services:ButtonAssist.Icon="&#xE710;" Content="Ekle…" Command="{Binding BrowseCommand}" />
-                        <Button services:ButtonAssist.Icon="&#xE70E;" Command="{Binding MoveUpCommand}" ToolTip="Yukarı taşı" />
-                        <Button services:ButtonAssist.Icon="&#xE70D;" Command="{Binding MoveDownCommand}" ToolTip="Aşağı taşı" />
-                        <Button services:ButtonAssist.Icon="&#xE74D;" Content="Kaldır" Command="{Binding RemoveCommand}" />
-                        <Button services:ButtonAssist.Icon="&#xE894;" Content="Temizle" Command="{Binding ClearCommand}" />
+                        <Button services:ButtonAssist.Icon="&#xE768;" Content="{loc:T Main_Cal}" Command="{Binding PlayCommand}" ToolTip="{loc:T Main_SeciliSarkiyiCalF5}" />
+                        <Button services:ButtonAssist.Icon="&#xE71A;" Content="{loc:T Main_Durdur}" Command="{Binding StopCommand}" ToolTip="{loc:T Main_MuzigiDurdurF6}" />
+                        <Button services:ButtonAssist.Icon="&#xE893;" Content="{loc:T Main_Sonraki}" Command="{Binding NextCommand}" ToolTip="{loc:T Main_SonrakiSarkiF7}" />
+                        <Button services:ButtonAssist.Icon="&#xE710;" Content="{loc:T Main_Ekle2}" Command="{Binding BrowseCommand}" />
+                        <Button services:ButtonAssist.Icon="&#xE70E;" Command="{Binding MoveUpCommand}" ToolTip="{loc:T Main_YukariTasi}" />
+                        <Button services:ButtonAssist.Icon="&#xE70D;" Command="{Binding MoveDownCommand}" ToolTip="{loc:T Main_AsagiTasi}" />
+                        <Button services:ButtonAssist.Icon="&#xE74D;" Content="{loc:T Main_Kaldir}" Command="{Binding RemoveCommand}" />
+                        <Button services:ButtonAssist.Icon="&#xE894;" Content="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
                     </WrapPanel>
                     <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
                         <ProgressBar Height="6" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}"
                                      Foreground="{DynamicResource AccentBrush}" BorderThickness="0" />
                         <DockPanel Margin="0,4,0,0">
-                            <CheckBox DockPanel.Dock="Right" Content="Bitince sonrakine geç" IsChecked="{Binding AutoAdvance}" />
+                            <CheckBox DockPanel.Dock="Right" Content="{loc:T Main_BitinceSonrakineGec}" IsChecked="{Binding AutoAdvance}" />
                             <TextBlock Text="{Binding PositionText}" FontFamily="Consolas" />
                         </DockPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
-                                    ToolTip="Şarkılar arasında bindirme süresi. 0 ise geçiş anında olur.">
-                            <TextBlock Text="Crossfade:" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    ToolTip="{loc:T Main_SarkilarArasindaBindirmeSuresi0}">
+                            <TextBlock Text="{loc:T Main_Crossfade}" VerticalAlignment="Center" Margin="0,0,8,0" />
                             <Slider Minimum="0" Maximum="10" Value="{Binding CrossfadeSeconds}" Width="140" VerticalAlignment="Center"
                                     IsSnapToTickEnabled="True" TickFrequency="0.5" SmallChange="0.5" LargeChange="1" />
-                            <TextBlock Text="{Binding CrossfadeSeconds, StringFormat={}{0:0.0} sn}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                            <TextBlock Text="{Binding CrossfadeSeconds, StringFormat={loc:T Main_SecondsFormat}}" VerticalAlignment="Center" Margin="6,0,0,0" />
                         </StackPanel>
                         <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
                     </StackPanel>
@@ -295,16 +296,16 @@
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top">
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE710;" Content="Sekme"
-                                    Command="{Binding NewBankCommand}" ToolTip="Yeni jingle sekmesi" />
-                            <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE74D;" Content="Sil"
-                                    Command="{Binding RemoveBankCommand}" ToolTip="Sekmeyi sil" />
-                            <Button services:ButtonAssist.Icon="&#xE71A;" Content="Tümünü durdur" Command="{Binding StopAllCommand}" Margin="4,0,0,0"
-                                    ToolTip="Çalan bütün jingle'ları durdur (Esc)" />
+                            <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE710;" Content="{loc:T Main_Sekme}"
+                                    Command="{Binding NewBankCommand}" ToolTip="{loc:T Main_YeniJingleSekmesi}" />
+                            <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE74D;" Content="{loc:T Main_Sil}"
+                                    Command="{Binding RemoveBankCommand}" ToolTip="{loc:T Main_SekmeyiSil}" />
+                            <Button services:ButtonAssist.Icon="&#xE71A;" Content="{loc:T Main_TumunuDurdur}" Command="{Binding StopAllCommand}" Margin="4,0,0,0"
+                                    ToolTip="{loc:T Main_CalanButunJingleLariDurdur}" />
                         </StackPanel>
                         <!-- The usage hint is a tooltip so the pads get the height. -->
-                        <TextBlock Text="Jingle paneli ⓘ" Style="{StaticResource PanelTitle}"
-                                   ToolTip="Tıkla ya da köşedeki tuşa bas: çal / durdur. Dosyayı hücreye sürükleyin; sağ tık ile dosya seçin veya temizleyin." />
+                        <TextBlock Text="{loc:T Main_JinglePaneli}" Style="{StaticResource PanelTitle}"
+                                   ToolTip="{loc:T Main_TiklaYaDaKosedekiTusa}" />
                     </DockPanel>
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
                     <TabControl ItemsSource="{Binding Banks}" SelectedItem="{Binding SelectedBank}">
@@ -317,12 +318,12 @@
                             <DataTemplate>
                                 <DockPanel Margin="0,6,0,0">
                                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock Text="Ad:" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,12,0" />
-                                        <TextBlock Text="Satır:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBlock Text="{loc:T Main_Ad}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="96" Margin="0,0,10,0" />
+                                        <TextBlock Text="{loc:T Main_Satir}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Rows}"
                                                   Width="72" Margin="0,0,12,0" />
-                                        <TextBlock Text="Sütun:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBlock Text="{loc:T Main_Sutun}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Columns}"
                                                   Width="72" />
                                     </StackPanel>
@@ -339,8 +340,8 @@
                                                         DragOver="FileDrop_DragOver" Drop="JingleCell_Drop" ToolTip="{Binding FilePath}">
                                                     <Button.ContextMenu>
                                                         <ContextMenu>
-                                                            <MenuItem Header="Dosya seç…" Command="{Binding BrowseCommand}" />
-                                                            <MenuItem Header="Temizle" Command="{Binding ClearCommand}" />
+                                                            <MenuItem Header="{loc:T Main_DosyaSec}" Command="{Binding BrowseCommand}" />
+                                                            <MenuItem Header="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
                                                         </ContextMenu>
                                                     </Button.ContextMenu>
                                                     <Button.Template>
@@ -402,25 +403,25 @@
 
                         <!-- Speech to text -->
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Konuşmayı yazıya çevir (transkript)" Style="{StaticResource PanelTitle}" />
+                            <TextBlock Text="{loc:T Main_KonusmayiYaziyaCevirTranskript}" Style="{StaticResource PanelTitle}" />
                             <WrapPanel>
-                                <TextBlock Text="Servis:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBlock Text="{loc:T Main_Servis}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <ComboBox ItemsSource="{x:Static vm:AiViewModel.TranscriptionProviders}" DisplayMemberPath="Name"
                                           SelectedValuePath="Id" SelectedValue="{Binding TranscriptionProvider}" Width="210" Margin="0,0,6,0" />
-                                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE713;" Content="Ayarlar" Command="{Binding OpenServiceSettingsCommand}" Click="ServiceSettingsButton_Click"
+                                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE713;" Content="{loc:T Main_Ayarlar}" Command="{Binding OpenServiceSettingsCommand}" Click="ServiceSettingsButton_Click"
                                         CommandParameter="{Binding TranscriptionProvider}" Margin="0,0,12,0"
-                                        ToolTip="Seçili servisin anahtar ve model ayarlarını aç" />
-                                <TextBlock Text="Dil:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        ToolTip="{loc:T Main_SeciliServisinAnahtarVeModel}" />
+                                <TextBlock Text="{loc:T Main_Dil}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBox Text="{Binding Language, UpdateSourceTrigger=PropertyChanged}" Width="40"
-                                         ToolTip="tr, en, de… Boş bırakılırsa dil otomatik algılanır." />
+                                         ToolTip="{loc:T Main_TrEnDeBosBirakilirsa}" />
                             </WrapPanel>
                             <WrapPanel Margin="0,6,0,0">
-                                <CheckBox Content="Kayıt bitince otomatik çıkar" IsChecked="{Binding TranscribeOnStop}"
+                                <CheckBox Content="{loc:T Main_KayitBitinceOtomatikCikar}" IsChecked="{Binding TranscribeOnStop}"
                                           VerticalAlignment="Center" Margin="0,0,12,0"
-                                          ToolTip="Kayıt dosyasının yanına aynı adla .txt (zaman damgalı metin) ve .srt (altyazı) yazılır." />
-                                <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE8E5;" Content="Dosya seç ve çevir…" Command="{Binding TranscribeFileCommand}" />
-                                <Button services:ButtonAssist.Icon="&#xE711;" Content="İptal" Command="{Binding CancelTranscriptionCommand}" />
-                                <Button services:ButtonAssist.Icon="&#xE8A5;" Content="Transkripti aç" Command="{Binding OpenTranscriptCommand}" />
+                                          ToolTip="{loc:T Main_KayitDosyasininYaninaAyniAdla}" />
+                                <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE8E5;" Content="{loc:T Main_DosyaSecVeCevir}" Command="{Binding TranscribeFileCommand}" />
+                                <Button services:ButtonAssist.Icon="&#xE711;" Content="{loc:T Main_Iptal}" Command="{Binding CancelTranscriptionCommand}" />
+                                <Button services:ButtonAssist.Icon="&#xE8A5;" Content="{loc:T Main_TranskriptiAc}" Command="{Binding OpenTranscriptCommand}" />
                             </WrapPanel>
                             <ProgressBar Height="6" Minimum="0" Maximum="1" Value="{Binding TranscriptionProgress, Mode=OneWay}"
                                          Foreground="{DynamicResource AccentBrush}" BorderThickness="0" Margin="0,6,0,0"
@@ -431,27 +432,27 @@
 
                         <!-- Text to speech -->
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Metinden ses (anons, jingle)" Style="{StaticResource PanelTitle}" />
+                            <TextBlock Text="{loc:T Main_MetindenSesAnonsJingle}" Style="{StaticResource PanelTitle}" />
                             <WrapPanel>
-                                <TextBlock Text="Servis:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBlock Text="{loc:T Main_Servis}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <ComboBox ItemsSource="{x:Static vm:AiViewModel.SynthesisProviders}" DisplayMemberPath="Name"
                                           SelectedValuePath="Id" SelectedValue="{Binding SynthesisProvider}" Width="210" Margin="0,0,6,0" />
-                                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE713;" Content="Ayarlar" Command="{Binding OpenServiceSettingsCommand}" Click="ServiceSettingsButton_Click"
+                                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE713;" Content="{loc:T Main_Ayarlar}" Command="{Binding OpenServiceSettingsCommand}" Click="ServiceSettingsButton_Click"
                                         CommandParameter="{Binding SynthesisProvider}" Margin="0,0,12,0"
-                                        ToolTip="Seçili servisin anahtar ve model ayarlarını aç" />
-                                <TextBlock Text="Ses:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        ToolTip="{loc:T Main_SeciliServisinAnahtarVeModel}" />
+                                <TextBlock Text="{loc:T Main_Ses}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <ComboBox ItemsSource="{Binding VoiceSuggestions}" Text="{Binding Voice, UpdateSourceTrigger=LostFocus}"
                                           IsEditable="True" Width="210"
-                                          ToolTip="Listeden seçin ya da servisteki bir sesin adını yazın." />
+                                          ToolTip="{loc:T Main_ListedenSecinYaDaServisteki}" />
                             </WrapPanel>
                             <TextBox Text="{Binding SpeechText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True"
                                      TextWrapping="Wrap" Height="52" Margin="0,6,0,0" VerticalScrollBarVisibility="Auto"
-                                     ToolTip="Seslendirilecek metin, ör. &quot;Şimdi kısa bir reklam arası veriyoruz.&quot;" />
+                                     ToolTip="{loc:T Main_SeslendirilecekMetinOrSimdiKisa}" />
                             <WrapPanel Margin="0,6,0,0">
-                                <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE767;" Content="Sesi oluştur" Command="{Binding SynthesizeCommand}"
-                                        ToolTip="Dosya, kayıt klasöründeki Anonslar klasörüne yazılır." />
-                                <Button services:ButtonAssist.Icon="&#xE710;" Content="Çalma listesine ekle" Command="{Binding AddSpeechToPlaylistCommand}" />
-                                <Button services:ButtonAssist.Icon="&#xE8A9;" Content="Boş jingle hücresine ata" Command="{Binding AssignSpeechToJingleCommand}" />
+                                <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE767;" Content="{loc:T Main_SesiOlustur}" Command="{Binding SynthesizeCommand}"
+                                        ToolTip="{loc:T Main_DosyaKayitKlasorundekiAnonslarKlasor}" />
+                                <Button services:ButtonAssist.Icon="&#xE710;" Content="{loc:T Main_CalmaListesineEkle}" Command="{Binding AddSpeechToPlaylistCommand}" />
+                                <Button services:ButtonAssist.Icon="&#xE8A9;" Content="{loc:T Main_BosJingleHucresineAta}" Command="{Binding AssignSpeechToJingleCommand}" />
                             </WrapPanel>
                             <TextBlock Text="{Binding SynthesisStatus}" TextWrapping="Wrap" Margin="0,4,0,0"
                                        Foreground="{DynamicResource MutedTextBrush}" />
@@ -459,19 +460,19 @@
                     </Grid>
 
                     <!-- Tab order must match AiViewModel.ServiceSettingsTabs. -->
-                    <Expander x:Name="ServiceSettings" Header="Servis ayarları (API anahtarları, modeller)" Margin="0,10,0,0"
+                    <Expander x:Name="ServiceSettings" Header="{loc:T Main_ServisAyarlariApiAnahtarlariModeller}" Margin="0,10,0,0"
                               IsExpanded="{Binding IsServiceSettingsOpen, Mode=TwoWay}" Expanded="ServiceSettings_Changed">
                         <TabControl Margin="0,6,0,0" SelectedIndex="{Binding ServiceSettingsTab, Mode=TwoWay}"
                                     SelectionChanged="ServiceSettings_Changed">
-                            <TabItem Header="Whisper (bu bilgisayarda)">
+                            <TabItem Header="{loc:T Main_WhisperBuBilgisayarda}">
                                 <StackPanel Margin="8">
                                     <WrapPanel>
-                                        <TextBlock Text="Model:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBlock Text="{loc:T Main_Model}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <ComboBox ItemsSource="{x:Static vm:AiViewModel.WhisperModels}" DisplayMemberPath="DisplayName"
                                                   SelectedValuePath="Id" SelectedValue="{Binding WhisperModel}" Width="260" />
                                     </WrapPanel>
                                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{DynamicResource MutedTextBrush}">
-                                        <Run Text="Ücretsiz ve internetsiz çalışır, ama işlemcide bulut servislerinden yavaştır. Model ilk kullanımda indirilir:" />
+                                        <Run Text="{loc:T Main_UcretsizVeInternetsizCalisirAma}" />
                                         <Run Text="{x:Static vm:AiViewModel.WhisperModelFolder}" />
                                     </TextBlock>
                                 </StackPanel>
@@ -479,18 +480,18 @@
                             <TabItem Header="OpenAI">
                                 <StackPanel Margin="8">
                                     <WrapPanel>
-                                        <TextBlock Text="API anahtarı:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBlock Text="{loc:T Main_ApiAnahtari}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <PasswordBox services:PasswordBoxAssist.Password="{Binding OpenAiKey}" Width="260" Margin="0,0,12,0" />
-                                        <TextBlock Text="Adres:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBlock Text="{loc:T Main_Adres}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <TextBox Text="{Binding OpenAiBaseUrl, UpdateSourceTrigger=PropertyChanged}" Width="240"
-                                                 ToolTip="OpenAI uyumlu başka bir servis kullanıyorsanız adresini yazın." />
+                                                 ToolTip="{loc:T Main_OpenaiUyumluBaskaBirServis}" />
                                     </WrapPanel>
                                     <WrapPanel Margin="0,6,0,0">
-                                        <TextBlock Text="Yazıya çevirme modeli:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBlock Text="{loc:T Main_YaziyaCevirmeModeli}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <ComboBox ItemsSource="{x:Static vm:AiViewModel.OpenAiTranscriptionModels}" IsEditable="True"
                                                   Text="{Binding OpenAiTranscriptionModel, UpdateSourceTrigger=LostFocus}" Width="190" Margin="0,0,12,0"
-                                                  ToolTip="Zaman damgalı altyazı yalnızca whisper-1 ile çıkar; gpt-4o modelleri daha doğru ama her 10 dakikayı tek parça verir." />
-                                        <TextBlock Text="Seslendirme modeli:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                  ToolTip="{loc:T Main_ZamanDamgaliAltyaziYalnizcaWhisper}" />
+                                        <TextBlock Text="{loc:T Main_SeslendirmeModeli}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <ComboBox ItemsSource="{x:Static vm:AiViewModel.OpenAiSpeechModels}" IsEditable="True"
                                                   Text="{Binding OpenAiSpeechModel, UpdateSourceTrigger=LostFocus}" Width="170" />
                                     </WrapPanel>
@@ -499,43 +500,43 @@
                             <TabItem Header="Azure OpenAI / Foundry">
                                 <StackPanel Margin="8">
                                     <WrapPanel>
-                                        <TextBlock Text="Uç nokta:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBlock Text="{loc:T Main_UcNokta}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <TextBox Text="{Binding AzureOpenAiEndpoint, UpdateSourceTrigger=PropertyChanged}" Width="300" Margin="0,0,12,0"
-                                                 ToolTip="ör. https://kaynak-adi.openai.azure.com ya da https://kaynak-adi.services.ai.azure.com" />
-                                        <TextBlock Text="API anahtarı:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                 ToolTip="{loc:T Main_OrHttpsKaynakAdiOpenai}" />
+                                        <TextBlock Text="{loc:T Main_ApiAnahtari}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <PasswordBox services:PasswordBoxAssist.Password="{Binding AzureOpenAiKey}" Width="240" />
                                     </WrapPanel>
                                     <WrapPanel Margin="0,6,0,0">
-                                        <TextBlock Text="Yazıya çevirme dağıtımı:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBlock Text="{loc:T Main_YaziyaCevirmeDagitimi}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <TextBox Text="{Binding AzureOpenAiTranscriptionDeployment, UpdateSourceTrigger=PropertyChanged}" Width="160" Margin="0,0,12,0" />
-                                        <TextBlock Text="Seslendirme dağıtımı:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBlock Text="{loc:T Main_SeslendirmeDagitimi}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <TextBox Text="{Binding AzureOpenAiSpeechDeployment, UpdateSourceTrigger=PropertyChanged}" Width="160" />
                                     </WrapPanel>
                                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{DynamicResource MutedTextBrush}"
-                                               Text="Foundry portalında whisper ya da gpt-4o-transcribe ve tts ya da gpt-4o-mini-tts modellerini dağıtın; burada dağıtım (deployment) adlarını yazın." />
+                                               Text="{loc:T Main_FoundryPortalindaWhisperYaDa}" />
                                 </StackPanel>
                             </TabItem>
                             <TabItem Header="Azure AI Speech (Foundry)">
                                 <StackPanel Margin="8">
                                     <WrapPanel>
-                                        <TextBlock Text="Bölge:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                        <TextBlock Text="{loc:T Main_Bolge}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <TextBox Text="{Binding AzureSpeechRegion, UpdateSourceTrigger=PropertyChanged}" Width="140" Margin="0,0,12,0"
-                                                 ToolTip="ör. westeurope, swedencentral" />
-                                        <TextBlock Text="Anahtar:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                 ToolTip="{loc:T Main_OrWesteuropeSwedencentral}" />
+                                        <TextBlock Text="{loc:T Main_Anahtar}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                         <PasswordBox services:PasswordBoxAssist.Password="{Binding AzureSpeechKey}" Width="240" />
                                     </WrapPanel>
                                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{DynamicResource MutedTextBrush}"
-                                               Text="Speech kaynağının &quot;Keys and Endpoint&quot; sayfasındaki anahtar ve bölge. Türkçe için tr-TR-EmelNeural ve tr-TR-AhmetNeural sesleri hazır gelir." />
+                                               Text="{loc:T Main_SpeechKaynagininKeysAndEndpoint}" />
                                 </StackPanel>
                             </TabItem>
-                            <TabItem Header="Windows sesleri">
+                            <TabItem Header="{loc:T Main_WindowsSesleri}">
                                 <TextBlock Margin="8" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}"
-                                           Text="İnternetsiz ve ücretsizdir. Türkçe ses için Windows Ayarlar › Saat ve dil › Konuşma bölümünden Türkçe konuşma paketini ekleyin; ses listesi uygulama açılırken okunur." />
+                                           Text="{loc:T Main_InternetsizVeUcretsizdirTurkceSes}" />
                             </TabItem>
                         </TabControl>
                     </Expander>
                     <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}"
-                               Text="API anahtarları ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Bulut servislerine gönderilen ses ve metin için ilgili servisin ücret ve gizlilik koşulları geçerlidir." />
+                               Text="{loc:T Main_ApiAnahtarlariAyarDosyasindaWindows}" />
                 </StackPanel>
             </ScrollViewer>
         </Border>
@@ -543,21 +544,21 @@
         <!-- Mixer: channel strips scroll sideways when there are many microphones -->
         <DockPanel Grid.Row="3" Margin="0,12,0,0" Height="250">
             <Border DockPanel.Dock="Right" Style="{StaticResource PanelBorder}" Width="120" Margin="8,0,0,0" Padding="8"
-                    ToolTip="Kulaklıkta duyulan sesin seviyesi. Mikrofon varsayılan olarak kulaklığa verilmez (gecikmeli yankı olmasın diye), ama her zaman kayda girer.">
+                    ToolTip="{loc:T Main_KulakliktaDuyulanSesinSeviyesiMikrof}">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Kulaklık" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_Kulaklik}" FontWeight="SemiBold" HorizontalAlignment="Center" />
                     <Slider Orientation="Vertical" Minimum="0" Maximum="1.5" Value="{Binding MonitorVolume}"
                             SmallChange="0.05" LargeChange="0.1" HorizontalAlignment="Center" Margin="0,6,0,0" />
                 </DockPanel>
             </Border>
 
             <Border DockPanel.Dock="Right" Style="{StaticResource PanelBorder}" Width="140" Margin="8,0,0,0" Padding="8"
-                    BorderBrush="{DynamicResource AccentBrush}" ToolTip="Kayda giden toplam ses">
+                    BorderBrush="{DynamicResource AccentBrush}" ToolTip="{loc:T Main_KaydaGidenToplamSes}">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Master (kayıt)" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_MasterKayit}" FontWeight="SemiBold" HorizontalAlignment="Center" />
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0"
-                                ToolTip="Kayıt -1 dB'yi geçmesin diye tepe seviyeleri anlık kısar. Turuncu: şu an kısıyor.">
-                        <CheckBox Content="Limiter" IsChecked="{Binding LimiterEnabled}" />
+                                ToolTip="{loc:T Main_Kayit1DbYiGecmesin}">
+                        <CheckBox Content="{loc:T Main_Limiter}" IsChecked="{Binding LimiterEnabled}" />
                         <Ellipse Width="8" Height="8" Margin="6,0,0,0" VerticalAlignment="Center" Fill="{DynamicResource WarningBrush}"
                                  Visibility="{Binding IsLimiting, Converter={StaticResource BoolToVisibility}}" />
                     </StackPanel>
@@ -567,7 +568,7 @@
                         <ProgressBar Style="{StaticResource VerticalMeter}" Value="{Binding MasterMeter.Left, Mode=OneWay}" />
                         <ProgressBar Style="{StaticResource VerticalMeter}" Value="{Binding MasterMeter.Right, Mode=OneWay}" />
                         <Ellipse Width="8" Height="8" Margin="4,0,0,0" VerticalAlignment="Top" Fill="{DynamicResource RecordBrush}"
-                                 ToolTip="Kırpılma (clip)"
+                                 ToolTip="{loc:T Main_KirpilmaClip}"
                                  Visibility="{Binding MasterMeter.IsClipping, Converter={StaticResource BoolToVisibility}}" />
                     </StackPanel>
                 </DockPanel>
@@ -586,7 +587,7 @@
                     </Style>
                 </Border.Style>
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Canlı yayın" Style="{StaticResource PanelTitle}" />
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_CanliYayin}" Style="{StaticResource PanelTitle}" />
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                         <Ellipse Width="10" Height="10" Fill="{DynamicResource RecordBrush}" Margin="0,0,8,0" VerticalAlignment="Center"
                                  Visibility="{Binding IsLive, Converter={StaticResource BoolToVisibility}}" />
@@ -597,10 +598,10 @@
                     <TextBlock DockPanel.Dock="Top" Text="{Binding TargetText}" Foreground="{DynamicResource MutedTextBrush}"
                                TextTrimming="CharacterEllipsis" ToolTip="{Binding TargetText}" Margin="0,4,0,8" />
                     <WrapPanel DockPanel.Dock="Top">
-                        <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE93E;" Content="Yayına başla" Command="{Binding StartCommand}"
-                                ToolTip="Master sesini Icecast sunucusuna gönder (Ctrl+L)" />
-                        <Button Style="{StaticResource DangerButton}" services:ButtonAssist.Icon="&#xE71A;" Content="Yayını durdur" Command="{Binding StopCommand}" ToolTip="Ctrl+Shift+L" />
-                        <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE713;" Content="Ayarlar…" Command="{Binding EditSettingsCommand}" Margin="0" />
+                        <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE93E;" Content="{loc:T Main_YayinaBasla}" Command="{Binding StartCommand}"
+                                ToolTip="{loc:T Main_MasterSesiniIcecastSunucusunaGonder}" />
+                        <Button Style="{StaticResource DangerButton}" services:ButtonAssist.Icon="&#xE71A;" Content="{loc:T Main_YayiniDurdur}" Command="{Binding StopCommand}" ToolTip="Ctrl+Shift+L" />
+                        <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE713;" Content="{loc:T Main_Ayarlar2}" Command="{Binding EditSettingsCommand}" Margin="0" />
                     </WrapPanel>
                     <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{DynamicResource MutedTextBrush}" />
                 </DockPanel>
@@ -619,18 +620,22 @@
 
         <!-- Status -->
         <DockPanel Grid.Row="4" Margin="4,10,0,0">
-            <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE765;" Content="Kısayollar (F1)" Command="ApplicationCommands.Help" Margin="0" />
+            <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE765;" Content="{loc:T Main_KisayollarF1}" Command="ApplicationCommands.Help" Margin="0" />
             <ComboBox DockPanel.Dock="Right" ItemsSource="{x:Static vm:MainViewModel.Themes}" DisplayMemberPath="Name"
-                      SelectedItem="{Binding SelectedTheme}" Width="90" Margin="0,0,8,0" ToolTip="Görünüm: açık, koyu ya da Windows'a göre" />
-            <TextBlock DockPanel.Dock="Right" Text="Tema:" VerticalAlignment="Center" Margin="12,0,6,0" />
+                      SelectedItem="{Binding SelectedTheme}" Width="90" Margin="0,0,8,0" ToolTip="{loc:T Main_GorunumAcikKoyuYaDa}" />
+            <TextBlock DockPanel.Dock="Right" Text="{loc:T Main_Tema}" VerticalAlignment="Center" Margin="12,0,6,0" />
+            <!-- Each language is listed in its own name. -->
+            <ComboBox DockPanel.Dock="Right" ItemsSource="{x:Static vm:MainViewModel.Languages}" DisplayMemberPath="Name"
+                      SelectedItem="{Binding SelectedLanguage}" Width="150" Margin="0" ToolTip="{loc:T Main_LanguageTip}" />
+            <TextBlock DockPanel.Dock="Right" Text="{loc:T Main_Dil}" VerticalAlignment="Center" Margin="12,0,6,0" />
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,16,0">
-                <TextBlock Text="Kayıt klasörü:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                <TextBlock Text="{loc:T Main_KayitKlasoru}" VerticalAlignment="Center" Margin="0,0,6,0" />
                 <TextBlock Text="{Binding RecordingFolder}" VerticalAlignment="Center" MaxWidth="260"
                            TextTrimming="CharacterEllipsis" ToolTip="{Binding RecordingFolder}" Margin="0,0,6,0" />
-                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE70F;" Command="{Binding ChooseRecordingFolderCommand}" IsEnabled="{Binding IsIdle}" ToolTip="Kayıt klasörünü değiştir" />
-                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE838;" Content="Klasörü aç" Command="{Binding OpenRecordingFolderCommand}" />
-                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE8EC;" Content="Dosya bilgileri…" Click="RecordingTags_Click" Margin="0"
-                        ToolTip="Kayda yazılacak başlık, sunucu, program, bölüm no, tür ve kapak resmi" />
+                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE70F;" Command="{Binding ChooseRecordingFolderCommand}" IsEnabled="{Binding IsIdle}" ToolTip="{loc:T Main_KayitKlasorunuDegistir}" />
+                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE838;" Content="{loc:T Main_KlasoruAc}" Command="{Binding OpenRecordingFolderCommand}" />
+                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE8EC;" Content="{loc:T Main_DosyaBilgileri}" Click="RecordingTags_Click" Margin="0"
+                        ToolTip="{loc:T Main_KaydaYazilacakBaslikSunucuProgram}" />
             </StackPanel>
             <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource MutedTextBrush}"
                        TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />

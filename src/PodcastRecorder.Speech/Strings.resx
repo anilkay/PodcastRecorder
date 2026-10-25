@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Azure_NoKey" xml:space="preserve"><value>Azure Speech anahtarı girilmemiş.</value></data>
+  <data name="Azure_NoRegion" xml:space="preserve"><value>Azure Speech bölgesi girilmemiş (ör. westeurope).</value></data>
+  <data name="Http_Error" xml:space="preserve"><value>Servis hata döndürdü ({0}).</value></data>
+  <data name="Http_NotFound" xml:space="preserve"><value>Adres, model ya da dağıtım (deployment) bulunamadı.</value></data>
+  <data name="Http_TooLarge" xml:space="preserve"><value>Gönderilen ses dosyası servisin sınırından büyük.</value></data>
+  <data name="Http_TooManyRequests" xml:space="preserve"><value>Hız sınırı ya da kota aşıldı; biraz sonra yeniden deneyin.</value></data>
+  <data name="Http_Unauthorized" xml:space="preserve"><value>API anahtarı geçersiz ya da bu kaynağa izni yok.</value></data>
+  <data name="OpenAi_BadAzureEndpoint" xml:space="preserve"><value>Azure adresi https:// ile başlayan tam bir adres olmalı, ör. https://kaynak-adi.openai.azure.com</value></data>
+  <data name="OpenAi_NoKey" xml:space="preserve"><value>API anahtarı girilmemiş.</value></data>
+  <data name="Stage_Done" xml:space="preserve"><value>Bitti</value></data>
+  <data name="Stage_DownloadingModel" xml:space="preserve"><value>Whisper modeli indiriliyor ({0} / ~{1} MB)</value></data>
+  <data name="Stage_LoadingModel" xml:space="preserve"><value>Whisper modeli yükleniyor</value></data>
+  <data name="Stage_Transcribing" xml:space="preserve"><value>Yazıya çevriliyor</value></data>
+  <data name="Whisper_Base" xml:space="preserve"><value>Base (142 MB)</value></data>
+  <data name="Whisper_DownloadFailed" xml:space="preserve"><value>Whisper modeli indirilemedi: {0}</value></data>
+  <data name="Whisper_LargeV3Turbo" xml:space="preserve"><value>Large v3 Turbo (1,6 GB, en doğru)</value></data>
+  <data name="Whisper_Medium" xml:space="preserve"><value>Medium (1,5 GB)</value></data>
+  <data name="Whisper_Small" xml:space="preserve"><value>Small (466 MB)</value></data>
+  <data name="Whisper_Tiny" xml:space="preserve"><value>Tiny (75 MB, en hızlı)</value></data>
+  <data name="Windows_VoiceMissing" xml:space="preserve"><value>Windows&apos;ta &quot;{0}&quot; sesi yüklü değil.</value></data>
+</root>

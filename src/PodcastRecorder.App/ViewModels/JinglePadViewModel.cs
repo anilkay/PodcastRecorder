@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PodcastRecorder.App.Services;
 using PodcastRecorder.Audio.Sources;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.ViewModels;
 
@@ -26,7 +27,7 @@ public partial class JingleCellViewModel(string key, int index, JinglePadViewMod
 
     public bool HasFile => FilePath is not null;
 
-    public string Title => FilePath is null ? "Boş" : Path.GetFileNameWithoutExtension(FilePath);
+    public string Title => FilePath is null ? Loc.T("Pad_Empty") : Path.GetFileNameWithoutExtension(FilePath);
 
     public void Assign(string path)
     {
@@ -151,7 +152,7 @@ public partial class JinglePadViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void NewBank() => SelectedBank = AddBank($"Sekme {Banks.Count + 1}");
+    private void NewBank() => SelectedBank = AddBank(Loc.F("Pad_TabName", Banks.Count + 1));
 
     [RelayCommand(CanExecute = nameof(CanRemoveBank))]
     private void RemoveBank()
@@ -191,7 +192,7 @@ public partial class JinglePadViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Jingle çalınamadı: {cell.Title} ({ex.Message})";
+            ErrorMessage = Loc.F("Pad_PlayFailed", cell.Title, ex.Message);
         }
     }
 

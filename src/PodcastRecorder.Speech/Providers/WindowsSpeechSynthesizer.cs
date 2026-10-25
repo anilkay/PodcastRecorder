@@ -33,7 +33,7 @@ public sealed class WindowsSpeechSynthesizer : ITextToSpeech
                 }
                 catch (ArgumentException ex)
                 {
-                    throw new SpeechException($"Windows'ta \"{voice}\" sesi yüklü değil.", ex);
+                    throw new SpeechException(Texts.Format("Windows_VoiceMissing", voice), ex);
                 }
             }
 

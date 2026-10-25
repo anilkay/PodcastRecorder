@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using PodcastRecorder.App.Services;
 using PodcastRecorder.Speech;
 using PodcastRecorder.Speech.Providers;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.ViewModels;
 
@@ -184,19 +185,19 @@ public partial class AiViewModel : ObservableObject, IDisposable
     {
         if (IsTranscribing)
         {
-            TranscriptionStatus = "Önceki transkript bitmeden yenisi başlatılamaz.";
+            TranscriptionStatus = Loc.T("Ai_TranscriptBusy");
             return;
         }
 
         IsTranscribing = true;
         TranscriptionProgress = 0;
-        TranscriptionStatus = $"Hazırlanıyor: {Path.GetFileName(audioPath)}";
+        TranscriptionStatus = Loc.F("Ai_Preparing", Path.GetFileName(audioPath));
         _transcription = new CancellationTokenSource();
         var token = _transcription.Token;
         var progress = new Progress<TranscriptionProgress>(p =>
         {
             TranscriptionProgress = p.Fraction;
-            TranscriptionStatus = $"{p.Stage}… %{p.Fraction * 100:0}";
+            TranscriptionStatus = Loc.F("Ai_Progress", p.Stage, p.Fraction * 100);
         });
         var language = string.IsNullOrWhiteSpace(Language) ? null : Language.Trim();
         ISpeechToText? service = null;
@@ -206,22 +207,22 @@ public partial class AiViewModel : ObservableObject, IDisposable
             var transcript = await Task.Run(() => Transcriber.TranscribeFileAsync(service, audioPath, language, progress, token), token);
             LastTranscriptPath = await transcript.SaveNextToAsync(audioPath, token);
             TranscriptionStatus = transcript.Segments.Count == 0
-                ? $"Kayıtta konuşma bulunamadı. Boş transkript: {LastTranscriptPath}"
-                : $"Transkript kaydedildi: {LastTranscriptPath} (+ .srt altyazı)";
+                ? Loc.F("Ai_NoSpeech", LastTranscriptPath)
+                : Loc.F("Ai_TranscriptSaved", LastTranscriptPath);
         }
         catch (OperationCanceledException)
         {
-            TranscriptionStatus = "Transkript iptal edildi.";
+            TranscriptionStatus = Loc.T("Ai_TranscriptCanceled");
         }
         catch (SpeechException ex)
         {
             // Usually a missing key, address or region: show where to enter it.
-            TranscriptionStatus = $"Transkript çıkarılamadı: {ex.Message}";
+            TranscriptionStatus = Loc.F("Ai_TranscriptFailed", ex.Message);
             OpenServiceSettings(TranscriptionProvider);
         }
         catch (Exception ex)
         {
-            TranscriptionStatus = $"Transkript çıkarılamadı: {ex.Message}";
+            TranscriptionStatus = Loc.F("Ai_TranscriptFailed", ex.Message);
         }
         finally
         {
@@ -259,38 +260,38 @@ public partial class AiViewModel : ObservableObject, IDisposable
 
     private bool CanSynthesize() => !IsSynthesizing && !string.IsNullOrWhiteSpace(SpeechText);
 
-    /// <summary>Writes the spoken text to the "Anonslar" folder under the recording folder.</summary>
+    /// <summary>Writes the spoken text to the Loc.T("Ai_AnnouncementsFolder") folder under the recording folder.</summary>
     [RelayCommand(CanExecute = nameof(CanSynthesize))]
     private async Task Synthesize()
     {
         var text = SpeechText.Trim();
         IsSynthesizing = true;
-        SynthesisStatus = "Ses oluşturuluyor…";
+        SynthesisStatus = Loc.T("Ai_Synthesizing");
         try
         {
             var service = SpeechProviders.CreateSynthesizer(SynthesisProvider, Credentials());
             if (text.Length > service.MaxCharacters)
             {
-                SynthesisStatus = $"Metin çok uzun: bu servis en fazla {service.MaxCharacters} karakter kabul ediyor.";
+                SynthesisStatus = Loc.F("Ai_TextTooLong", service.MaxCharacters);
                 return;
             }
 
-            var folder = Path.Combine(_recordingFolder(), "Anonslar");
+            var folder = Path.Combine(_recordingFolder(), Loc.T("Ai_AnnouncementsFolder"));
             Directory.CreateDirectory(folder);
             var path = Path.Combine(folder, FileNameFor(text) + service.FileExtension);
             await service.SynthesizeAsync(text, Voice, path, CancellationToken.None);
             LastSpeechPath = path;
-            SynthesisStatus = $"Hazır: {Path.GetFileName(path)}";
+            SynthesisStatus = Loc.F("Ai_SpeechReady", Path.GetFileName(path));
         }
         catch (SpeechException ex)
         {
             // Usually a missing key, address or region: show where to enter it.
-            SynthesisStatus = $"Ses oluşturulamadı: {ex.Message}";
+            SynthesisStatus = Loc.F("Ai_SynthesisFailed", ex.Message);
             OpenServiceSettings(SynthesisProvider);
         }
         catch (Exception ex)
         {
-            SynthesisStatus = $"Ses oluşturulamadı: {ex.Message}";
+            SynthesisStatus = Loc.F("Ai_SynthesisFailed", ex.Message);
         }
         finally
         {
@@ -306,7 +307,7 @@ public partial class AiViewModel : ObservableObject, IDisposable
         if (LastSpeechPath is { } path)
         {
             _playlist.AddFiles([path]);
-            SynthesisStatus = $"Çalma listesine eklendi: {Path.GetFileName(path)}";
+            SynthesisStatus = Loc.F("Ai_AddedToPlaylist", Path.GetFileName(path));
         }
     }
 
@@ -321,14 +322,14 @@ public partial class AiViewModel : ObservableObject, IDisposable
         var cell = _jingles.SelectedBank?.Cells.FirstOrDefault(c => !c.HasFile);
         if (cell is null)
         {
-            SynthesisStatus = "Bu jingle sekmesinde boş hücre yok. Dosyayı Anonslar klasöründen bir hücreye sürükleyebilirsiniz.";
+            SynthesisStatus = Loc.T("Ai_NoEmptyPad");
             return;
         }
 
         cell.Assign(path);
         SynthesisStatus = cell.Shortcut is { } key
-            ? $"Jingle hücresine atandı (tuş: {key})."
-            : "Jingle hücresine atandı.";
+            ? Loc.F("Ai_AssignedToPadKey", key)
+            : Loc.T("Ai_AssignedToPad");
     }
 
     public void SaveTo(AiSettings settings)
@@ -377,6 +378,6 @@ public partial class AiViewModel : ObservableObject, IDisposable
         if (safe.Length > 40) safe = safe[..40];
         // Windows drops trailing dots and spaces from names, and "metin." would end in "..wav".
         safe = safe.TrimEnd('.', ' ');
-        return $"anons-{DateTime.Now:yyyyMMdd-HHmmss} {safe}".TrimEnd();
+        return $"{Loc.T("Ai_AnnouncementFilePrefix")}-{DateTime.Now:yyyyMMdd-HHmmss} {safe}".TrimEnd();
     }
 }

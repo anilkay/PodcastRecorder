@@ -39,10 +39,10 @@ internal static class IcecastProtocol
 
         throw new IcecastException(status switch
         {
-            401 => "Sunucu kullanıcı adını ya da şifreyi kabul etmedi.",
-            403 => "Sunucu bu mount'a yayına izin vermedi (mount kullanımda ya da kapalı olabilir).",
-            404 => "Sunucu bu adreste bir Icecast yayın noktası bulamadı.",
-            _ => $"Sunucu yayını reddetti: {Truncate(statusLine, 120)}",
+            401 => Texts.Get("Icecast_BadCredentials"),
+            403 => Texts.Get("Icecast_MountRefused"),
+            404 => Texts.Get("Icecast_NotFound"),
+            _ => Texts.Format("Icecast_Refused", Truncate(statusLine, 120)),
         });
     }
 
@@ -82,7 +82,7 @@ internal static class IcecastProtocol
             int read = await stream.ReadAsync(one, cancellationToken).ConfigureAwait(false);
             if (read == 0)
             {
-                throw new IcecastException("Sunucu bağlantıyı yanıt vermeden kapattı.");
+                throw new IcecastException(Texts.Get("Icecast_ClosedWithoutAnswer"));
             }
 
             head.Add(one[0]);

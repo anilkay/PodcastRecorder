@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Azure_NoKey" xml:space="preserve"><value>No Azure Speech key was entered.</value></data>
+  <data name="Azure_NoRegion" xml:space="preserve"><value>No Azure Speech region was entered (e.g. westeurope).</value></data>
+  <data name="Http_Error" xml:space="preserve"><value>The service returned an error ({0}).</value></data>
+  <data name="Http_NotFound" xml:space="preserve"><value>The address, model or deployment was not found.</value></data>
+  <data name="Http_TooLarge" xml:space="preserve"><value>The audio file sent is larger than the service&apos;s limit.</value></data>
+  <data name="Http_TooManyRequests" xml:space="preserve"><value>Rate limit or quota exceeded; try again a little later.</value></data>
+  <data name="Http_Unauthorized" xml:space="preserve"><value>The API key is invalid or has no access to this resource.</value></data>
+  <data name="OpenAi_BadAzureEndpoint" xml:space="preserve"><value>The Azure address must be a full address starting with https://, e.g. https://resource-name.openai.azure.com</value></data>
+  <data name="OpenAi_NoKey" xml:space="preserve"><value>No API key was entered.</value></data>
+  <data name="Stage_Done" xml:space="preserve"><value>Done</value></data>
+  <data name="Stage_DownloadingModel" xml:space="preserve"><value>Downloading the Whisper model ({0} / ~{1} MB)</value></data>
+  <data name="Stage_LoadingModel" xml:space="preserve"><value>Loading the Whisper model</value></data>
+  <data name="Stage_Transcribing" xml:space="preserve"><value>Transcribing</value></data>
+  <data name="Whisper_Base" xml:space="preserve"><value>Base (142 MB)</value></data>
+  <data name="Whisper_DownloadFailed" xml:space="preserve"><value>Could not download the Whisper model: {0}</value></data>
+  <data name="Whisper_LargeV3Turbo" xml:space="preserve"><value>Large v3 Turbo (1.6 GB, most accurate)</value></data>
+  <data name="Whisper_Medium" xml:space="preserve"><value>Medium (1.5 GB)</value></data>
+  <data name="Whisper_Small" xml:space="preserve"><value>Small (466 MB)</value></data>
+  <data name="Whisper_Tiny" xml:space="preserve"><value>Tiny (75 MB, fastest)</value></data>
+  <data name="Windows_VoiceMissing" xml:space="preserve"><value>The voice &quot;{0}&quot; is not installed in Windows.</value></data>
+</root>

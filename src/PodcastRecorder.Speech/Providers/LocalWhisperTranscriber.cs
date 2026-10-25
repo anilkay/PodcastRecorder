@@ -12,11 +12,11 @@ public sealed class LocalWhisperTranscriber(string modelFolder, string modelSize
 {
     public static IReadOnlyList<WhisperModelOption> Models { get; } =
     [
-        new("tiny", "Tiny (75 MB, en hızlı)", GgmlType.Tiny, 75),
-        new("base", "Base (142 MB)", GgmlType.Base, 142),
-        new("small", "Small (466 MB)", GgmlType.Small, 466),
-        new("medium", "Medium (1,5 GB)", GgmlType.Medium, 1530),
-        new("large-v3-turbo", "Large v3 Turbo (1,6 GB, en doğru)", GgmlType.LargeV3Turbo, 1620),
+        new("tiny", "Whisper_Tiny", GgmlType.Tiny, 75),
+        new("base", "Whisper_Base", GgmlType.Base, 142),
+        new("small", "Whisper_Small", GgmlType.Small, 466),
+        new("medium", "Whisper_Medium", GgmlType.Medium, 1530),
+        new("large-v3-turbo", "Whisper_LargeV3Turbo", GgmlType.LargeV3Turbo, 1620),
     ];
 
     private WhisperFactory? _factory;
@@ -34,7 +34,7 @@ public sealed class LocalWhisperTranscriber(string modelFolder, string modelSize
             await DownloadModelAsync(progress, cancellationToken);
         }
 
-        progress?.Report(new TranscriptionProgress("Whisper modeli yükleniyor", 0));
+        progress?.Report(new TranscriptionProgress(Texts.Get("Stage_LoadingModel"), 0));
         _factory ??= WhisperFactory.FromPath(ModelPath);
     }
 
@@ -77,7 +77,7 @@ public sealed class LocalWhisperTranscriber(string modelFolder, string modelSize
                     await file.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
                     total += read;
                     progress?.Report(new TranscriptionProgress(
-                        $"Whisper modeli indiriliyor ({total / 1_000_000} / ~{model.ApproximateMegabytes} MB)",
+                        Texts.Format("Stage_DownloadingModel", total / 1_000_000, model.ApproximateMegabytes),
                         Math.Min(total / (model.ApproximateMegabytes * 1_000_000.0), 1)));
                 }
             }
@@ -86,7 +86,7 @@ public sealed class LocalWhisperTranscriber(string modelFolder, string modelSize
         }
         catch (HttpRequestException ex)
         {
-            throw new SpeechException($"Whisper modeli indirilemedi: {ex.Message}", ex);
+            throw new SpeechException(Texts.Format("Whisper_DownloadFailed", ex.Message), ex);
         }
         finally
         {
@@ -101,4 +101,8 @@ public sealed class LocalWhisperTranscriber(string modelFolder, string modelSize
     }
 }
 
-public sealed record WhisperModelOption(string Id, string DisplayName, GgmlType Type, int ApproximateMegabytes);
+/// <summary>A Whisper model size; <see cref="DisplayName"/> is in the UI language.</summary>
+public sealed record WhisperModelOption(string Id, string DisplayNameKey, GgmlType Type, int ApproximateMegabytes)
+{
+    public string DisplayName => Texts.Get(DisplayNameKey);
+}

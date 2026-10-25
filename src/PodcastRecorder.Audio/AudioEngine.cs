@@ -42,8 +42,8 @@ public sealed class AudioEngine : IDisposable
     {
         Playlist = new PlaybackDeck(opener);
         Jingles = new JinglePlayer(opener);
-        MusicChannel = new MixerChannel("Müzik", Playlist);
-        JingleChannel = new MixerChannel("Jingle", Jingles);
+        MusicChannel = new MixerChannel(Texts.Get("Channel_Music"), Playlist);
+        JingleChannel = new MixerChannel(Texts.Get("Channel_Jingle"), Jingles);
         Mixer.Add(MusicChannel);
         Mixer.Add(JingleChannel);
         Bus = new OutputBus(Mixer, Recorder, [Live], AfterMix);

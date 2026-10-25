@@ -10,10 +10,15 @@ using PodcastRecorder.Audio.Devices;
 using PodcastRecorder.Audio.Mixing;
 using PodcastRecorder.Audio.Recording;
 using PodcastRecorder.Audio.Sources;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.ViewModels;
 
-public sealed record DuckingModeOption(DuckingMode Mode, string Name);
+/// <summary>A ducking mode; <see cref="Name"/> is in the current language.</summary>
+public sealed record DuckingModeOption(DuckingMode Mode, string NameKey)
+{
+    public string Name => Loc.T(NameKey);
+}
 
 /// <summary>The lossless capture of a recording and the file it becomes once normalized.</summary>
 internal sealed record PendingNormalization(string CapturePath, RecordingTarget Final);
@@ -47,15 +52,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Ai = new AiViewModel(_settings.Ai, () => RecordingFolder, Playlist, Jingles, dialogs);
         Tags = new RecordingTagsViewModel(_settings.Tags, dialogs, () => LastRecordingPath, message => StatusMessage = message);
         SelectedTheme = ThemeService.Options.FirstOrDefault(o => o.Theme == _settings.Theme) ?? ThemeService.Options[0];
+        _selectedLanguage = Loc.Languages.FirstOrDefault(l => l.Code == _settings.Language) ?? Loc.Languages[0];
         Playlist.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(PlaylistViewModel.CurrentItem)) Live.SetNowPlaying(Playlist.CurrentItem?.Title);
         };
 
-        _engine.Recorder.Faulted += (_, ex) => _ui.Post(_ => StatusMessage = $"Kayıt hatası: {ex.Message}", null);
+        _engine.Recorder.Faulted += (_, ex) => _ui.Post(_ => StatusMessage = Loc.F("Main_RecordingError", ex.Message), null);
         _engine.OutputStopped += (_, ex) =>
         {
-            if (ex is not null) _ui.Post(_ => StatusMessage = $"Ses çıkışı durdu: {ex.Message}", null);
+            if (ex is not null) _ui.Post(_ => StatusMessage = Loc.F("Main_OutputStopped", ex.Message), null);
         };
 
         _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
@@ -77,6 +83,28 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public partial ThemeOption SelectedTheme { get; set; }
 
     partial void OnSelectedThemeChanged(ThemeOption value) => ThemeService.Apply(value.Theme);
+
+    public static IReadOnlyList<LanguageOption> Languages => Loc.Languages;
+
+    private LanguageOption _selectedLanguage;
+
+    /// <summary>The interface language; changing it switches the texts at once (the window is rebuilt).</summary>
+    public LanguageOption SelectedLanguage
+    {
+        get => _selectedLanguage;
+        set
+        {
+            if (value is null || value == _selectedLanguage) return;
+            _selectedLanguage = value;
+            _settings.Language = value.Code;
+            Loc.Apply(value.Code);
+            OnPropertyChanged();
+            LanguageChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    /// <summary>Raised after <see cref="SelectedLanguage"/> changes; the app then rebuilds its window.</summary>
+    public event EventHandler? LanguageChanged;
 
     public JinglePadViewModel Jingles { get; }
 
@@ -139,8 +167,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public IReadOnlyList<DuckingModeOption> DuckingModes { get; } =
     [
-        new(DuckingMode.WhileMicrophoneLive, "Mikrofon açıkken"),
-        new(DuckingMode.WhileSpeaking, "Konuşunca (otomatik)"),
+        new(DuckingMode.WhileMicrophoneLive, "Ducking_WhileMicLive"),
+        new(DuckingMode.WhileSpeaking, "Ducking_WhileSpeaking"),
     ];
 
     [ObservableProperty]
@@ -190,14 +218,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public string StateText => RecordingState switch
     {
-        RecorderState.Recording => "KAYITTA",
-        RecorderState.Paused => "DURAKLATILDI",
-        _ => "Hazır",
+        RecorderState.Recording => Loc.T("Main_StateRecording"),
+        RecorderState.Paused => Loc.T("Main_StatePaused"),
+        _ => Loc.T("Main_StateReady"),
     };
 
-    public string PauseButtonText => IsPaused ? "Devam" : "Duraklat";
+    public string PauseButtonText => IsPaused ? Loc.T("Main_Resume") : Loc.T("Main_Pause");
 
-    public string MicrophoneButtonText => IsMicrophoneLive ? "Mikrofon AÇIK" : "Mikrofon KAPALI";
+    public string MicrophoneButtonText => IsMicrophoneLive ? Loc.T("Main_MicOn") : Loc.T("Main_MicOff");
 
     /// <summary>Opens the devices from the saved settings and starts the audio output.</summary>
     public void Initialize()
@@ -207,8 +235,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(InputDevices));
         OnPropertyChanged(nameof(OutputDevices));
 
-        Channels.Add(new ChannelStripViewModel(_engine.MusicChannel) { Volume = _settings.MusicVolume });
-        Channels.Add(new ChannelStripViewModel(_engine.JingleChannel) { Volume = _settings.JingleVolume });
+        Channels.Add(new ChannelStripViewModel(_engine.MusicChannel) { Volume = _settings.MusicVolume, NameSource = () => Loc.T("Channel_Music") });
+        Channels.Add(new ChannelStripViewModel(_engine.JingleChannel) { Volume = _settings.JingleVolume, NameSource = () => Loc.T("Channel_Jingle") });
         MasterVolume = _settings.MasterVolume;
         MonitorVolume = _settings.MonitorVolume;
         DuckingEnabled = _settings.DuckingEnabled;
@@ -250,7 +278,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Çıkış cihazı açılamadı: {ex.Message}";
+            StatusMessage = Loc.F("Main_OutputOpenFailed", ex.Message);
         }
     }
 
@@ -270,11 +298,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
             var microphone = new MicrophoneSource(_devices.GetDevice(device.Id));
             microphone.Stopped += (_, ex) =>
             {
-                if (ex is not null) _ui.Post(_ => StatusMessage = $"Mikrofon durdu ({device.Name}): {ex.Message}", null);
+                if (ex is not null) _ui.Post(_ => StatusMessage = Loc.F("Main_MicStopped", device.Name, ex.Message), null);
             };
-            var channel = _engine.AddMicrophone(microphone, NextMicrophoneName());
+            int number = NextMicrophoneNumber();
+            var channel = _engine.AddMicrophone(microphone, Loc.F("Main_MicName", number));
             var strip = new ChannelStripViewModel(channel, device.Name, RemoveMicrophone)
             {
+                MicrophoneNumber = number,
+                NameSource = () => Loc.F("Main_MicName", number),
                 DeviceId = device.Id,
                 Volume = saved.Volume,
                 MonitorEnabled = saved.MonitorEnabled,
@@ -284,7 +315,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Mikrofon açılamadı ({device.Name}): {ex.Message}";
+            StatusMessage = Loc.F("Main_MicOpenFailed", device.Name, ex.Message);
         }
 
         AddMicrophoneCommand.NotifyCanExecuteChanged();
@@ -294,7 +325,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (!IsIdle)
         {
-            StatusMessage = "Kayıt sürerken mikrofon kaldırılamaz.";
+            StatusMessage = Loc.T("Main_CannotRemoveMic");
             return;
         }
 
@@ -304,12 +335,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         AddMicrophoneCommand.NotifyCanExecuteChanged();
     }
 
-    private string NextMicrophoneName()
+    private int NextMicrophoneNumber()
     {
         for (int n = 1; ; n++)
         {
-            var name = $"Mikrofon {n}";
-            if (_microphoneStrips.All(m => m.Name != name)) return name;
+            if (_microphoneStrips.All(m => m.MicrophoneNumber != n)) return n;
         }
     }
 
@@ -359,7 +389,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (!_engine.IsOutputRunning)
         {
-            StatusMessage = "Kayıt için önce bir çıkış cihazı seçin.";
+            StatusMessage = Loc.T("Main_NeedOutputToRecord");
             return;
         }
 
@@ -382,14 +412,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 _pendingNormalization = null;
             }
 
-            var stems = RecordStems ? StemTargets(Path.Combine(RecordingFolder, name + " izler")) : null;
+            var stems = RecordStems ? StemTargets(Path.Combine(RecordingFolder, name + " " + Loc.T("Main_StemsFolderSuffix"))) : null;
             _engine.Recorder.Start(mix, stems);
             _engine.Loudness.ResetIntegrated();
-            StatusMessage = $"Kaydediliyor: {finalPath}" + (stems is null ? "" : $" (+{stems.Count} ayrı iz)");
+            StatusMessage = Loc.F("Main_RecordingTo", finalPath) + (stems is null ? "" : Loc.F("Main_RecordingStems", stems.Count));
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Kayıt başlatılamadı: {ex.Message}";
+            StatusMessage = Loc.F("Main_StartFailed", ex.Message);
         }
 
         RecordingState = _engine.Recorder.State;
@@ -406,7 +436,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand(CanExecute = nameof(CanStop))]
     private async Task StopRecording()
     {
-        StatusMessage = "Kayıt dosyası kapatılıyor…";
+        StatusMessage = Loc.T("Main_Closing");
         string? path;
         try
         {
@@ -428,7 +458,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             RecordingState = _engine.Recorder.State;
             LastRecordingPath = path;
-            StatusMessage = path is null ? null : $"Kayıt kaydedildi: {path}";
+            StatusMessage = path is null ? null : Loc.F("Main_Saved", path);
             if (path is not null) await WriteTagsAsync(path, stems);
             TranscribeIfEnabled(path);
             return;
@@ -438,20 +468,20 @@ public partial class MainViewModel : ObservableObject, IDisposable
         RecordingState = _engine.Recorder.State;
         double measured = _engine.Loudness.IntegratedLufs;
         double gain = Normalizer.GainFor(measured);
-        var progress = new Progress<double>(p => StatusMessage = $"Normalize ediliyor… %{p * 100:0}");
+        var progress = new Progress<double>(p => StatusMessage = Loc.F("Main_Normalizing", p * 100));
         try
         {
             await Normalizer.NormalizeAsync(pending.CapturePath, pending.Final, gain, progress);
             File.Delete(pending.CapturePath);
             LastRecordingPath = pending.Final.Path;
-            StatusMessage = $"Kayıt kaydedildi: {pending.Final.Path} ({FormatLufs(measured)} → {Normalizer.PodcastTargetLufs} LUFS, {gain:+0.0;-0.0} dB)";
+            StatusMessage = Loc.F("Main_SavedNormalized", pending.Final.Path, FormatLufs(measured), Normalizer.PodcastTargetLufs, gain);
             await WriteTagsAsync(pending.Final.Path, stems);
             TranscribeIfEnabled(pending.Final.Path);
         }
         catch (Exception ex)
         {
             LastRecordingPath = pending.CapturePath;
-            StatusMessage = $"Normalize edilemedi, ham kayıt duruyor: {pending.CapturePath} ({ex.Message})";
+            StatusMessage = Loc.F("Main_NormalizeFailed", pending.CapturePath, ex.Message);
         }
         finally
         {
@@ -533,7 +563,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (banks.Count == 0)
         {
             // Settings from the first version had a single 4x4 grid.
-            banks = [new JingleBankSettings { Name = "Genel", Slots = _settings.Jingles ?? [] }];
+            banks = [new JingleBankSettings { Name = Loc.T("Pad_DefaultTab"), Slots = _settings.Jingles ?? [] }];
         }
 
         foreach (var saved in banks)
@@ -609,6 +639,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Ai.SaveTo(_settings.Ai);
         Tags.SaveTo(_settings.Tags);
         _settings.Theme = SelectedTheme.Theme;
+        _settings.Language = SelectedLanguage.Code;
         _settings.Jingles = null;
         _settings.JingleBanks = Jingles.Banks
             .Select(b => new JingleBankSettings

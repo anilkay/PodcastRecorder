@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using PodcastRecorder.App.ViewModels;
 using PodcastRecorder.Audio.Sources;
+using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App;
 
@@ -15,32 +16,6 @@ namespace PodcastRecorder.App;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private const string ShortcutHelp =
-        """
-        Kayıt
-          Ctrl+R          Kaydı başlat
-          Ctrl+P          Duraklat / devam
-          Ctrl+Shift+R    Kaydı durdur ve kaydet
-          Ctrl+M          Mikrofonu kapat / aç
-
-        Canlı yayın
-          Ctrl+L          Yayına başla
-          Ctrl+Shift+L    Yayını durdur
-
-        Çalma listesi
-          F5              Seçili şarkıyı çal
-          F6              Müziği durdur
-          F7              Sonraki şarkı
-
-        Jingle paneli (açık sekme; tuşlar paneldeki yerleriyle aynı,
-        her hücrenin köşesinde yazar)
-          1 2 3 4 5 6 7 8
-          Q W E R T Y U I
-          A S D F G H J K
-          Z X C V B N M   Jingle çal / durdur
-          Esc             Bütün jingle'ları durdur
-        """;
-
     private Point _dragStart;
     private BrowserEntry? _dragEntry;
 
@@ -105,12 +80,12 @@ public partial class MainWindow : Window
     /// <summary>Shows the shortcut list in a monospace font so the key column lines up (MessageBox cannot).</summary>
     private void Help_Executed(object sender, ExecutedRoutedEventArgs e)
     {
-        var text = new TextBlock { Text = ShortcutHelp, FontFamily = new FontFamily("Consolas"), FontSize = 13 };
-        var ok = new Button { Content = "Tamam", IsDefault = true, IsCancel = true, MinWidth = 90, Style = (Style)FindResource("PrimaryButton"),
+        var text = new TextBlock { Text = Loc.T("Help_Shortcuts"), FontFamily = new FontFamily("Consolas"), FontSize = 13 };
+        var ok = new Button { Content = Loc.T("Help_Ok"), IsDefault = true, IsCancel = true, MinWidth = 90, Style = (Style)FindResource("PrimaryButton"),
             Margin = new Thickness(0, 16, 0, 0), HorizontalAlignment = HorizontalAlignment.Right };
         var help = new Window
         {
-            Title = "Klavye kısayolları",
+            Title = Loc.T("Help_Title"),
             Owner = this,
             SizeToContent = SizeToContent.WidthAndHeight,
             ResizeMode = ResizeMode.NoResize,
