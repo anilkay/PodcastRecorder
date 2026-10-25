@@ -16,4 +16,20 @@
     <SolidColorBrush x:Key="LiveBrush" Color="#45C771" />
     <SolidColorBrush x:Key="LiveSoftBrush" Color="#1E3A28" />
     <SolidColorBrush x:Key="WarningBrush" Color="#F5A524" />
+
+    <!-- Buttons (Themes/Controls.xaml) -->
+    <SolidColorBrush x:Key="BtnBackgroundBrush" Color="#33363C" />
+    <SolidColorBrush x:Key="BtnHoverBrush" Color="#3D4047" />
+    <SolidColorBrush x:Key="BtnPressedBrush" Color="#2C2F34" />
+    <SolidColorBrush x:Key="BtnBorderBrush" Color="#4B4F57" />
+    <SolidColorBrush x:Key="GhostHoverBrush" Color="#383B41" />
+    <SolidColorBrush x:Key="GhostPressedBrush" Color="#2F3237" />
+    <SolidColorBrush x:Key="AccentFillBrush" Color="#3B7BE8" />
+    <SolidColorBrush x:Key="AccentFillHoverBrush" Color="#4C89F0" />
+    <SolidColorBrush x:Key="AccentFillPressedBrush" Color="#326BD3" />
+    <SolidColorBrush x:Key="RecordFillBrush" Color="#D94343" />
+    <SolidColorBrush x:Key="RecordFillHoverBrush" Color="#E55252" />
+    <SolidColorBrush x:Key="RecordSoftHoverBrush" Color="#5A2D33" />
+    <SolidColorBrush x:Key="MuteSoftBrush" Color="#46252A" />
+    <SolidColorBrush x:Key="FocusRingBrush" Color="#7FB0FF" />
 </ResourceDictionary>

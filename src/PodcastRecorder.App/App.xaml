@@ -1,6 +1,7 @@
 <Application x:Class="PodcastRecorder.App.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:services="clr-namespace:PodcastRecorder.App.Services"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
         <ResourceDictionary>
@@ -8,6 +9,8 @@
                 <!-- Swapped by ThemeService: the Fluent control theme, then the app colours. -->
                 <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.Light.xaml" />
                 <ResourceDictionary Source="Themes/Light.xaml" />
+                <!-- The app's own buttons; merged last so they win over Fluent's. -->
+                <ResourceDictionary Source="Themes/Controls.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
@@ -32,9 +35,7 @@
                 <Setter Property="Margin" Value="0,6,0,0" />
             </Style>
 
-            <!-- The implicit Button style and "TransportButton" are built by ThemeService on top of the
-                 active Fluent dictionary: BasedOn="{StaticResource {x:Type Button}}" here resolves to
-                 null in the compiled resources, which falls back to the classic Aero2 button. -->
+            <!-- Buttons and toggle buttons are styled in Themes/Controls.xaml. -->
 
             <Style x:Key="VerticalMeter" TargetType="ProgressBar">
                 <Setter Property="Orientation" Value="Vertical" />
@@ -67,7 +68,8 @@
                 <Border Style="{StaticResource PanelBorder}" Width="120" Margin="0,0,8,0" Padding="8">
                     <DockPanel>
                         <DockPanel DockPanel.Dock="Top">
-                            <Button DockPanel.Dock="Right" Content="✕" Command="{Binding RemoveCommand}" Padding="4,0" MinWidth="0" Margin="0"
+                            <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE711;"
+                                    Command="{Binding RemoveCommand}" Padding="4,2" MinWidth="0" MinHeight="0" Margin="0"
                                     ToolTip="Mikrofonu kaldır" Visibility="{Binding CanRemove, Converter={StaticResource BoolToVisibility}}" />
                             <TextBlock Text="{Binding Name}" FontWeight="SemiBold" HorizontalAlignment="Center" ToolTip="{Binding DeviceName}" />
                         </DockPanel>
@@ -75,7 +77,8 @@
                                    TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" ToolTip="{Binding DeviceName}" />
                         <CheckBox DockPanel.Dock="Bottom" Content="Kulaklık" IsChecked="{Binding MonitorEnabled}" Margin="0,4,0,0"
                                   ToolTip="Kulaklıkta duy. Kapalıyken de kayda girer; sadece kulaklıkta duyulmaz." />
-                        <ToggleButton DockPanel.Dock="Bottom" Content="Sessiz" IsChecked="{Binding IsMuted}" Margin="0,6,0,0" />
+                        <ToggleButton DockPanel.Dock="Bottom" Style="{StaticResource MuteToggle}" Content="Sessiz" IsChecked="{Binding IsMuted}"
+                                      Margin="0,6,0,0" HorizontalAlignment="Stretch" ToolTip="Kanalı sustur" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
                             <Slider Orientation="Vertical" Minimum="0" Maximum="1.5" Value="{Binding Volume}"
                                     SmallChange="0.05" LargeChange="0.1" Margin="0,0,8,0"
@@ -89,32 +92,6 @@
                     </DockPanel>
                 </Border>
             </DataTemplate>
-            <!-- The on-air switch: green while the microphone is live. -->
-            <Style x:Key="MicrophoneToggle" TargetType="ToggleButton">
-                <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-                <Setter Property="FontSize" Value="14" />
-                <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="MinWidth" Value="150" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ToggleButton">
-                            <Border x:Name="Body" CornerRadius="6" BorderThickness="2" Padding="14,6"
-                                    BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource PanelBrush}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="Body" Property="Background" Value="{DynamicResource LiveSoftBrush}" />
-                                    <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource LiveBrush}" />
-                                </Trigger>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

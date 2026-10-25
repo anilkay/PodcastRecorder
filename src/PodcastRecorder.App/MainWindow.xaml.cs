@@ -106,7 +106,7 @@ public partial class MainWindow : Window
     private void Help_Executed(object sender, ExecutedRoutedEventArgs e)
     {
         var text = new TextBlock { Text = ShortcutHelp, FontFamily = new FontFamily("Consolas"), FontSize = 13 };
-        var ok = new Button { Content = "Tamam", IsDefault = true, IsCancel = true, MinWidth = 90,
+        var ok = new Button { Content = "Tamam", IsDefault = true, IsCancel = true, MinWidth = 90, Style = (Style)FindResource("PrimaryButton"),
             Margin = new Thickness(0, 16, 0, 0), HorizontalAlignment = HorizontalAlignment.Right };
         var help = new Window
         {

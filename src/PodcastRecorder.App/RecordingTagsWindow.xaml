@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:PodcastRecorder.App.ViewModels"
         xmlns:app="clr-namespace:PodcastRecorder.App"
+        xmlns:services="clr-namespace:PodcastRecorder.App.Services"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:RecordingTagsViewModel}"
         Title="Dosya bilgileri" Width="620" SizeToContent="Height" ResizeMode="NoResize"
@@ -85,8 +86,8 @@
                     </Grid>
                 </Border>
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Button Content="Seç…" Command="{Binding ChooseCoverCommand}" ToolTip="JPEG ya da PNG; kare bir resim (ör. 1400×1400) önerilir." />
-                    <Button Content="Kaldır" Command="{Binding ClearCoverCommand}" Margin="0" />
+                    <Button services:ButtonAssist.Icon="&#xE91B;" Content="Seç…" Command="{Binding ChooseCoverCommand}" ToolTip="JPEG ya da PNG; kare bir resim (ör. 1400×1400) önerilir." />
+                    <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE74D;" Content="Kaldır" Command="{Binding ClearCoverCommand}" Margin="0" />
                 </StackPanel>
             </StackPanel>
         </Grid>
@@ -96,9 +97,9 @@
         <DockPanel Margin="0,12,0,0">
             <Button DockPanel.Dock="Right" Content="Kapat" IsCancel="True" IsDefault="True" MinWidth="90" Margin="0" />
             <StackPanel Orientation="Horizontal">
-                <Button Content="Son kayda yaz" Command="{Binding WriteToLastRecordingCommand}"
+                <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE74E;" Content="Son kayda yaz" Command="{Binding WriteToLastRecordingCommand}"
                         ToolTip="Bu bilgileri bu oturumdaki son kayda yeniden yazar; o kaydın bölüm numarası korunur." />
-                <Button Content="Dosyaya yaz…" Command="{Binding WriteToFileCommand}"
+                <Button services:ButtonAssist.Icon="&#xE8E5;" Content="Dosyaya yaz…" Command="{Binding WriteToFileCommand}"
                         ToolTip="Bir ses dosyası seçin; bu bilgiler ona yazılır." />
             </StackPanel>
         </DockPanel>
