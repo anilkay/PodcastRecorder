@@ -1,0 +1,83 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:PodcastRecorder.App.Localization"
+        xmlns:vm="using:PodcastRecorder.App.ViewModels"
+        xmlns:views="using:PodcastRecorder.App.Views"
+        x:Class="PodcastRecorder.App.Views.RecordingTagsWindow"
+        x:DataType="vm:RecordingTagsViewModel"
+        Icon="avares://PodcastRecorder.Avalonia/Assets/logo.png"
+        Title="{loc:T Tags_DosyaBilgileri}" Width="640" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Window.Resources>
+        <views:ImagePathConverter x:Key="ImagePath" />
+    </Window.Resources>
+    <StackPanel Margin="16">
+        <TextBlock TextWrapping="Wrap" Classes="muted" Margin="0,0,0,12"
+                   Text="{loc:T Cross_TagsIntro}" />
+
+        <Grid ColumnDefinitions="*,16,150">
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                <Grid.Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Margin" Value="0,0,12,8" />
+                    </Style>
+                    <Style Selector="TextBox">
+                        <Setter Property="Margin" Value="0,0,0,8" />
+                    </Style>
+                </Grid.Styles>
+
+                <TextBlock Grid.Row="0" Text="{loc:T Tags_Baslik}" />
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Title}" ToolTip.Tip="{loc:T Tags_BosBirakilirsaDosyaAdiKullanilir}" />
+
+                <TextBlock Grid.Row="1" Text="{loc:T Tags_SunucuSanatci}" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Artist}" />
+
+                <TextBlock Grid.Row="2" Text="{loc:T Tags_ProgramAlbum}" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Album}" />
+
+                <TextBlock Grid.Row="3" Text="{loc:T Tags_BolumNo}" />
+                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                    <TextBox Text="{Binding EpisodeText}" Width="70"
+                             ToolTip.Tip="{loc:T Tags_SonrakiKaydinBolumNumarasiHer}" />
+                    <TextBlock Text="{loc:T Tags_Yil}" Margin="16,0,8,8" />
+                    <TextBox Text="{Binding YearText}" Width="70" />
+                </StackPanel>
+
+                <TextBlock Grid.Row="4" Text="{loc:T Tags_Tur}" />
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Genre}" />
+
+                <TextBlock Grid.Row="5" Text="{loc:T Tags_Aciklama}" VerticalAlignment="Top" Margin="0,6,12,8" />
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Comment}" AcceptsReturn="True" TextWrapping="Wrap" Height="64" />
+            </Grid>
+
+            <!-- Cover -->
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="{loc:T Tags_KapakResmi}" Margin="0,0,0,6" />
+                <Border Width="150" Height="150" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
+                        Background="{DynamicResource PanelBrush}" ToolTip.Tip="{Binding CoverImagePath}">
+                    <Grid>
+                        <TextBlock Text="{loc:T Tags_KapakYok}" Classes="muted" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Image Source="{Binding CoverImagePath, Converter={StaticResource ImagePath}}" Stretch="Uniform" Margin="2" />
+                    </Grid>
+                </Border>
+                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                    <Button Content="{loc:T Tags_Sec}" Command="{Binding ChooseCoverCommand}" ToolTip.Tip="{loc:T Tags_JpegYaDaPngKare}" />
+                    <Button Content="{loc:T Main_Kaldir}" Command="{Binding ClearCoverCommand}" Margin="0" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Classes="muted" Margin="0,8,0,0" />
+
+        <DockPanel Margin="0,12,0,0">
+            <Button DockPanel.Dock="Right" Content="{loc:T Tags_Kapat}" IsCancel="True" IsDefault="True" MinWidth="90" Margin="0" Click="Close_Click" />
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{loc:T Tags_SonKaydaYaz}" Command="{Binding WriteToLastRecordingCommand}"
+                        ToolTip.Tip="{loc:T Tags_BuBilgileriBuOturumdakiSon}" />
+                <Button Content="{loc:T Tags_DosyayaYaz}" Command="{Binding WriteToFileCommand}"
+                        ToolTip.Tip="{loc:T Tags_BirSesDosyasiSecinBu}" />
+            </StackPanel>
+        </DockPanel>
+    </StackPanel>
+</Window>

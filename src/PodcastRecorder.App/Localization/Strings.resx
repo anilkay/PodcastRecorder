@@ -269,4 +269,14 @@ her hücrenin köşesinde yazar)
   <data name="Theme_Dark" xml:space="preserve"><value>Koyu</value></data>
   <data name="Theme_Light" xml:space="preserve"><value>Açık</value></data>
   <data name="Theme_System" xml:space="preserve"><value>Sistem</value></data>
+  <data name="Provider_System" xml:space="preserve"><value>Sistem sesleri (bu bilgisayarda)</value></data>
+  <data name="Cross_SystemVoices" xml:space="preserve"><value>Sistem sesleri</value></data>
+  <data name="Cross_SystemVoicesLinux" xml:space="preserve"><value>İnternetsiz ve ücretsizdir; espeak-ng kullanır (sudo apt install espeak-ng). Türkçe için ses adına &quot;tr&quot; yazın.</value></data>
+  <data name="Cross_SystemVoicesMac" xml:space="preserve"><value>İnternetsiz ve ücretsizdir; macOS&apos;un &quot;say&quot; komutunu kullanır. Türkçe için &quot;Yelda&quot; sesini Sistem Ayarları › Erişilebilirlik › Seslendirilen İçerik bölümünden indirin.</value></data>
+  <data name="Cross_ApiKeysNote" xml:space="preserve"><value>API anahtarları ayar dosyasında kullanıcınıza özel olarak şifrelenir. Bulut servislerine gönderilen ses ve metin için ilgili servisin ücret ve gizlilik koşulları geçerlidir.</value></data>
+  <data name="Cross_ThemeTip" xml:space="preserve"><value>Görünüm: açık, koyu ya da sisteme göre</value></data>
+  <data name="Cross_LanguageTip" xml:space="preserve"><value>Arayüz dili; Sistem, işletim sisteminin dilini kullanır</value></data>
+  <data name="Cross_PasswordStored" xml:space="preserve"><value>Kullanıcınıza özel şifrelenmiş olarak saklanır</value></data>
+  <data name="Cross_TagsIntro" xml:space="preserve"><value>Kayıt bitince bu bilgiler dosyaya (ve ayrı izlere) yazılır; müzik çalarlar ve dosya yöneticileri bunları gösterir. Bölüm no her kayıttan sonra bir artar.</value></data>
+  <data name="Secrets_KeyDamaged" xml:space="preserve"><value>Şifreleme anahtarı dosyası bozuk: {0}. Kayıtlı şifreler kaybolmasın diye dosyaya dokunulmadı; sağlam bir yedeği varsa geri koyun, yoksa dosyayı silin ve şifreleri yeniden girin.</value></data>
 </root>

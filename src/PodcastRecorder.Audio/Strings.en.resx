@@ -32,4 +32,18 @@
   <data name="Tags_WriteFailed" xml:space="preserve"><value>Could not write the file info ({0}): {1}</value></data>
   <data name="Wma_ConvertFailed" xml:space="preserve"><value>Could not convert to WMA; the recording was kept as WAV: {0}</value></data>
   <data name="Wma_NoEncoder" xml:space="preserve"><value>No WMA encoder was found on this computer.</value></data>
+  <data name="Files_NotFound" xml:space="preserve"><value>File not found.</value></data>
+  <data name="Ffmpeg_Missing" xml:space="preserve"><value>Playing {0} files needs ffmpeg (Linux: sudo apt install ffmpeg, macOS: brew install ffmpeg).</value></data>
+  <data name="Ffmpeg_Failed" xml:space="preserve"><value>ffmpeg could not open the file: {0}</value></data>
+  <data name="Lame_Missing" xml:space="preserve"><value>The LAME library for MP3 was not found. Linux: sudo apt install libmp3lame0, macOS: brew install lame.</value></data>
+  <data name="Lame_InitFailed" xml:space="preserve"><value>Could not start LAME.</value></data>
+  <data name="Lame_BadSettings" xml:space="preserve"><value>LAME did not accept these settings ({0} Hz, {1} kbps).</value></data>
+  <data name="Lame_EncodeFailed" xml:space="preserve"><value>MP3 encoding error ({0}).</value></data>
+  <data name="Pa_OutputFormat" xml:space="preserve"><value>&quot;{0}&quot; cannot play 48 kHz stereo. Try the &quot;default&quot;, &quot;pulse&quot; or &quot;pipewire&quot; device.</value></data>
+  <data name="Pa_OutputOpenFailed" xml:space="preserve"><value>Could not open the output device</value></data>
+  <data name="Pa_OutputStartFailed" xml:space="preserve"><value>Could not start the output</value></data>
+  <data name="Pa_InitFailed" xml:space="preserve"><value>Could not start PortAudio</value></data>
+  <data name="Pa_DeviceGone" xml:space="preserve"><value>The audio device was not found; it may have been unplugged.</value></data>
+  <data name="Pa_MicOpenFailed" xml:space="preserve"><value>Could not open the microphone ({0})</value></data>
+  <data name="Pa_MicStartFailed" xml:space="preserve"><value>Could not start the microphone ({0})</value></data>
 </root>

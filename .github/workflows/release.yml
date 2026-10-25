@@ -1,6 +1,7 @@
 name: release
 
-# Push a tag such as v0.0.1 to build, test and publish a Windows release.
+# Push a tag such as v0.0.1 to build, test and publish a release: the Windows (WPF) app as a zip,
+# the Avalonia app for Linux and macOS as tar.gz files.
 on:
   push:
     tags: ['v*']
@@ -9,7 +10,34 @@ permissions:
   contents: write
 
 jobs:
+  cross-platform:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: macos-latest
+            rid: osx-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Publish
+        run: |
+          version='${{ github.ref_name }}'
+          version=${version#v}
+          dotnet publish src/PodcastRecorder.Avalonia --configuration Release --runtime ${{ matrix.rid }} --self-contained \
+            -p:Version=$version --output publish/PodcastRecorder
+          tar -czf "PodcastRecorder-$version-${{ matrix.rid }}.tar.gz" -C publish PodcastRecorder
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.rid }}
+          path: PodcastRecorder-*.tar.gz
+
   release:
+    needs: cross-platform
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,10 +52,13 @@ jobs:
           dotnet publish src/PodcastRecorder.App --configuration Release --runtime win-x64 --self-contained `
             -p:Version=$version --output publish/PodcastRecorder
           Compress-Archive -Path publish/PodcastRecorder -DestinationPath "PodcastRecorder-$version-win-x64.zip"
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
       - name: Create GitHub release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create '${{ github.ref_name }}' (Get-ChildItem PodcastRecorder-*.zip).FullName `
+          gh release create '${{ github.ref_name }}' (Get-ChildItem PodcastRecorder-*.zip, PodcastRecorder-*.tar.gz).FullName `
             --title 'Podcast Recorder ${{ github.ref_name }}' --generate-notes

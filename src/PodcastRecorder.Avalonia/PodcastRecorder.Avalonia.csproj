@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The cross-platform app (Windows, Linux, macOS). It shares the view models and settings with the
+    WPF app by compiling the same files, so both stay in step; only the views and the few
+    platform services below are its own.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>PodcastRecorder.App</RootNamespace>
+    <AssemblyName>PodcastRecorder.Avalonia</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <!-- Strings.resx (shared with the WPF app) is Turkish; Strings.en.resx becomes the en satellite assembly. -->
+    <NeutralLanguage>tr</NeutralLanguage>
+    <!-- The exe icon on Windows; drawn from assets/logo/logo.svg like the WPF app's. -->
+    <ApplicationIcon>..\..\assets\logo\logo.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <!-- Window icon and the logo in the UI: avares://PodcastRecorder.Avalonia/Assets/logo.png -->
+  <ItemGroup>
+    <AvaloniaResource Include="..\..\assets\logo\png\256.png" Link="Assets\logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\PodcastRecorder.App\ViewModels\*.cs" Link="Shared\ViewModels\%(Filename)%(Extension)" />
+    <Compile Include="..\PodcastRecorder.App\Services\AppSettings.cs;..\PodcastRecorder.App\Services\SettingsStore.cs;..\PodcastRecorder.App\Services\SpeechProviders.cs;..\PodcastRecorder.App\Services\Secrets.cs;..\PodcastRecorder.App\Services\SecretKeyFile.cs;..\PodcastRecorder.App\Services\IFileDialogs.cs;..\PodcastRecorder.App\Services\ILiveSettingsDialog.cs"
+             Link="Shared\Services\%(Filename)%(Extension)" />
+    <Compile Include="..\PodcastRecorder.App\Localization\Loc.cs" Link="Shared\Localization\Loc.cs" />
+    <EmbeddedResource Include="..\PodcastRecorder.App\Localization\Strings.resx;..\PodcastRecorder.App\Localization\Strings.en.resx"
+                      Link="Localization\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PodcastRecorder.Audio\PodcastRecorder.Audio.csproj" />
+    <ProjectReference Include="..\PodcastRecorder.Audio.PortAudio\PodcastRecorder.Audio.PortAudio.csproj" />
+    <ProjectReference Include="..\PodcastRecorder.Speech\PodcastRecorder.Speech.csproj" />
+  </ItemGroup>
+
+</Project>

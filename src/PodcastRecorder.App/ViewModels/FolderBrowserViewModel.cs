@@ -73,5 +73,5 @@ public partial class FolderBrowserViewModel(IFileDialogs dialogs, Action<string>
         else addToPlaylist(entry.FullPath);
     }
 
-    private bool CanGoUp() => CurrentFolder is not null && Directory.GetParent(CurrentFolder) is not null;
+    private bool CanGoUp() => !string.IsNullOrEmpty(CurrentFolder) && Directory.GetParent(CurrentFolder) is not null;
 }

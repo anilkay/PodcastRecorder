@@ -1,0 +1,53 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:PodcastRecorder.App.Localization"
+        x:Class="PodcastRecorder.App.Views.LiveSettingsWindow"
+        Icon="avares://PodcastRecorder.Avalonia/Assets/logo.png"
+        Title="{loc:T Live_CanliYayinAyarlari}" Width="460" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <StackPanel Margin="16">
+        <TextBlock TextWrapping="Wrap" Classes="muted" Margin="0,0,0,12"
+                   Text="{loc:T Live_KaydaGidenSesMasterBir}" />
+
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+            <Grid.Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Margin" Value="0,0,12,8" />
+                </Style>
+                <Style Selector="TextBox, ComboBox">
+                    <Setter Property="Margin" Value="0,0,0,8" />
+                </Style>
+            </Grid.Styles>
+
+            <TextBlock Grid.Row="0" Text="{loc:T Live_Sunucu}" />
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="HostBox" ToolTip.Tip="{loc:T Live_OrYayinExampleComHttp}" />
+
+            <TextBlock Grid.Row="1" Text="{loc:T Live_Port}" />
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="PortBox" Width="90" HorizontalAlignment="Left" />
+
+            <TextBlock Grid.Row="2" Text="{loc:T Live_Mount}" />
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="MountBox" ToolTip.Tip="{loc:T Live_OrCanli}" />
+
+            <TextBlock Grid.Row="3" Text="{loc:T Live_Kullanici}" />
+            <TextBox Grid.Row="3" Grid.Column="1" x:Name="UserBox" ToolTip.Tip="{loc:T Live_IcecastTeGeneldeSource}" />
+
+            <TextBlock Grid.Row="4" Text="{loc:T Live_Sifre}" />
+            <TextBox Grid.Row="4" Grid.Column="1" x:Name="PasswordBox" PasswordChar="•"
+                     ToolTip.Tip="{loc:T Cross_PasswordStored}" />
+
+            <TextBlock Grid.Row="5" Text="{loc:T Live_Kalite}" />
+            <ComboBox Grid.Row="5" Grid.Column="1" x:Name="BitrateBox" Width="170" HorizontalAlignment="Left" />
+
+            <TextBlock Grid.Row="6" Text="{loc:T Live_YayinAdi}" />
+            <TextBox Grid.Row="6" Grid.Column="1" x:Name="NameBox" ToolTip.Tip="{loc:T Live_DinleyicilerinGorduguAdIstegeBagli}" />
+        </Grid>
+
+        <TextBlock x:Name="ErrorText" Classes="error" Margin="0,4,0,0" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="{loc:T Live_Kaydet}" IsDefault="True" MinWidth="90" Click="Save_Click" />
+            <Button Content="{loc:T Main_Iptal}" IsCancel="True" MinWidth="90" Margin="0" Click="Cancel_Click" />
+        </StackPanel>
+    </StackPanel>
+</Window>

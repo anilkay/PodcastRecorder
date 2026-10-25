@@ -2,7 +2,7 @@
 
 # Podcast Recorder
 
-Windows için podcast kayıt uygulaması. Mikrofonu, çalma listesindeki şarkıları ve jingle panelini uygulamanın kendi mikserinde birleştirir ve tek bir MP3, WMA, FLAC veya WAV dosyasına kaydeder; isterseniz aynı anda Icecast sunucusuna canlı yayın yapar. Windows "Stereo Mix" ayarı gerekmez.
+Windows için podcast kayıt uygulaması; Linux ve macOS için de [Avalonia sürümü](#linux-ve-macos-avalonia-sürümü) var. Mikrofonu, çalma listesindeki şarkıları ve jingle panelini uygulamanın kendi mikserinde birleştirir ve tek bir MP3, WMA, FLAC veya WAV dosyasına kaydeder; isterseniz aynı anda Icecast sunucusuna canlı yayın yapar. Windows "Stereo Mix" ayarı gerekmez.
 
 *A podcast recorder for Windows: mixes microphones, a playlist and jingle pads, records MP3/WMA/FLAC/WAV and can stream live to Icecast. The interface is available in Turkish and English (status bar › Language).*
 
@@ -82,6 +82,27 @@ Durdurma tuşları kazara basılmasın diye Shift ister.
 
 WMA, Windows Media Foundation kodlayıcısıyla yazılır. Media Foundation dosyayı bütün olarak kodladığından kayıt önce yanına geçici bir WAV (`.wma.kayit.wav`) olarak yazılır ve durdurulunca WMA'ya çevrilir; çevirme başarısız olursa kayıt `.wav` olarak saklanır. Windows Server'da "Media Foundation" özelliği gerekebilir.
 
+## Linux ve macOS (Avalonia sürümü)
+
+`src/PodcastRecorder.Avalonia` aynı uygulamanın Avalonia ile yazılmış, Windows, Linux ve macOS'ta çalışan sürümüdür. ViewModel'ler ve ayarlar WPF uygulamasıyla ortaktır (aynı dosyalar derlenir), yalnızca arayüz ve birkaç platform servisi ayrıdır. Ses Windows'ta yine WASAPI ile, Linux ve macOS'ta PortAudio ile (ALSA, PulseAudio/PipeWire, Core Audio) çalınır ve kaydedilir.
+
+```bash
+dotnet run --project src/PodcastRecorder.Avalonia
+```
+
+Windows sürümünden farkları:
+
+| Özellik | Linux / macOS |
+| --- | --- |
+| WMA kaydı | Yok (Media Foundation yalnızca Windows'ta). MP3, FLAC ve WAV var. |
+| MP3 kaydı ve canlı yayın | Sistemdeki LAME kütüphanesi gerekir: `sudo apt install libmp3lame0` ya da `brew install lame` |
+| Çalma | MP3 ve WAV doğrudan; FLAC, M4A, AAC ve WMA için `ffmpeg` gerekir (`sudo apt install ffmpeg`, `brew install ffmpeg`) |
+| Seslendirme (bu bilgisayarda) | Windows sesleri yerine Linux'ta espeak-ng (`sudo apt install espeak-ng`, Türkçe için ses adı `tr`), macOS'ta `say` (Türkçe ses "Yelda") |
+| API anahtarları | DPAPI yerine ayar klasöründeki, yalnızca kullanıcının okuyabildiği bir anahtarla AES-GCM ile şifrelenir |
+| Çıkış cihazı | 48 kHz açılamayan bir donanım cihazında `default`, `pulse` ya da `pipewire` cihazını seçin |
+
+Whisper (yerel), OpenAI, Azure OpenAI / Foundry ve Azure AI Speech her platformda aynı çalışır. Ayarlar Linux'ta `~/.config/PodcastRecorder`, macOS'ta `~/Library/Application Support/PodcastRecorder` altındadır.
+
 ## Gereksinimler
 
 - Windows 10/11
@@ -101,7 +122,7 @@ dotnet test
 
 ## Sürüm çıkarmak
 
-Sürüm numarası `Directory.Build.props` içindeki `<Version>` alanındadır. `v` ile başlayan bir tag push edildiğinde GitHub Actions testleri çalıştırır, uygulamayı .NET kurulumu gerektirmeyen (self-contained) win-x64 olarak yayınlar ve zip'i GitHub Releases'a ekler:
+Sürüm numarası `Directory.Build.props` içindeki `<Version>` alanındadır. `v` ile başlayan bir tag push edildiğinde GitHub Actions testleri çalıştırır, uygulamayı .NET kurulumu gerektirmeyen (self-contained) win-x64 olarak yayınlar ve zip'i GitHub Releases'a ekler. Avalonia sürümü de linux-x64 ve osx-arm64 için `.tar.gz` olarak eklenir:
 
 ```powershell
 git tag v0.0.1
@@ -113,8 +134,10 @@ git push origin v0.0.1
 | Proje | İçerik |
 | --- | --- |
 | `src/PodcastRecorder.Audio` | Ses motoru: mikser, kaynaklar (mikrofon, çalma listesi, jingle), kayıt ve encoder'lar. NAudio üzerine kurulu. |
-| `src/PodcastRecorder.Speech` | Yazıya çevirme ve seslendirme servisleri (Whisper.net, OpenAI / Azure REST, Windows sesleri) |
-| `src/PodcastRecorder.App` | WPF arayüzü (MVVM, CommunityToolkit.Mvvm) |
+| `src/PodcastRecorder.Speech` | Yazıya çevirme ve seslendirme servisleri (Whisper.net, OpenAI / Azure REST, Windows sesleri, espeak-ng / say) |
+| `src/PodcastRecorder.Audio.PortAudio` | Linux ve macOS ses cihazları (PortAudio); Windows'ta `WasapiBackend` kullanılır |
+| `src/PodcastRecorder.App` | WPF arayüzü (MVVM, CommunityToolkit.Mvvm); ViewModel'ler Avalonia sürümüyle ortak |
+| `src/PodcastRecorder.Avalonia` | Windows, Linux ve macOS için Avalonia arayüzü |
 | `tests/PodcastRecorder.Audio.Tests` | Ses motoru birim testleri (xUnit) |
 
 ### Ses akışı
@@ -122,7 +145,7 @@ git push origin v0.0.1
 ```
 Mikrofon ─┐                    ┌─> Program bus ─> Recorder ─> IAudioEncoder (MP3/WAV) ─> dosya
 Müzik ────┼─> AudioMixer ──────┤
-Jingle ───┘                    └─> Monitor bus ─> WasapiOut (kulaklık)
+Jingle ───┘                    └─> Monitor bus ─> IAudioOutput (kulaklık: WASAPI ya da PortAudio)
 ```
 
 Tüm kaynaklar 48 kHz stereo float formatına çevrilir. Çıkış cihazının saati akışı sürer; kodlama ayrı bir arka plan görevinde yapılır, böylece disk yazımı sesi takıltmaz.

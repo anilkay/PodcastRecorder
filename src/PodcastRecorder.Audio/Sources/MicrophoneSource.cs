@@ -1,5 +1,6 @@
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using PodcastRecorder.Audio.Devices;
 
 namespace PodcastRecorder.Audio.Sources;
 
@@ -7,7 +8,7 @@ namespace PodcastRecorder.Audio.Sources;
 /// Captures a WASAPI input device and exposes it in the mix format. The capture and output
 /// clocks drift apart slowly, so the buffer is dropped when it lags too far behind.
 /// </summary>
-public sealed class MicrophoneSource : ISampleProvider, IDisposable
+public sealed class MicrophoneSource : IAudioInput
 {
     private static readonly TimeSpan MaxLatency = TimeSpan.FromMilliseconds(250);
 
