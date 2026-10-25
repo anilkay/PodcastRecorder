@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- The macOS app bundle's description; package-app.sh fills in the version. -->
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>Podcast Recorder</string>
+    <key>CFBundleDisplayName</key>
+    <string>Podcast Recorder</string>
+    <key>CFBundleIdentifier</key>
+    <string>io.github.anilkay.PodcastRecorder</string>
+    <key>CFBundleExecutable</key>
+    <string>PodcastRecorder.Avalonia</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>0.0.0</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.music</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Podcast Recorder records your voice from the microphone. / Podcast Recorder mikrofondan sesinizi kaydeder.</string>
+</dict>
+</plist>
