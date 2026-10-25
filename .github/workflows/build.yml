@@ -52,3 +52,23 @@ jobs:
         with:
           name: PodcastRecorder-osx-arm64-app
           path: PodcastRecorder-osx-arm64.zip
+      - name: Package the Linux AppImage and run it
+        if: runner.os == 'Linux'
+        run: |
+          dotnet publish src/PodcastRecorder.Avalonia --configuration Release --runtime linux-x64 --self-contained \
+            --output publish/PodcastRecorder
+          bash src/PodcastRecorder.Avalonia/linux/get-appimagetool.sh
+          APPIMAGETOOL=$PWD/appimagetool APPIMAGE_RUNTIME=$PWD/runtime-x86_64 \
+            bash src/PodcastRecorder.Avalonia/linux/package-appimage.sh publish/PodcastRecorder 0.0.0 PodcastRecorder-x86_64.AppImage
+          command -v xvfb-run || sudo apt-get install -y xvfb
+          # On a virtual display; killed by the timeout (124) means it was still running after 15 s.
+          code=0
+          APPIMAGE_EXTRACT_AND_RUN=1 xvfb-run -a timeout 15 ./PodcastRecorder-x86_64.AppImage || code=$?
+          echo "exit code $code"
+          test "$code" -eq 124
+      # The AppImage, to try on a Linux desktop before a release.
+      - uses: actions/upload-artifact@v6
+        if: runner.os == 'Linux'
+        with:
+          name: PodcastRecorder-linux-appimage
+          path: PodcastRecorder-x86_64.AppImage

@@ -103,6 +103,10 @@ Windows sürümünden farkları:
 
 Whisper (yerel), OpenAI, Azure OpenAI / Foundry ve Azure AI Speech her platformda aynı çalışır. Ayarlar Linux'ta `~/.config/PodcastRecorder`, macOS'ta `~/Library/Application Support/PodcastRecorder` altındadır.
 
+### Linux'ta kurulum
+
+Release'teki `PodcastRecorder-<sürüm>-x86_64.AppImage` dosyasını indirip çalıştırılabilir yapın (`chmod +x PodcastRecorder-*.AppImage` ya da dosya yöneticisinde Özellikler › İzinler) ve çift tıklayın. Ubuntu 22.04 ve sonrasında AppImage'ların çalışması için bir kez `sudo apt install libfuse2t64` (22.04'te `libfuse2`) gerekebilir. MP3 için LAME ve FLAC/M4A için ffmpeg yine sistemden kullanılır. Aynı derleme klasör olarak `PodcastRecorder-<sürüm>-linux-x64.tar.gz` içinde de vardır.
+
 ### macOS'ta kurulum
 
 Release sayfasındaki `PodcastRecorder-<sürüm>-osx-arm64.zip` (Apple Silicon) ya da `-osx-x64.zip` (Intel) içinde çift tıklayarak açılan `Podcast Recorder.app` vardır; .NET kurmak gerekmez.
@@ -137,7 +141,7 @@ dotnet test
 
 ## Sürüm çıkarmak
 
-Sürüm numarası `Directory.Build.props` içindeki `<Version>` alanındadır. `v` ile başlayan bir tag push edildiğinde GitHub Actions testleri çalıştırır, uygulamayı .NET kurulumu gerektirmeyen (self-contained) win-x64 olarak yayınlar ve zip'i GitHub Releases'a ekler. Avalonia sürümü de linux-x64 için `.tar.gz`, osx-arm64 (Apple Silicon) ve osx-x64 (Intel) için zip'lenmiş `Podcast Recorder.app` olarak eklenir (`src/PodcastRecorder.Avalonia/macOS/package-app.sh`):
+Sürüm numarası `Directory.Build.props` içindeki `<Version>` alanındadır. `v` ile başlayan bir tag push edildiğinde GitHub Actions testleri çalıştırır, uygulamayı .NET kurulumu gerektirmeyen (self-contained) win-x64 olarak yayınlar ve zip'i GitHub Releases'a ekler. Avalonia sürümü de linux-x64 için `.tar.gz` ve tek dosyalık `PodcastRecorder-<sürüm>-x86_64.AppImage` (`src/PodcastRecorder.Avalonia/linux/package-appimage.sh`), osx-arm64 (Apple Silicon) ve osx-x64 (Intel) için zip'lenmiş `Podcast Recorder.app` olarak eklenir (`src/PodcastRecorder.Avalonia/macOS/package-app.sh`):
 
 ```powershell
 git tag v0.0.1

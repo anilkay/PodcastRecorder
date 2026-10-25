@@ -1,7 +1,7 @@
 name: release
 
 # Push a tag such as v0.0.1 to build, test and publish a release: the Windows (WPF) app as a zip,
-# the Avalonia app for Linux as a tar.gz and for macOS as a zipped .app bundle.
+# the Avalonia app for Linux as a tar.gz and an AppImage, and for macOS as a zipped .app bundle.
 on:
   push:
     tags: ['v*']
@@ -39,6 +39,10 @@ jobs:
             ditto -c -k --keepParent "publish/Podcast Recorder.app" "PodcastRecorder-$version-${{ matrix.rid }}.zip"
           else
             tar -czf "PodcastRecorder-$version-${{ matrix.rid }}.tar.gz" -C publish PodcastRecorder
+            # The same build as one file that most distributions run with a double click.
+            bash src/PodcastRecorder.Avalonia/linux/get-appimagetool.sh
+            APPIMAGETOOL=$PWD/appimagetool APPIMAGE_RUNTIME=$PWD/runtime-x86_64 \
+              bash src/PodcastRecorder.Avalonia/linux/package-appimage.sh publish/PodcastRecorder "$version" "PodcastRecorder-$version-x86_64.AppImage"
           fi
       - uses: actions/upload-artifact@v6
         with:
@@ -46,6 +50,7 @@ jobs:
           path: |
             PodcastRecorder-*.tar.gz
             PodcastRecorder-*.zip
+            PodcastRecorder-*.AppImage
 
   release:
     needs: cross-platform
@@ -71,5 +76,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create '${{ github.ref_name }}' (Get-ChildItem PodcastRecorder-*.zip, PodcastRecorder-*.tar.gz).FullName `
+          gh release create '${{ github.ref_name }}' (Get-ChildItem PodcastRecorder-*.zip, PodcastRecorder-*.tar.gz, PodcastRecorder-*.AppImage).FullName `
             --title 'Podcast Recorder ${{ github.ref_name }}' --generate-notes
