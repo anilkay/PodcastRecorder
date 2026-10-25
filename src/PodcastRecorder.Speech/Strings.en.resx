@@ -24,4 +24,6 @@
   <data name="Whisper_Small" xml:space="preserve"><value>Small (466 MB)</value></data>
   <data name="Whisper_Tiny" xml:space="preserve"><value>Tiny (75 MB, fastest)</value></data>
   <data name="Windows_VoiceMissing" xml:space="preserve"><value>The voice &quot;{0}&quot; is not installed in Windows.</value></data>
+  <data name="System_SayFailed" xml:space="preserve"><value>Could not run the &quot;say&quot; command.</value></data>
+  <data name="System_EspeakMissing" xml:space="preserve"><value>Speech needs espeak-ng: sudo apt install espeak-ng</value></data>
 </root>

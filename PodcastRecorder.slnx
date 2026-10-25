@@ -2,6 +2,8 @@
   <Folder Name="/src/">
     <Project Path="src/PodcastRecorder.App/PodcastRecorder.App.csproj" />
     <Project Path="src/PodcastRecorder.Audio/PodcastRecorder.Audio.csproj" />
+    <Project Path="src/PodcastRecorder.Audio.PortAudio/PodcastRecorder.Audio.PortAudio.csproj" />
+    <Project Path="src/PodcastRecorder.Avalonia/PodcastRecorder.Avalonia.csproj" />
     <Project Path="src/PodcastRecorder.Speech/PodcastRecorder.Speech.csproj" />
   </Folder>
   <Folder Name="/tests/">

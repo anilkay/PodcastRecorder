@@ -5,16 +5,6 @@ using PodcastRecorder.App.Localization;
 
 namespace PodcastRecorder.App.Services;
 
-public interface IFileDialogs
-{
-    IReadOnlyList<string> PickAudioFiles(bool multiple);
-
-    string? PickFolder(string? initialFolder);
-
-    /// <summary>A JPEG or PNG picture, for a recording's cover.</summary>
-    string? PickImage();
-}
-
 public sealed class FileDialogs : IFileDialogs
 {
     private static string AudioFilter =>

@@ -1,12 +1,11 @@
-using NAudio.Lame;
 using NAudio.Wave;
 
 namespace PodcastRecorder.Audio.Recording;
 
-/// <summary>MP3 via the LAME encoder bundled with NAudio.Lame.</summary>
+/// <summary>MP3 via LAME (see <see cref="Mp3Writers"/>).</summary>
 public sealed class Mp3Encoder(int bitrateKbps) : IAudioEncoder
 {
-    private LameMP3FileWriter? _writer;
+    private Stream? _writer;
     private byte[] _pcm = [];
 
     public int BitrateKbps { get; } = bitrateKbps;
@@ -16,7 +15,7 @@ public sealed class Mp3Encoder(int bitrateKbps) : IAudioEncoder
     public void Open(string path, WaveFormat inputFormat)
     {
         var pcmFormat = new WaveFormat(inputFormat.SampleRate, 16, inputFormat.Channels);
-        _writer = new LameMP3FileWriter(path, pcmFormat, BitrateKbps);
+        _writer = Mp3Writers.CreateFile(path, pcmFormat, BitrateKbps);
     }
 
     public void Write(float[] samples, int offset, int count)

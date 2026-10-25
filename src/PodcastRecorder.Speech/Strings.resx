@@ -24,4 +24,6 @@
   <data name="Whisper_Small" xml:space="preserve"><value>Small (466 MB)</value></data>
   <data name="Whisper_Tiny" xml:space="preserve"><value>Tiny (75 MB, en hızlı)</value></data>
   <data name="Windows_VoiceMissing" xml:space="preserve"><value>Windows&apos;ta &quot;{0}&quot; sesi yüklü değil.</value></data>
+  <data name="System_SayFailed" xml:space="preserve"><value>&quot;say&quot; komutu çalıştırılamadı.</value></data>
+  <data name="System_EspeakMissing" xml:space="preserve"><value>Seslendirme için espeak-ng gerekli: sudo apt install espeak-ng</value></data>
 </root>

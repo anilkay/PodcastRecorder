@@ -8,6 +8,7 @@ public class WmaEncoderTests
     [Fact]
     public async Task Wma_encoder_writes_a_readable_file_and_removes_the_temporary_wav()
     {
+        if (!OperatingSystem.IsWindows()) return;
         var folder = Directory.CreateTempSubdirectory("podcastrecorder-");
         try
         {
@@ -60,8 +61,9 @@ public class WmaEncoderTests
     }
 
     [Fact]
-    public void Catalog_offers_wma()
+    public void Catalog_offers_wma_only_on_windows()
     {
-        Assert.Equal(".wma", EncoderCatalog.Find("wma-192").Create().FileExtension);
+        Assert.Equal(OperatingSystem.IsWindows(), EncoderCatalog.All.Any(o => o.Id == "wma-192"));
+        if (OperatingSystem.IsWindows()) Assert.Equal(".wma", EncoderCatalog.Find("wma-192").Create().FileExtension);
     }
 }

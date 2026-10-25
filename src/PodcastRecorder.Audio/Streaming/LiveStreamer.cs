@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.Net.Sockets;
 using System.Threading.Channels;
-using NAudio.Lame;
 using NAudio.Wave;
 using PodcastRecorder.Audio.Mixing;
 using PodcastRecorder.Audio.Recording;
@@ -44,7 +43,7 @@ public sealed class LiveStreamer : IProgramSink
     private volatile LiveState _state = LiveState.Offline;
 
     public LiveStreamer()
-        : this((output, settings) => new LameMP3FileWriter(
+        : this((output, settings) => Mp3Writers.Create(
             output, new WaveFormat(AudioFormat.SampleRate, 16, AudioFormat.Channels), settings.BitrateKbps))
     {
     }

@@ -26,8 +26,7 @@ public sealed class TagWriterTests : IDisposable
     public Task Flac_gets_the_tags_and_the_cover() => WritesAndReadsBack(".flac", () => new FlacEncoder());
 
     [Fact]
-    public Task Mp3_gets_id3v23_tags_and_the_cover() =>
-        OperatingSystem.IsWindows() ? WritesAndReadsBack(".mp3", () => new Mp3Encoder(128)) : Task.CompletedTask;
+    public Task Mp3_gets_id3v23_tags_and_the_cover() => WritesAndReadsBack(".mp3", () => new Mp3Encoder(128));
 
     [Fact]
     public Task Wma_gets_the_tags_and_the_cover() =>

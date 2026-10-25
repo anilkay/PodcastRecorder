@@ -11,11 +11,13 @@
     <PackageReference Include="NAudio.Core" Version="2.2.1" />
     <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
     <PackageReference Include="NAudio.Lame" Version="2.1.0" />
+    <PackageReference Include="NLayer" Version="3.0.0" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="PodcastRecorder.Audio.Tests" />
+    <InternalsVisibleTo Include="PodcastRecorder.Audio.PortAudio" />
   </ItemGroup>
 
 </Project>

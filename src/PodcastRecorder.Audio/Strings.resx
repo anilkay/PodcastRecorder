@@ -32,4 +32,18 @@
   <data name="Tags_WriteFailed" xml:space="preserve"><value>Dosya bilgileri yazılamadı ({0}): {1}</value></data>
   <data name="Wma_ConvertFailed" xml:space="preserve"><value>WMA&apos;ya çevrilemedi, kayıt WAV olarak saklandı: {0}</value></data>
   <data name="Wma_NoEncoder" xml:space="preserve"><value>Bu bilgisayarda WMA kodlayıcısı bulunamadı.</value></data>
+  <data name="Files_NotFound" xml:space="preserve"><value>Dosya bulunamadı.</value></data>
+  <data name="Ffmpeg_Missing" xml:space="preserve"><value>{0} dosyalarını çalmak için ffmpeg gerekli (Linux: sudo apt install ffmpeg, macOS: brew install ffmpeg).</value></data>
+  <data name="Ffmpeg_Failed" xml:space="preserve"><value>ffmpeg dosyayı açamadı: {0}</value></data>
+  <data name="Lame_Missing" xml:space="preserve"><value>MP3 için LAME kütüphanesi bulunamadı. Linux: sudo apt install libmp3lame0, macOS: brew install lame.</value></data>
+  <data name="Lame_InitFailed" xml:space="preserve"><value>LAME başlatılamadı.</value></data>
+  <data name="Lame_BadSettings" xml:space="preserve"><value>LAME bu ayarları kabul etmedi ({0} Hz, {1} kbps).</value></data>
+  <data name="Lame_EncodeFailed" xml:space="preserve"><value>MP3 kodlama hatası ({0}).</value></data>
+  <data name="Pa_OutputFormat" xml:space="preserve"><value>&quot;{0}&quot; 48 kHz stereo çalamıyor. &quot;default&quot;, &quot;pulse&quot; ya da &quot;pipewire&quot; cihazını deneyin.</value></data>
+  <data name="Pa_OutputOpenFailed" xml:space="preserve"><value>Çıkış cihazı açılamadı</value></data>
+  <data name="Pa_OutputStartFailed" xml:space="preserve"><value>Çıkış başlatılamadı</value></data>
+  <data name="Pa_InitFailed" xml:space="preserve"><value>PortAudio başlatılamadı</value></data>
+  <data name="Pa_DeviceGone" xml:space="preserve"><value>Ses cihazı bulunamadı; çıkarılmış olabilir.</value></data>
+  <data name="Pa_MicOpenFailed" xml:space="preserve"><value>Mikrofon açılamadı ({0})</value></data>
+  <data name="Pa_MicStartFailed" xml:space="preserve"><value>Mikrofon başlatılamadı ({0})</value></data>
 </root>

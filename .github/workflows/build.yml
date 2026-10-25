@@ -15,3 +15,21 @@ jobs:
           global-json-file: global.json
       - run: dotnet build --configuration Release
       - run: dotnet test --configuration Release --no-build
+
+  # The Avalonia app and the audio engine on Linux and macOS.
+  cross-platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Install LAME and ffmpeg
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get update && sudo apt-get install -y libmp3lame0 ffmpeg; else brew install lame ffmpeg; fi
+      - run: dotnet build src/PodcastRecorder.Avalonia --configuration Release
+      - run: dotnet test tests/PodcastRecorder.Audio.Tests --configuration Release

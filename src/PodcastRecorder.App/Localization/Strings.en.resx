@@ -269,4 +269,13 @@ shown in each pad&apos;s corner)
   <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
   <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>
   <data name="Theme_System" xml:space="preserve"><value>System</value></data>
+  <data name="Provider_System" xml:space="preserve"><value>System voices (on this computer)</value></data>
+  <data name="Cross_SystemVoices" xml:space="preserve"><value>System voices</value></data>
+  <data name="Cross_SystemVoicesLinux" xml:space="preserve"><value>Free and offline; uses espeak-ng (sudo apt install espeak-ng). Type a voice name such as &quot;en&quot; or &quot;tr&quot;.</value></data>
+  <data name="Cross_SystemVoicesMac" xml:space="preserve"><value>Free and offline; uses the macOS &quot;say&quot; command. Download more voices in System Settings › Accessibility › Spoken Content.</value></data>
+  <data name="Cross_ApiKeysNote" xml:space="preserve"><value>API keys are encrypted in the settings file for your user. The pricing and privacy terms of each cloud service apply to the audio and text sent to it.</value></data>
+  <data name="Cross_ThemeTip" xml:space="preserve"><value>Appearance: light, dark or follow the system</value></data>
+  <data name="Cross_LanguageTip" xml:space="preserve"><value>Interface language; System follows the operating system&apos;s language</value></data>
+  <data name="Cross_PasswordStored" xml:space="preserve"><value>Stored encrypted for your user</value></data>
+  <data name="Cross_TagsIntro" xml:space="preserve"><value>When a recording ends this information is written into the file (and the separate tracks); music players and file managers show it. The episode number goes up by one after each recording.</value></data>
 </root>

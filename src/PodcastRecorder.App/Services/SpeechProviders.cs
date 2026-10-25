@@ -31,7 +31,7 @@ public static class SpeechProviders
 
     public static IReadOnlyList<SpeechProviderOption> Synthesis { get; } =
     [
-        new(Windows, "Provider_Windows"),
+        new(Windows, OperatingSystem.IsWindows() ? "Provider_Windows" : "Provider_System"),
         new(OpenAi, "Provider_OpenAi"),
         new(AzureOpenAi, "Provider_AzureOpenAi"),
         new(AzureSpeech, "Provider_AzureSpeech"),
@@ -56,21 +56,25 @@ public static class SpeechProviders
         OpenAi => new OpenAiSpeechSynthesizer(Http, OpenAiEndpoint.OpenAi(c.OpenAiKey, c.OpenAiBaseUrl), c.OpenAiSpeechModel),
         AzureOpenAi => new OpenAiSpeechSynthesizer(Http, OpenAiEndpoint.Azure(c.AzureOpenAiEndpoint, c.AzureOpenAiKey), c.AzureOpenAiSpeechDeployment),
         AzureSpeech => new AzureSpeechSynthesizer(Http, new AzureSpeechEndpoint(c.AzureSpeechRegion, c.AzureSpeechKey)),
-        _ => new WindowsSpeechSynthesizer(),
+        _ => SystemVoices(),
     };
 
     public static IReadOnlyList<string> VoicesFor(string provider) => provider switch
     {
         OpenAi or AzureOpenAi => OpenAiSpeechSynthesizer.Voices,
         AzureSpeech => AzureSpeechSynthesizer.SuggestedVoices,
-        _ => InstalledWindowsVoices(),
+        _ => InstalledSystemVoices(),
     };
 
-    private static IReadOnlyList<string> InstalledWindowsVoices()
+    /// <summary>The offline voices: Windows' own, or espeak-ng / "say" on Linux and macOS.</summary>
+    private static ITextToSpeech SystemVoices() =>
+        OperatingSystem.IsWindows() ? new WindowsSpeechSynthesizer() : new SystemSpeechSynthesizer();
+
+    private static IReadOnlyList<string> InstalledSystemVoices()
     {
         try
         {
-            return WindowsSpeechSynthesizer.InstalledVoices();
+            return OperatingSystem.IsWindows() ? WindowsSpeechSynthesizer.InstalledVoices() : SystemSpeechSynthesizer.InstalledVoices();
         }
         catch (Exception)
         {

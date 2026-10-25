@@ -1,6 +1,5 @@
-using NAudio.CoreAudioApi;
 using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
+using PodcastRecorder.Audio.Devices;
 using PodcastRecorder.Audio.Mixing;
 using PodcastRecorder.Audio.Recording;
 using PodcastRecorder.Audio.Sources;
@@ -29,7 +28,7 @@ public sealed class AudioEngine : IDisposable
 
     // Snapshot of the microphone channels for the audio thread, replaced on every change.
     private volatile MixerChannel[] _microphoneChannels = [];
-    private WasapiOut? _output;
+    private IAudioOutput? _output;
     private bool _microphoneLive = true;
     private bool _duckingEnabled = true;
     private float _duckLevel = DecibelsToGain(-12);
@@ -69,7 +68,7 @@ public sealed class AudioEngine : IDisposable
 
     public LoudnessMeter Loudness => Bus.Loudness;
 
-    public bool IsOutputRunning => _output?.PlaybackState == PlaybackState.Playing;
+    public bool IsOutputRunning => _output?.IsRunning == true;
 
     /// <summary>
     /// The on-air switch. Off silences every microphone; on opens them and, with ducking
@@ -153,7 +152,7 @@ public sealed class AudioEngine : IDisposable
         _microphones[channel] = microphone;
         _microphoneChannels = [.. _microphones.Keys];
         Mixer.Add(channel);
-        if (microphone is MicrophoneSource device) device.Start();
+        if (microphone is IAudioInput device) device.Start();
         UpdateDucking();
         return channel;
     }
@@ -171,13 +170,13 @@ public sealed class AudioEngine : IDisposable
         UpdateDucking();
     }
 
-    public void StartOutput(MMDevice device)
+    /// <summary>Opens an output device on <paramref name="backend"/> and starts pulling the mix through it.</summary>
+    public void StartOutput(IAudioBackend backend, string deviceId)
     {
         StopOutput();
-        var output = new WasapiOut(device, AudioClientShareMode.Shared, useEventSync: true, latency: 60);
-        output.PlaybackStopped += (_, e) => OutputStopped?.Invoke(this, e.Exception);
-        output.Init(new SampleToWaveProvider(Bus));
-        output.Play();
+        var output = backend.OpenOutput(deviceId, Bus);
+        output.Stopped += (_, e) => OutputStopped?.Invoke(this, e);
+        output.Start();
         _output = output;
     }
 

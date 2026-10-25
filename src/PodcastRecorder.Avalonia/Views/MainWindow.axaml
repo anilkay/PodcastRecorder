@@ -1,0 +1,520 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PodcastRecorder.App.ViewModels"
+        xmlns:controls="using:PodcastRecorder.App.Controls"
+        xmlns:loc="using:PodcastRecorder.App.Localization"
+        x:Class="PodcastRecorder.App.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Width="1280" Height="820" MinWidth="1000" MinHeight="640"
+        WindowStartupLocation="CenterScreen">
+    <!-- Keyboard shortcuts. Jingle pad keys (1-8, Q-I, A-K, Z-M by grid position) and F1 are handled in code-behind. -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+R" Command="{Binding StartRecordingCommand}" />
+        <KeyBinding Gesture="Ctrl+P" Command="{Binding TogglePauseCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+R" Command="{Binding StopRecordingCommand}" />
+        <KeyBinding Gesture="Ctrl+M" Command="{Binding ToggleMicrophoneCommand}" />
+        <KeyBinding Gesture="Ctrl+L" Command="{Binding Live.StartCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+L" Command="{Binding Live.StopCommand}" />
+        <KeyBinding Gesture="F5" Command="{Binding Playlist.PlayCommand}" />
+        <KeyBinding Gesture="F6" Command="{Binding Playlist.StopCommand}" />
+        <KeyBinding Gesture="F7" Command="{Binding Playlist.NextCommand}" />
+        <KeyBinding Gesture="Escape" Command="{Binding Jingles.StopAllCommand}" />
+    </Window.KeyBindings>
+
+    <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto,Auto">
+
+        <!-- Recording bar -->
+        <Border Grid.Row="0" Classes="panel" Classes.alert="{Binding IsRecording}" Padding="12,10">
+            <DockPanel LastChildFill="False">
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Classes="transport" Command="{Binding StartRecordingCommand}" ToolTip.Tip="{loc:T Main_KaydiBaslatCtrlR}">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="12" Height="12" Fill="{DynamicResource RecordBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{loc:T Live_Kaydet}" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="transport" Command="{Binding TogglePauseCommand}" Content="{Binding PauseButtonText}"
+                            ToolTip.Tip="{loc:T Main_DuraklatDevamCtrlP}" />
+                    <Button Classes="transport" Command="{Binding StopRecordingCommand}" Content="{loc:T Main_Durdur}"
+                            ToolTip.Tip="{loc:T Main_KaydiDurdurVeDosyayiKaydet}" />
+                    <ToggleButton Classes="onair" IsChecked="{Binding IsMicrophoneLive}" Content="{Binding MicrophoneButtonText}"
+                                  Margin="10,0,0,0"
+                                  ToolTip.Tip="{loc:T Main_KapaliykenMikrofonKaydaGirmezAcikken}" />
+                    <TextBlock Text="{Binding ElapsedText}" FontFamily="{StaticResource MonoFont}" FontSize="28" FontWeight="SemiBold"
+                               VerticalAlignment="Center" Margin="14,0,10,0" />
+                    <TextBlock Text="{Binding StateText}" Classes="muted" VerticalAlignment="Center" FontWeight="SemiBold" />
+                    <StackPanel VerticalAlignment="Center" Margin="14,0,16,0"
+                                ToolTip.Tip="{loc:T Main_SesYuksekligiEbuR128Anlik}">
+                        <TextBlock>
+                            <Run Text="{loc:T Main_Anlik, Suffix=' '}" Foreground="{DynamicResource MutedTextBrush}" />
+                            <Run Text="{Binding MomentaryLoudnessText}" FontWeight="SemiBold" />
+                        </TextBlock>
+                        <TextBlock>
+                            <Run Text="{loc:T Main_Kayit, Suffix=' '}" Foreground="{DynamicResource MutedTextBrush}" />
+                            <Run Text="{Binding IntegratedLoudnessText}" FontWeight="SemiBold" />
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="{loc:T Main_Format}" Classes="label" />
+                    <ComboBox ItemsSource="{Binding Encoders}" SelectedItem="{Binding SelectedEncoder}"
+                              DisplayMemberBinding="{ReflectionBinding DisplayName}" Width="130" IsEnabled="{Binding IsIdle}" Margin="0,0,8,0" />
+                    <CheckBox Content="{loc:T Main_NormalizeEt}" IsChecked="{Binding NormalizeOnStop}" IsEnabled="{Binding IsIdle}" Margin="0,0,8,0"
+                              ToolTip.Tip="{loc:T Main_16LufsENormalizeEt}" />
+                    <CheckBox Content="{loc:T Main_AyriIzler}" IsChecked="{Binding RecordStems}" IsEnabled="{Binding IsIdle}"
+                              ToolTip.Tip="{loc:T Main_KarisimaEkOlarakHerKanali}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Devices and AI tools -->
+        <StackPanel Grid.Row="1">
+            <WrapPanel Orientation="Horizontal" Margin="4,10,0,6">
+                <TextBlock Text="{loc:T Main_MikrofonEkle}" Classes="label" />
+                <ComboBox ItemsSource="{Binding InputDevices}" SelectedItem="{Binding InputToAdd}" DisplayMemberBinding="{ReflectionBinding Name}"
+                          Width="210" IsEnabled="{Binding IsIdle}" Margin="0,0,6,4" />
+                <Button Content="{loc:T Main_Ekle}" Command="{Binding AddMicrophoneCommand}" Margin="0,0,16,4" />
+                <TextBlock Text="{loc:T Main_DinlemeCikisiKulaklik}" Classes="label" />
+                <ComboBox ItemsSource="{Binding OutputDevices}" SelectedItem="{Binding SelectedOutput}" DisplayMemberBinding="{ReflectionBinding Name}"
+                          Width="220" IsEnabled="{Binding IsIdle}" Margin="0,0,16,4" />
+                <CheckBox Content="{loc:T Main_Ducking}" IsChecked="{Binding DuckingEnabled}" Margin="0,0,8,4"
+                          ToolTip.Tip="{loc:T Main_MikrofonAcikkenYaDaKonusunca}" />
+                <Slider Minimum="-30" Maximum="-3" Value="{Binding DuckLevelDb}" Width="100"
+                        SmallChange="1" LargeChange="3" IsSnapToTickEnabled="True" TickFrequency="1"
+                        IsEnabled="{Binding DuckingEnabled}" ToolTip.Tip="{loc:T Main_MikrofonAcikkenMuziginSeviyesi}" />
+                <TextBlock Text="{Binding DuckLevelDb, StringFormat='{}{0:0} dB'}" VerticalAlignment="Center" Margin="6,0,16,0" />
+                <ComboBox ItemsSource="{Binding DuckingModes}" SelectedItem="{Binding SelectedDuckingMode}" DisplayMemberBinding="{ReflectionBinding Name}"
+                          Width="170" IsEnabled="{Binding DuckingEnabled}" Margin="0,0,8,4" />
+                <StackPanel Orientation="Horizontal" IsVisible="{Binding IsVoiceDucking}"
+                            ToolTip.Tip="{loc:T Main_MikrofonBuSeviyeyiGecinceKonusma}">
+                    <TextBlock Text="{loc:T Main_Esik}" Classes="label" />
+                    <Slider Minimum="-60" Maximum="-10" Value="{Binding VoiceThresholdDb}" Width="100"
+                            IsSnapToTickEnabled="True" TickFrequency="1" />
+                    <TextBlock Text="{Binding VoiceThresholdDb, StringFormat='{}{0:0} dB'}" VerticalAlignment="Center" Margin="6,0,6,0" />
+                    <Ellipse Classes="voice" Classes.on="{Binding IsVoiceDetected}" Width="10" Height="10" VerticalAlignment="Center"
+                             ToolTip.Tip="{loc:T Main_KonusmaAlgilandi}" />
+                </StackPanel>
+            </WrapPanel>
+
+            <Expander x:Name="AiExpander" Margin="0,0,0,10" HorizontalAlignment="Stretch" x:DataType="vm:AiViewModel" DataContext="{Binding Ai}">
+                <Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{loc:T Main_YapayZekaYaziyaCevirmeVe}" FontWeight="SemiBold" />
+                        <TextBlock Text="{loc:T Main_TranskriptCikariliyor}" Classes="muted" IsVisible="{Binding IsTranscribing}" />
+                    </StackPanel>
+                </Expander.Header>
+                <TextBlock Text="{loc:T Main_AraclarAsagidaKlasorGezginiVe}"
+                           Classes="muted" FontSize="12" />
+            </Expander>
+        </StackPanel>
+
+        <!-- Folder browser, playlist, jingle pad -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,12,1.3*,12,1.3*">
+
+            <Border Grid.Column="0" Classes="panel" x:DataType="vm:FolderBrowserViewModel" DataContext="{Binding Browser}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_KlasorGezgini}" Classes="title" />
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                        <Button Content="{loc:T Main_KlasorSec}" Command="{Binding ChooseFolderCommand}" />
+                        <Button Content="{loc:T Main_UstKlasor, Prefix='↑ '}" Command="{Binding UpCommand}" />
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentFolder}" Classes="muted"
+                               TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding CurrentFolder}" Margin="0,0,0,6" />
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Classes="error" />
+                    <TextBlock DockPanel.Dock="Bottom" Classes="muted" TextWrapping="Wrap" Margin="0,6,0,0"
+                               Text="{loc:T Main_CiftTikKlasoreGirYa}" />
+                    <ListBox x:Name="BrowserList" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}"
+                             DoubleTapped="BrowserList_DoubleTapped">
+                        <ListBox.KeyBindings>
+                            <KeyBinding Gesture="Enter" Command="{Binding OpenCommand}" />
+                        </ListBox.KeyBindings>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:BrowserEntry">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Icon}" Margin="0,0,6,0" />
+                                    <TextBlock Text="{Binding Name}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Column="2" Classes="panel" x:DataType="vm:PlaylistViewModel" DataContext="{Binding Playlist}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_CalmaListesi}" Classes="title" />
+                    <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                        <Button Content="{loc:T Main_Cal, Prefix='▶ '}" Command="{Binding PlayCommand}" ToolTip.Tip="{loc:T Main_SeciliSarkiyiCalF5}" />
+                        <Button Content="{loc:T Main_Durdur, Prefix='■ '}" Command="{Binding StopCommand}" ToolTip.Tip="{loc:T Main_MuzigiDurdurF6}" />
+                        <Button Content="{loc:T Main_Sonraki, Prefix='⏭ '}" Command="{Binding NextCommand}" ToolTip.Tip="{loc:T Main_SonrakiSarkiF7}" />
+                        <Button Content="{loc:T Main_Ekle2}" Command="{Binding BrowseCommand}" />
+                        <Button Content="↑" Command="{Binding MoveUpCommand}" ToolTip.Tip="{loc:T Main_YukariTasi}" />
+                        <Button Content="↓" Command="{Binding MoveDownCommand}" ToolTip.Tip="{loc:T Main_AsagiTasi}" />
+                        <Button Content="{loc:T Main_Kaldir}" Command="{Binding RemoveCommand}" />
+                        <Button Content="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
+                    </WrapPanel>
+                    <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                        <ProgressBar Classes="thin" Value="{Binding Progress}" />
+                        <DockPanel Margin="0,4,0,0">
+                            <CheckBox DockPanel.Dock="Right" Content="{loc:T Main_BitinceSonrakineGec}" IsChecked="{Binding AutoAdvance}" />
+                            <TextBlock Text="{Binding PositionText}" FontFamily="{StaticResource MonoFont}" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
+                                    ToolTip.Tip="{loc:T Main_SarkilarArasindaBindirmeSuresi0}">
+                            <TextBlock Text="{loc:T Main_Crossfade}" Classes="label" Margin="0,0,8,0" />
+                            <Slider Minimum="0" Maximum="10" Value="{Binding CrossfadeSeconds}" Width="140"
+                                    IsSnapToTickEnabled="True" TickFrequency="0.5" SmallChange="0.5" LargeChange="1" />
+                            <TextBlock Text="{Binding CrossfadeSeconds, StringFormat={loc:T Main_SecondsFormat}}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding ErrorMessage}" Classes="error" />
+                    </StackPanel>
+                    <ListBox x:Name="PlaylistList" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
+                             DragDrop.AllowDrop="True" DoubleTapped="PlaylistList_DoubleTapped">
+                        <ListBox.KeyBindings>
+                            <KeyBinding Gesture="Enter" Command="{Binding PlayCommand}" />
+                            <KeyBinding Gesture="Delete" Command="{Binding RemoveCommand}" />
+                        </ListBox.KeyBindings>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:PlaylistItemViewModel">
+                                <StackPanel Orientation="Horizontal" ToolTip.Tip="{Binding FilePath}">
+                                    <TextBlock Text="▶ " Foreground="{DynamicResource AccentBrush}" IsVisible="{Binding IsPlaying}" />
+                                    <TextBlock Text="{Binding Title}" Classes.playing="{Binding IsPlaying}">
+                                        <TextBlock.Styles>
+                                            <Style Selector="TextBlock.playing">
+                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                            </Style>
+                                        </TextBlock.Styles>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Column="4" Classes="panel" x:DataType="vm:JinglePadViewModel" DataContext="{Binding Jingles}">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="{loc:T Main_Sekme, Prefix='+ '}" Command="{Binding NewBankCommand}" />
+                            <Button Content="{loc:T Main_SekmeyiSil}" Command="{Binding RemoveBankCommand}" />
+                            <Button Content="{loc:T Main_TumunuDurdur}" Command="{Binding StopAllCommand}" Margin="0"
+                                    ToolTip.Tip="{loc:T Main_CalanButunJingleLariDurdur}" />
+                        </StackPanel>
+                        <!-- The usage hint is a tooltip so the pads get the height. -->
+                        <TextBlock Text="{loc:T Main_JinglePaneli}" Classes="title"
+                                   ToolTip.Tip="{loc:T Main_TiklaYaDaKosedekiTusa}" />
+                    </DockPanel>
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Classes="error" />
+                    <TabControl ItemsSource="{Binding Banks}" SelectedItem="{Binding SelectedBank}" Padding="0">
+                        <TabControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:JingleBankViewModel">
+                                <TextBlock Text="{Binding Name}" FontSize="13" />
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate x:DataType="vm:JingleBankViewModel">
+                                <DockPanel Margin="0,6,0,0">
+                                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                                        <TextBlock Text="{loc:T Main_Ad}" Classes="label" />
+                                        <TextBox Text="{Binding Name}" Width="120" Margin="0,0,12,0" />
+                                        <TextBlock Text="{loc:T Main_Satir}" Classes="label" />
+                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Rows}"
+                                                  Width="72" Margin="0,0,12,0" />
+                                        <TextBlock Text="{loc:T Main_Sutun}" Classes="label" />
+                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Columns}"
+                                                  Width="72" />
+                                    </StackPanel>
+                                    <ItemsControl ItemsSource="{Binding Cells}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:JingleCellViewModel">
+                                                <Button Classes="pad" Classes.playing="{Binding IsPlaying}" Classes.empty="{Binding !HasFile}"
+                                                        Command="{Binding ToggleCommand}" DragDrop.AllowDrop="True" ToolTip.Tip="{Binding FilePath}">
+                                                    <Button.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="{loc:T Main_DosyaSec}" Command="{Binding BrowseCommand}" />
+                                                            <MenuItem Header="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
+                                                        </ContextMenu>
+                                                    </Button.ContextMenu>
+                                                    <Grid>
+                                                        <TextBlock Classes="key" Text="{Binding Shortcut}"
+                                                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                        <TextBlock Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                    </Grid>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </DockPanel>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+                    </TabControl>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- AI tools open over the middle row, so they never push the panels off a small screen. -->
+        <Border Grid.Row="2" Classes="panel" x:DataType="vm:AiViewModel" DataContext="{Binding Ai}" ZIndex="1"
+                IsVisible="{Binding #AiExpander.IsExpanded}">
+            <ScrollViewer x:Name="AiScroller" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <Grid ColumnDefinitions="*,16,*">
+
+                        <!-- Speech to text -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="{loc:T Main_KonusmayiYaziyaCevirTranskript}" Classes="title" />
+                            <WrapPanel>
+                                <TextBlock Text="{loc:T Main_Servis}" Classes="label" />
+                                <ComboBox ItemsSource="{x:Static vm:AiViewModel.TranscriptionProviders}" DisplayMemberBinding="{ReflectionBinding Name}"
+                                          SelectedValueBinding="{ReflectionBinding Id}" SelectedValue="{Binding TranscriptionProvider}" Width="210" Margin="0,0,6,4" />
+                                <Button Content="{loc:T Main_Ayarlar, Prefix='⚙ '}" Command="{Binding OpenServiceSettingsCommand}" Click="ServiceSettingsButton_Click"
+                                        CommandParameter="{Binding TranscriptionProvider}" Margin="0,0,12,4"
+                                        ToolTip.Tip="{loc:T Main_SeciliServisinAnahtarVeModel}" />
+                                <TextBlock Text="{loc:T Main_Dil}" Classes="label" />
+                                <TextBox Text="{Binding Language}" Width="48"
+                                         ToolTip.Tip="{loc:T Main_TrEnDeBosBirakilirsa}" />
+                            </WrapPanel>
+                            <WrapPanel Margin="0,6,0,0">
+                                <CheckBox Content="{loc:T Main_KayitBitinceOtomatikCikar}" IsChecked="{Binding TranscribeOnStop}" Margin="0,0,12,4"
+                                          ToolTip.Tip="{loc:T Main_KayitDosyasininYaninaAyniAdla}" />
+                                <Button Content="{loc:T Main_DosyaSecVeCevir}" Command="{Binding TranscribeFileCommand}" />
+                                <Button Content="{loc:T Main_Iptal}" Command="{Binding CancelTranscriptionCommand}" />
+                                <Button Content="{loc:T Main_TranskriptiAc}" Command="{Binding OpenTranscriptCommand}" />
+                            </WrapPanel>
+                            <ProgressBar Classes="thin" Value="{Binding TranscriptionProgress}" Margin="0,6,0,0"
+                                         IsVisible="{Binding IsTranscribing}" />
+                            <TextBlock Text="{Binding TranscriptionStatus}" TextWrapping="Wrap" Margin="0,4,0,0" Classes="muted" />
+                        </StackPanel>
+
+                        <!-- Text to speech -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="{loc:T Main_MetindenSesAnonsJingle}" Classes="title" />
+                            <WrapPanel>
+                                <TextBlock Text="{loc:T Main_Servis}" Classes="label" />
+                                <ComboBox ItemsSource="{x:Static vm:AiViewModel.SynthesisProviders}" DisplayMemberBinding="{ReflectionBinding Name}"
+                                          SelectedValueBinding="{ReflectionBinding Id}" SelectedValue="{Binding SynthesisProvider}" Width="210" Margin="0,0,6,4" />
+                                <Button Content="{loc:T Main_Ayarlar, Prefix='⚙ '}" Command="{Binding OpenServiceSettingsCommand}" Click="ServiceSettingsButton_Click"
+                                        CommandParameter="{Binding SynthesisProvider}" Margin="0,0,12,4"
+                                        ToolTip.Tip="{loc:T Main_SeciliServisinAnahtarVeModel}" />
+                                <TextBlock Text="{loc:T Main_Ses}" Classes="label" />
+                                <AutoCompleteBox ItemsSource="{Binding VoiceSuggestions}" Text="{Binding Voice}" Width="210"
+                                                 FilterMode="ContainsOrdinal" MinimumPrefixLength="0"
+                                                 ToolTip.Tip="{loc:T Main_ListedenSecinYaDaServisteki}" />
+                            </WrapPanel>
+                            <TextBox Text="{Binding SpeechText}" AcceptsReturn="True" TextWrapping="Wrap" Height="56" Margin="0,6,0,0"
+                                     ToolTip.Tip="{loc:T Main_SeslendirilecekMetinOrSimdiKisa}" />
+                            <WrapPanel Margin="0,6,0,0">
+                                <Button Content="{loc:T Main_SesiOlustur}" Command="{Binding SynthesizeCommand}" FontWeight="SemiBold"
+                                        ToolTip.Tip="{loc:T Main_DosyaKayitKlasorundekiAnonslarKlasor}" />
+                                <Button Content="{loc:T Main_CalmaListesineEkle}" Command="{Binding AddSpeechToPlaylistCommand}" />
+                                <Button Content="{loc:T Main_BosJingleHucresineAta}" Command="{Binding AssignSpeechToJingleCommand}" />
+                            </WrapPanel>
+                            <TextBlock Text="{Binding SynthesisStatus}" TextWrapping="Wrap" Margin="0,4,0,0" Classes="muted" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Tab order must match AiViewModel.ServiceSettingsTabs. -->
+                    <Expander x:Name="ServiceSettings" Header="{loc:T Main_ServisAyarlariApiAnahtarlariModeller}" Margin="0,10,0,0"
+                              HorizontalAlignment="Stretch" IsExpanded="{Binding IsServiceSettingsOpen}">
+                        <TabControl x:Name="ServiceTabs" Margin="0,6,0,0" SelectedIndex="{Binding ServiceSettingsTab}">
+                            <TabItem Header="{loc:T Main_WhisperBuBilgisayarda}">
+                                <StackPanel Margin="8">
+                                    <WrapPanel>
+                                        <TextBlock Text="{loc:T Main_Model}" Classes="label" />
+                                        <ComboBox ItemsSource="{x:Static vm:AiViewModel.WhisperModels}" DisplayMemberBinding="{ReflectionBinding DisplayName}"
+                                                  SelectedValueBinding="{ReflectionBinding Id}" SelectedValue="{Binding WhisperModel}" Width="260" />
+                                    </WrapPanel>
+                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Classes="muted">
+                                        <Run Text="{loc:T Main_UcretsizVeInternetsizCalisirAma, Suffix=' '}" />
+                                        <Run Text="{x:Static vm:AiViewModel.WhisperModelFolder}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </TabItem>
+                            <TabItem Header="{loc:T Provider_OpenAi}">
+                                <StackPanel Margin="8">
+                                    <WrapPanel>
+                                        <TextBlock Text="{loc:T Main_ApiAnahtari}" Classes="label" />
+                                        <TextBox Text="{Binding OpenAiKey}" PasswordChar="•" Width="260" Margin="0,0,12,4" />
+                                        <TextBlock Text="{loc:T Main_Adres}" Classes="label" />
+                                        <TextBox Text="{Binding OpenAiBaseUrl}" Width="240"
+                                                 ToolTip.Tip="{loc:T Main_OpenaiUyumluBaskaBirServis}" />
+                                    </WrapPanel>
+                                    <WrapPanel Margin="0,6,0,0">
+                                        <TextBlock Text="{loc:T Main_YaziyaCevirmeModeli}" Classes="label" />
+                                        <AutoCompleteBox ItemsSource="{x:Static vm:AiViewModel.OpenAiTranscriptionModels}" MinimumPrefixLength="0"
+                                                         Text="{Binding OpenAiTranscriptionModel}" Width="190" Margin="0,0,12,4"
+                                                         ToolTip.Tip="{loc:T Main_ZamanDamgaliAltyaziYalnizcaWhisper}" />
+                                        <TextBlock Text="{loc:T Main_SeslendirmeModeli}" Classes="label" />
+                                        <AutoCompleteBox ItemsSource="{x:Static vm:AiViewModel.OpenAiSpeechModels}" MinimumPrefixLength="0"
+                                                         Text="{Binding OpenAiSpeechModel}" Width="170" />
+                                    </WrapPanel>
+                                </StackPanel>
+                            </TabItem>
+                            <TabItem Header="{loc:T Provider_AzureOpenAi}">
+                                <StackPanel Margin="8">
+                                    <WrapPanel>
+                                        <TextBlock Text="{loc:T Main_UcNokta}" Classes="label" />
+                                        <TextBox Text="{Binding AzureOpenAiEndpoint}" Width="300" Margin="0,0,12,4"
+                                                 ToolTip.Tip="{loc:T Main_OrHttpsKaynakAdiOpenai}" />
+                                        <TextBlock Text="{loc:T Main_ApiAnahtari}" Classes="label" />
+                                        <TextBox Text="{Binding AzureOpenAiKey}" PasswordChar="•" Width="240" />
+                                    </WrapPanel>
+                                    <WrapPanel Margin="0,6,0,0">
+                                        <TextBlock Text="{loc:T Main_YaziyaCevirmeDagitimi}" Classes="label" />
+                                        <TextBox Text="{Binding AzureOpenAiTranscriptionDeployment}" Width="160" Margin="0,0,12,4" />
+                                        <TextBlock Text="{loc:T Main_SeslendirmeDagitimi}" Classes="label" />
+                                        <TextBox Text="{Binding AzureOpenAiSpeechDeployment}" Width="160" />
+                                    </WrapPanel>
+                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Classes="muted"
+                                               Text="{loc:T Main_FoundryPortalindaWhisperYaDa}" />
+                                </StackPanel>
+                            </TabItem>
+                            <TabItem Header="{loc:T Provider_AzureSpeech}">
+                                <StackPanel Margin="8">
+                                    <WrapPanel>
+                                        <TextBlock Text="{loc:T Main_Bolge}" Classes="label" />
+                                        <TextBox Text="{Binding AzureSpeechRegion}" Width="140" Margin="0,0,12,4"
+                                                 ToolTip.Tip="{loc:T Main_OrWesteuropeSwedencentral}" />
+                                        <TextBlock Text="{loc:T Main_Anahtar}" Classes="label" />
+                                        <TextBox Text="{Binding AzureSpeechKey}" PasswordChar="•" Width="240" />
+                                    </WrapPanel>
+                                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" Classes="muted"
+                                               Text="{loc:T Main_SpeechKaynagininKeysAndEndpoint}" />
+                                </StackPanel>
+                            </TabItem>
+                            <TabItem x:Name="SystemVoicesTab">
+                                <TextBlock x:Name="SystemVoicesHelp" Margin="8" TextWrapping="Wrap" Classes="muted" />
+                            </TabItem>
+                        </TabControl>
+                    </Expander>
+                    <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Classes="muted"
+                               Text="{loc:T Cross_ApiKeysNote}" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Mixer: channel strips scroll sideways when there are many microphones -->
+        <DockPanel Grid.Row="3" Margin="0,12,0,0" Height="250">
+            <Border DockPanel.Dock="Right" Classes="panel" Width="120" Margin="8,0,0,0" Padding="8"
+                    ToolTip.Tip="{loc:T Main_KulakliktaDuyulanSesinSeviyesiMikrof}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_Kulaklik}" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <Slider Orientation="Vertical" Minimum="0" Maximum="1.5" Value="{Binding MonitorVolume}"
+                            SmallChange="0.05" LargeChange="0.1" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                </DockPanel>
+            </Border>
+
+            <Border DockPanel.Dock="Right" Classes="panel" Width="140" Margin="8,0,0,0" Padding="8"
+                    BorderBrush="{DynamicResource AccentBrush}" ToolTip.Tip="{loc:T Main_KaydaGidenToplamSes}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_MasterKayit}" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0"
+                                ToolTip.Tip="{loc:T Main_Kayit1DbYiGecmesin}">
+                        <CheckBox Content="{loc:T Main_Limiter}" IsChecked="{Binding LimiterEnabled}" />
+                        <Ellipse Width="8" Height="8" Margin="6,0,0,0" VerticalAlignment="Center" Fill="{DynamicResource WarningBrush}"
+                                 IsVisible="{Binding IsLimiting}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
+                        <Slider Orientation="Vertical" Minimum="0" Maximum="1.5" Value="{Binding MasterVolume}"
+                                SmallChange="0.05" LargeChange="0.1" Margin="0,0,8,0" />
+                        <controls:LevelBar Value="{Binding MasterMeter.Left}" />
+                        <controls:LevelBar Value="{Binding MasterMeter.Right}" />
+                        <Ellipse Width="8" Height="8" Margin="4,0,0,0" VerticalAlignment="Top" Fill="{DynamicResource RecordBrush}"
+                                 ToolTip.Tip="{loc:T Main_KirpilmaClip}" IsVisible="{Binding MasterMeter.IsClipping}" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- Live stream -->
+            <Border DockPanel.Dock="Right" Width="320" Margin="8,0,0,0" Classes="panel" x:DataType="vm:LiveStreamViewModel"
+                    DataContext="{Binding Live}" Classes.alert="{Binding IsLive}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_CanliYayin}" Classes="title" />
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                        <Ellipse Width="10" Height="10" Fill="{DynamicResource RecordBrush}" Margin="0,0,8,0" VerticalAlignment="Center"
+                                 IsVisible="{Binding IsLive}" />
+                        <TextBlock Text="{Binding StateText}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,12,0" />
+                        <TextBlock Text="{Binding ElapsedText}" FontFamily="{StaticResource MonoFont}" FontSize="18" VerticalAlignment="Center"
+                                   IsVisible="{Binding IsLive}" />
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding TargetText}" Classes="muted"
+                               TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding TargetText}" Margin="0,4,0,8" />
+                    <WrapPanel DockPanel.Dock="Top">
+                        <Button Content="{loc:T Main_YayinaBasla}" Command="{Binding StartCommand}" FontWeight="SemiBold"
+                                ToolTip.Tip="{loc:T Main_MasterSesiniIcecastSunucusunaGonder}" />
+                        <Button Content="{loc:T Main_YayiniDurdur}" Command="{Binding StopCommand}" ToolTip.Tip="Ctrl+Shift+L" />
+                        <Button Content="{loc:T Main_Ayarlar2}" Command="{Binding EditSettingsCommand}" Margin="0,0,0,4" />
+                    </WrapPanel>
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Margin="0,8,0,0" Classes="muted" />
+                </DockPanel>
+            </Border>
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding Channels}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <!-- One mixer strip: name, fader, stereo meter and mute. -->
+                        <DataTemplate x:DataType="vm:ChannelStripViewModel">
+                            <Border Classes="panel" Width="128" Margin="0,0,8,0" Padding="8">
+                                <DockPanel>
+                                    <DockPanel DockPanel.Dock="Top">
+                                        <Button DockPanel.Dock="Right" Content="✕" Command="{Binding RemoveCommand}" Padding="4,0" MinWidth="0" Margin="0"
+                                                ToolTip.Tip="{loc:T Strip_MikrofonuKaldir}" IsVisible="{Binding CanRemove}" />
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" HorizontalAlignment="Center" ToolTip.Tip="{Binding DeviceName}" />
+                                    </DockPanel>
+                                    <TextBlock DockPanel.Dock="Top" Text="{Binding DeviceName}" FontSize="11" Classes="muted"
+                                               TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" ToolTip.Tip="{Binding DeviceName}" />
+                                    <CheckBox DockPanel.Dock="Bottom" Content="{loc:T Main_Kulaklik}" IsChecked="{Binding MonitorEnabled}" Margin="0,4,0,0"
+                                              ToolTip.Tip="{loc:T Strip_KulakliktaDuyKapaliykenDeKayda}" />
+                                    <ToggleButton DockPanel.Dock="Bottom" Content="{loc:T Strip_Sessiz}" IsChecked="{Binding IsMuted}" Margin="0,6,0,0"
+                                                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
+                                        <Slider Orientation="Vertical" Minimum="0" Maximum="1.5" Value="{Binding Volume}"
+                                                SmallChange="0.05" LargeChange="0.1" Margin="0,0,8,0" ToolTip.Tip="{loc:T Strip_SesSeviyesi}" />
+                                        <controls:LevelBar Value="{Binding Meter.Left}" />
+                                        <controls:LevelBar Value="{Binding Meter.Right}" />
+                                        <Ellipse Width="8" Height="8" Margin="4,0,0,0" VerticalAlignment="Top" Fill="{DynamicResource RecordBrush}"
+                                                 ToolTip.Tip="{loc:T Main_KirpilmaClip}" IsVisible="{Binding Meter.IsClipping}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- Status -->
+        <DockPanel Grid.Row="4" Margin="4,10,0,0">
+            <Button DockPanel.Dock="Right" Content="{loc:T Main_KisayollarF1}" Click="Help_Click" Margin="0" />
+            <ComboBox DockPanel.Dock="Right" ItemsSource="{x:Static vm:MainViewModel.Themes}" DisplayMemberBinding="{ReflectionBinding Name}"
+                      SelectedItem="{Binding SelectedTheme}" Width="96" Margin="0,0,8,0" ToolTip.Tip="{loc:T Cross_ThemeTip}" />
+            <TextBlock DockPanel.Dock="Right" Text="{loc:T Main_Tema}" Classes="label" Margin="12,0,6,0" />
+            <!-- Each language is listed in its own name. -->
+            <ComboBox DockPanel.Dock="Right" ItemsSource="{x:Static vm:MainViewModel.Languages}" DisplayMemberBinding="{ReflectionBinding Name}"
+                      SelectedItem="{Binding SelectedLanguage}" Width="150" Margin="0,0,8,0" ToolTip.Tip="{loc:T Cross_LanguageTip}" />
+            <TextBlock DockPanel.Dock="Right" Text="{loc:T Main_Dil}" Classes="label" Margin="12,0,6,0" />
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,16,0">
+                <TextBlock Text="{loc:T Main_KayitKlasoru}" Classes="label" />
+                <TextBlock Text="{Binding RecordingFolder}" VerticalAlignment="Center" MaxWidth="260"
+                           TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding RecordingFolder}" Margin="0,0,6,0" />
+                <Button Content="…" Command="{Binding ChooseRecordingFolderCommand}" IsEnabled="{Binding IsIdle}" ToolTip.Tip="{loc:T Main_KayitKlasorunuDegistir}" />
+                <Button Content="{loc:T Main_KlasoruAc}" Command="{Binding OpenRecordingFolderCommand}" />
+                <Button Content="{loc:T Main_DosyaBilgileri}" Click="RecordingTags_Click" Margin="0"
+                        ToolTip.Tip="{loc:T Main_KaydaYazilacakBaslikSunucuProgram}" />
+            </StackPanel>
+            <TextBlock Text="{Binding StatusMessage}" Classes="muted" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+        </DockPanel>
+    </Grid>
+</Window>

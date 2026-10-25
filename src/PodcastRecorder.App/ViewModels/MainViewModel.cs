@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PodcastRecorder.App.Services;
@@ -26,19 +25,21 @@ internal sealed record PendingNormalization(string CapturePath, RecordingTarget 
 public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly AudioEngine _engine = new();
-    private readonly DeviceCatalog _devices = new();
+    private readonly IAudioBackend _devices;
     private readonly SettingsStore _settingsStore;
     private readonly AppSettings _settings;
     private readonly IFileDialogs _dialogs;
     private readonly SynchronizationContext _ui;
-    private readonly DispatcherTimer _timer;
+    private readonly PeriodicTimer _timer = new(TimeSpan.FromMilliseconds(50));
     private readonly List<ChannelStripViewModel> _microphoneStrips = [];
     private bool _initialized;
     private int _refreshTicks;
     private PendingNormalization? _pendingNormalization;
 
-    public MainViewModel(SettingsStore settingsStore, IFileDialogs dialogs, ILiveSettingsDialog liveDialog)
+    /// <param name="audio">The sound system; WASAPI when not given (the Windows app).</param>
+    public MainViewModel(SettingsStore settingsStore, IFileDialogs dialogs, ILiveSettingsDialog liveDialog, IAudioBackend? audio = null)
     {
+        _devices = audio ?? new WasapiBackend();
         _settingsStore = settingsStore;
         _settings = settingsStore.Load();
         _dialogs = dialogs;
@@ -63,9 +64,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             if (ex is not null) _ui.Post(_ => StatusMessage = Loc.F("Main_OutputStopped", ex.Message), null);
         };
-
-        _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
-        _timer.Tick += (_, _) => Refresh();
     }
 
     public PlaylistViewModel Playlist { get; }
@@ -259,13 +257,22 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         Browser.Navigate(_settings.BrowseFolder is { } folder && Directory.Exists(folder)
             ? folder
-            : Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
+            : AppSettings.MusicFolder);
 
         _initialized = true;
         SelectedOutput = Pick(OutputDevices, _settings.OutputDeviceId, _devices.DefaultOutputId);
         LoadMicrophones();
         InputToAdd = InputDevices.FirstOrDefault(d => _microphoneStrips.All(m => m.DeviceId != d.Id));
-        _timer.Start();
+        _ = RefreshLoopAsync();
+    }
+
+    /// <summary>Updates meters and clocks; continues on the UI thread that called <see cref="Initialize"/>.</summary>
+    private async Task RefreshLoopAsync()
+    {
+        while (await _timer.WaitForNextTickAsync())
+        {
+            Refresh();
+        }
     }
 
     partial void OnSelectedOutputChanged(AudioDevice? value)
@@ -274,7 +281,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         try
         {
             if (value is null) _engine.StopOutput();
-            else _engine.StartOutput(_devices.GetDevice(value.Id));
+            else _engine.StartOutput(_devices, value.Id);
         }
         catch (Exception ex)
         {
@@ -295,7 +302,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         try
         {
-            var microphone = new MicrophoneSource(_devices.GetDevice(device.Id));
+            var microphone = _devices.OpenInput(device.Id);
             microphone.Stopped += (_, ex) =>
             {
                 if (ex is not null) _ui.Post(_ => StatusMessage = Loc.F("Main_MicStopped", device.Name, ex.Message), null);
@@ -516,9 +523,21 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void OpenRecordingFolder()
     {
-        var target = LastRecordingPath is { } last && File.Exists(last) ? $"/select,\"{last}\"" : $"\"{RecordingFolder}\"";
         Directory.CreateDirectory(RecordingFolder);
-        Process.Start(new ProcessStartInfo("explorer.exe", target) { UseShellExecute = true });
+        var last = LastRecordingPath is { } path && File.Exists(path) ? path : null;
+        if (OperatingSystem.IsWindows())
+        {
+            var target = last is not null ? $"/select,\"{last}\"" : $"\"{RecordingFolder}\"";
+            Process.Start(new ProcessStartInfo("explorer.exe", target) { UseShellExecute = true });
+        }
+        else if (OperatingSystem.IsMacOS())
+        {
+            Process.Start("open", last is not null ? ["-R", last] : [RecordingFolder]);
+        }
+        else
+        {
+            Process.Start("xdg-open", [RecordingFolder]);
+        }
     }
 
     /// <summary>One file per mixer channel, named after the channel, in its own folder.</summary>
@@ -586,7 +605,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        _timer.Stop();
+        _timer.Dispose();
         if (RecordingState != RecorderState.Idle)
         {
             try

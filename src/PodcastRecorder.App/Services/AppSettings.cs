@@ -18,8 +18,13 @@ public sealed class AppSettings
 
     public string? EncoderId { get; set; }
 
-    public string RecordingFolder { get; set; } =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), Loc.T("Default_RecordingFolder"));
+    public string RecordingFolder { get; set; } = Path.Combine(MusicFolder, Loc.T("Default_RecordingFolder"));
+
+    /// <summary>The user's music folder; on Linux without an XDG music folder, ~/Music.</summary>
+    public static string MusicFolder =>
+        Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) is { Length: > 0 } music
+            ? music
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music");
 
     public string? BrowseFolder { get; set; }
 

@@ -9,7 +9,12 @@ public sealed record EncoderOption(string Id, string DisplayNameKey, Func<IAudio
 /// <summary>The output formats offered in the UI.</summary>
 public static class EncoderCatalog
 {
-    public static IReadOnlyList<EncoderOption> All { get; } =
+    /// <summary>The formats this platform can write; WMA needs Windows Media Foundation.</summary>
+    public static IReadOnlyList<EncoderOption> All { get; } = Everything()
+        .Where(o => OperatingSystem.IsWindows() || !o.Id.StartsWith("wma", StringComparison.Ordinal))
+        .ToList();
+
+    private static IEnumerable<EncoderOption> Everything() =>
     [
         new("mp3-128", "Encoder_Mp3_128", () => new Mp3Encoder(128)),
         new("mp3-192", "Encoder_Mp3_192", () => new Mp3Encoder(192)),
