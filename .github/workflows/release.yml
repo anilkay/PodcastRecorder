@@ -20,8 +20,8 @@ jobs:
             rid: osx-arm64
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
       - name: Publish
@@ -31,7 +31,7 @@ jobs:
           dotnet publish src/PodcastRecorder.Avalonia --configuration Release --runtime ${{ matrix.rid }} --self-contained \
             -p:Version=$version --output publish/PodcastRecorder
           tar -czf "PodcastRecorder-$version-${{ matrix.rid }}.tar.gz" -C publish PodcastRecorder
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.rid }}
           path: PodcastRecorder-*.tar.gz
@@ -40,8 +40,8 @@ jobs:
     needs: cross-platform
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
       - run: dotnet test --configuration Release
@@ -52,7 +52,7 @@ jobs:
           dotnet publish src/PodcastRecorder.App --configuration Release --runtime win-x64 --self-contained `
             -p:Version=$version --output publish/PodcastRecorder
           Compress-Archive -Path publish/PodcastRecorder -DestinationPath "PodcastRecorder-$version-win-x64.zip"
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           merge-multiple: true
       - name: Create GitHub release
