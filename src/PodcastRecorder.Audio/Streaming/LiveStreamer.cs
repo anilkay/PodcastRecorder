@@ -114,7 +114,9 @@ public sealed class LiveStreamer : IProgramSink
     /// <summary>Opens the connection, logs in and wraps it in an MP3 encoder.</summary>
     private async Task<(TcpClient Client, Stream Encoder)> ConnectAsync(IcecastSettings settings, CancellationToken cancellationToken)
     {
-        var client = new TcpClient { NoDelay = true };
+        // The send timeout is set before connecting: macOS refuses socket options (EINVAL) on a
+        // connection the server has already reset, which would hide the reset from the reconnect logic.
+        var client = new TcpClient { NoDelay = true, SendTimeout = (int)ConnectTimeout.TotalMilliseconds };
         try
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -133,9 +135,7 @@ public sealed class LiveStreamer : IProgramSink
                 throw new IcecastException(Texts.Format("Live_ConnectFailed", ex.Message));
             }
 
-            var stream = client.GetStream();
-            stream.WriteTimeout = (int)ConnectTimeout.TotalMilliseconds;
-            return (client, _createEncoder(stream, settings));
+            return (client, _createEncoder(client.GetStream(), settings));
         }
         catch
         {
