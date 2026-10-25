@@ -36,11 +36,19 @@ jobs:
       - name: Package the macOS app and open it
         if: runner.os == 'macOS'
         run: |
+          brew install librsvg
           dotnet publish src/PodcastRecorder.Avalonia --configuration Release --runtime osx-arm64 --self-contained \
             --output publish/PodcastRecorder
           bash src/PodcastRecorder.Avalonia/macOS/package-app.sh publish/PodcastRecorder 0.0.0 publish
+          ditto -c -k --keepParent "publish/Podcast Recorder.app" PodcastRecorder-osx-arm64.zip
           # Opened the way a double click does; it must still be running a few seconds later.
           open "publish/Podcast Recorder.app"
           sleep 15
           pgrep -x PodcastRecorder.Avalonia
           pkill -x PodcastRecorder.Avalonia
+      # The packaged app, to try on a Mac before a release.
+      - uses: actions/upload-artifact@v6
+        if: runner.os == 'macOS'
+        with:
+          name: PodcastRecorder-osx-arm64-app
+          path: PodcastRecorder-osx-arm64.zip

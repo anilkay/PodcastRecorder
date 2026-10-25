@@ -18,6 +18,8 @@ jobs:
             rid: linux-x64
           - os: macos-latest
             rid: osx-arm64
+          - os: macos-latest
+            rid: osx-x64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
@@ -32,6 +34,7 @@ jobs:
             -p:Version=$version --output publish/PodcastRecorder
           if [ "$RUNNER_OS" = "macOS" ]; then
             # "Podcast Recorder.app" in a zip, which Finder opens with a double click.
+            brew install librsvg
             bash src/PodcastRecorder.Avalonia/macOS/package-app.sh publish/PodcastRecorder "$version" publish
             ditto -c -k --keepParent "publish/Podcast Recorder.app" "PodcastRecorder-$version-${{ matrix.rid }}.zip"
           else

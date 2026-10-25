@@ -105,7 +105,7 @@ Whisper (yerel), OpenAI, Azure OpenAI / Foundry ve Azure AI Speech her platformd
 
 ### macOS'ta kurulum
 
-Release sayfasındaki `PodcastRecorder-<sürüm>-osx-arm64.zip` (Apple Silicon) içinde çift tıklayarak açılan `Podcast Recorder.app` vardır; .NET kurmak gerekmez.
+Release sayfasındaki `PodcastRecorder-<sürüm>-osx-arm64.zip` (Apple Silicon) ya da `-osx-x64.zip` (Intel) içinde çift tıklayarak açılan `Podcast Recorder.app` vardır; .NET kurmak gerekmez.
 
 1. Zip'i açın ve `Podcast Recorder.app` dosyasını Uygulamalar klasörüne sürükleyin.
 2. Uygulama Apple Developer hesabıyla imzalanmadığı (noter onayı olmadığı) için macOS ilk açılışta engeller. Bir kez izin verin: Sistem Ayarları › Gizlilik ve Güvenlik › "Yine de Aç". Ya da Terminal'de:
@@ -137,7 +137,7 @@ dotnet test
 
 ## Sürüm çıkarmak
 
-Sürüm numarası `Directory.Build.props` içindeki `<Version>` alanındadır. `v` ile başlayan bir tag push edildiğinde GitHub Actions testleri çalıştırır, uygulamayı .NET kurulumu gerektirmeyen (self-contained) win-x64 olarak yayınlar ve zip'i GitHub Releases'a ekler. Avalonia sürümü de linux-x64 için `.tar.gz`, osx-arm64 için zip'lenmiş `Podcast Recorder.app` olarak eklenir (`src/PodcastRecorder.Avalonia/macOS/package-app.sh`):
+Sürüm numarası `Directory.Build.props` içindeki `<Version>` alanındadır. `v` ile başlayan bir tag push edildiğinde GitHub Actions testleri çalıştırır, uygulamayı .NET kurulumu gerektirmeyen (self-contained) win-x64 olarak yayınlar ve zip'i GitHub Releases'a ekler. Avalonia sürümü de linux-x64 için `.tar.gz`, osx-arm64 (Apple Silicon) ve osx-x64 (Intel) için zip'lenmiş `Podcast Recorder.app` olarak eklenir (`src/PodcastRecorder.Avalonia/macOS/package-app.sh`):
 
 ```powershell
 git tag v0.0.1
