@@ -62,23 +62,37 @@ public static class AudioFiles
 
 /// <summary>
 /// Decodes formats without a managed decoder (FLAC, AAC, M4A, WMA) with the ffmpeg command, into a
-/// cached WAV file so the result can be seeked. Each file is decoded once per change.
+/// cached WAV file so the result can be seeked. Each file is decoded once per change. The cache is
+/// the user's own (decoded audio is as private as the source) and is trimmed after each decode.
 /// </summary>
 internal static class FfmpegDecoder
 {
-    private static readonly string CacheFolder = Path.Combine(Path.GetTempPath(), "PodcastRecorder", "decoded");
+    private static readonly TimeSpan MaxAge = TimeSpan.FromDays(7);
+    private const long MaxCacheBytes = 2L * 1024 * 1024 * 1024;
 
-    public static string ToWav(string path)
+    private static readonly string CacheFolder = Path.Combine(
+        OperatingSystem.IsMacOS()
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "Caches")
+            : Environment.GetEnvironmentVariable("XDG_CACHE_HOME") is { Length: > 0 } xdg
+                ? xdg
+                : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".cache"),
+        "PodcastRecorder", "decoded");
+
+    public static string ToWav(string path) => ToWav(path, CacheFolder);
+
+    internal static string ToWav(string path, string cacheFolder)
     {
         var info = new FileInfo(path);
         if (!info.Exists) throw new FileNotFoundException(Texts.Get("Files_NotFound"), path);
 
         var key = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes($"{info.FullName}|{info.Length}|{info.LastWriteTimeUtc.Ticks}")))[..24];
-        var wav = Path.Combine(CacheFolder, key + ".wav");
+        var wav = Path.Combine(cacheFolder, key + ".wav");
         if (File.Exists(wav)) return wav;
 
-        Directory.CreateDirectory(CacheFolder);
-        var partial = wav + ".part";
+        CreatePrivateFolder(cacheFolder);
+        // A name of its own, so two conversions of the same file (playback and transcription) do not
+        // write into one another.
+        var partial = Path.Combine(cacheFolder, $"{key}.{Guid.NewGuid():N}.part");
         var start = new ProcessStartInfo("ffmpeg")
         {
             ArgumentList = { "-v", "error", "-nostdin", "-y", "-i", info.FullName, "-vn", "-ac", "2", "-acodec", "pcm_s16le", "-f", "wav", partial },
@@ -108,7 +122,78 @@ internal static class FfmpegDecoder
             }
         }
 
-        File.Move(partial, wav, overwrite: true);
+        try
+        {
+            File.Move(partial, wav, overwrite: false);
+        }
+        catch (IOException) when (File.Exists(wav))
+        {
+            // The same file was decoded meanwhile; keep that copy, which may already be playing.
+            File.Delete(partial);
+            return wav;
+        }
+
+        Trim(cacheFolder, wav);
         return wav;
+    }
+
+    private static void CreatePrivateFolder(string folder)
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Directory.CreateDirectory(folder);
+        }
+        else
+        {
+            Directory.CreateDirectory(folder, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        }
+    }
+
+    /// <summary>
+    /// Deletes decodes unused for <see cref="MaxAge"/>, then the oldest until the cache fits in
+    /// <see cref="MaxCacheBytes"/>, and leftovers of interrupted decodes. Never <paramref name="keep"/>.
+    /// A file that cannot be deleted (open elsewhere) is simply skipped.
+    /// </summary>
+    internal static void Trim(string cacheFolder, string keep)
+    {
+        var now = DateTime.UtcNow;
+        try
+        {
+            var folder = new DirectoryInfo(cacheFolder);
+            foreach (var part in folder.EnumerateFiles("*.part"))
+            {
+                if (now - part.LastWriteTimeUtc > TimeSpan.FromDays(1)) TryDelete(part);
+            }
+
+            var wavs = folder.EnumerateFiles("*.wav")
+                .Where(f => !string.Equals(f.FullName, Path.GetFullPath(keep), StringComparison.Ordinal))
+                .OrderBy(LastUsed)
+                .ToList();
+            long total = wavs.Sum(f => f.Length) + new FileInfo(keep).Length;
+            foreach (var wav in wavs)
+            {
+                if (now - LastUsed(wav) <= MaxAge && total <= MaxCacheBytes) break;
+                if (TryDelete(wav)) total -= wav.Length;
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+        }
+    }
+
+    private static DateTime LastUsed(FileInfo file) =>
+        file.LastAccessTimeUtc > file.LastWriteTimeUtc ? file.LastAccessTimeUtc : file.LastWriteTimeUtc;
+
+    private static bool TryDelete(FileInfo file)
+    {
+        try
+        {
+            file.Delete();
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return false;
+        }
     }
 }

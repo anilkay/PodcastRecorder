@@ -278,4 +278,5 @@ her hücrenin köşesinde yazar)
   <data name="Cross_LanguageTip" xml:space="preserve"><value>Arayüz dili; Sistem, işletim sisteminin dilini kullanır</value></data>
   <data name="Cross_PasswordStored" xml:space="preserve"><value>Kullanıcınıza özel şifrelenmiş olarak saklanır</value></data>
   <data name="Cross_TagsIntro" xml:space="preserve"><value>Kayıt bitince bu bilgiler dosyaya (ve ayrı izlere) yazılır; müzik çalarlar ve dosya yöneticileri bunları gösterir. Bölüm no her kayıttan sonra bir artar.</value></data>
+  <data name="Secrets_KeyDamaged" xml:space="preserve"><value>Şifreleme anahtarı dosyası bozuk: {0}. Kayıtlı şifreler kaybolmasın diye dosyaya dokunulmadı; sağlam bir yedeği varsa geri koyun, yoksa dosyayı silin ve şifreleri yeniden girin.</value></data>
 </root>

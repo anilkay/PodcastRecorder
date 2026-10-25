@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <Compile Include="..\PodcastRecorder.App\ViewModels\*.cs" Link="Shared\ViewModels\%(Filename)%(Extension)" />
-    <Compile Include="..\PodcastRecorder.App\Services\AppSettings.cs;..\PodcastRecorder.App\Services\SettingsStore.cs;..\PodcastRecorder.App\Services\SpeechProviders.cs;..\PodcastRecorder.App\Services\Secrets.cs;..\PodcastRecorder.App\Services\IFileDialogs.cs;..\PodcastRecorder.App\Services\ILiveSettingsDialog.cs"
+    <Compile Include="..\PodcastRecorder.App\Services\AppSettings.cs;..\PodcastRecorder.App\Services\SettingsStore.cs;..\PodcastRecorder.App\Services\SpeechProviders.cs;..\PodcastRecorder.App\Services\Secrets.cs;..\PodcastRecorder.App\Services\SecretKeyFile.cs;..\PodcastRecorder.App\Services\IFileDialogs.cs;..\PodcastRecorder.App\Services\ILiveSettingsDialog.cs"
              Link="Shared\Services\%(Filename)%(Extension)" />
     <Compile Include="..\PodcastRecorder.App\Localization\Loc.cs" Link="Shared\Localization\Loc.cs" />
     <EmbeddedResource Include="..\PodcastRecorder.App\Localization\Strings.resx;..\PodcastRecorder.App\Localization\Strings.en.resx"

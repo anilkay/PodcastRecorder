@@ -16,6 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The app projects target WPF and Avalonia; their plain helpers are compiled in directly. -->
+    <Compile Include="..\..\src\PodcastRecorder.App\Services\SecretKeyFile.cs" Link="Shared\SecretKeyFile.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\PodcastRecorder.Audio\PodcastRecorder.Audio.csproj" />
     <ProjectReference Include="..\..\src\PodcastRecorder.Speech\PodcastRecorder.Speech.csproj" />
   </ItemGroup>

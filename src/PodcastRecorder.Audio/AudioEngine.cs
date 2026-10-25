@@ -176,7 +176,17 @@ public sealed class AudioEngine : IDisposable
         StopOutput();
         var output = backend.OpenOutput(deviceId, Bus);
         output.Stopped += (_, e) => OutputStopped?.Invoke(this, e);
-        output.Start();
+        try
+        {
+            output.Start();
+        }
+        catch
+        {
+            // Not kept in _output yet, so nothing else would release the device.
+            output.Dispose();
+            throw;
+        }
+
         _output = output;
     }
 

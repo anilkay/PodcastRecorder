@@ -47,7 +47,7 @@ public sealed class CrossPlatformTests : IDisposable
         Assert.InRange(peak, 0.4f, 0.6f);
     }
 
-    private static bool HasFfmpeg()
+    internal static bool HasFfmpeg()
     {
         try
         {

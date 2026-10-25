@@ -51,7 +51,7 @@ public static class Secrets
             aes.Decrypt(bytes.AsSpan(0, 12), bytes.AsSpan(28), bytes.AsSpan(12, 16), plain, Entropy);
             return Encoding.UTF8.GetString(plain);
         }
-        catch (Exception ex) when (ex is CryptographicException or FormatException or IOException or UnauthorizedAccessException)
+        catch (Exception ex) when (ex is CryptographicException or FormatException or IOException or UnauthorizedAccessException or InvalidDataException)
         {
             return null;
         }
@@ -60,24 +60,13 @@ public static class Secrets
     [UnsupportedOSPlatform("windows")]
     private static byte[] LoadOrCreateKey()
     {
-        if (File.Exists(KeyPath))
+        try
         {
-            var existing = File.ReadAllBytes(KeyPath);
-            if (existing.Length == 32) return existing;
+            return SecretKeyFile.LoadOrCreate(KeyPath);
         }
-
-        var key = RandomNumberGenerator.GetBytes(32);
-        Directory.CreateDirectory(Path.GetDirectoryName(KeyPath)!);
-        using (var file = new FileStream(KeyPath, new FileStreamOptions
+        catch (InvalidDataException ex)
         {
-            Mode = FileMode.Create,
-            Access = FileAccess.Write,
-            UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite,
-        }))
-        {
-            file.Write(key);
+            throw new InvalidDataException(Localization.Loc.F("Secrets_KeyDamaged", KeyPath), ex);
         }
-
-        return key;
     }
 }

@@ -10,10 +10,23 @@ namespace PodcastRecorder.Audio.Recording;
 /// </summary>
 public static class Mp3Writers
 {
-    public static Stream CreateFile(string path, WaveFormat pcmFormat, int bitrateKbps) =>
-        OperatingSystem.IsWindows()
-            ? new LameMP3FileWriter(path, pcmFormat, bitrateKbps)
-            : new LameMp3Stream(File.Create(path), pcmFormat, bitrateKbps, ownsOutput: true);
+    public static Stream CreateFile(string path, WaveFormat pcmFormat, int bitrateKbps)
+    {
+        if (OperatingSystem.IsWindows()) return new LameMP3FileWriter(path, pcmFormat, bitrateKbps);
+
+        var file = File.Create(path);
+        try
+        {
+            return new LameMp3Stream(file, pcmFormat, bitrateKbps, ownsOutput: true);
+        }
+        catch
+        {
+            // LAME missing or refusing the format: leave no empty recording behind.
+            file.Dispose();
+            File.Delete(path);
+            throw;
+        }
+    }
 
     /// <summary>Encodes into <paramref name="output"/>, which stays open when the encoder is disposed.</summary>
     public static Stream Create(Stream output, WaveFormat pcmFormat, int bitrateKbps) =>

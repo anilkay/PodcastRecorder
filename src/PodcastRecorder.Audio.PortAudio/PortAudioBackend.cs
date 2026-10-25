@@ -46,12 +46,13 @@ public sealed unsafe class PortAudioBackend : IAudioBackend
     {
         var inputs = new List<AudioDevice>();
         var outputs = new List<AudioDevice>();
-        int count = Pa_GetDeviceCount();
-        bool severalHosts = Enumerable.Range(0, Math.Max(0, count)).Select(i => Pa_GetDeviceInfo(i)->HostApi).Distinct().Count() > 1;
-        for (int i = 0; i < count; i++)
+        var ids = DeviceIds();
+        bool severalHosts = Enumerable.Range(0, ids.Length).Select(i => Pa_GetDeviceInfo(i)->HostApi).Distinct().Count() > 1;
+        for (int i = 0; i < ids.Length; i++)
         {
             var info = Pa_GetDeviceInfo(i);
-            var device = new AudioDevice(IdOf(i), DisplayName(info, severalHosts));
+            // The "#2" of a second identical device shows in its name too.
+            var device = new AudioDevice(ids[i], DisplayName(info, ids[i][BaseId(i).Length..], severalHosts));
             if (info->MaxInputChannels > 0) inputs.Add(device);
             if (info->MaxOutputChannels > 0) outputs.Add(device);
         }
@@ -60,32 +61,51 @@ public sealed unsafe class PortAudioBackend : IAudioBackend
         Outputs = outputs;
         int defaultInput = Pa_GetDefaultInputDevice();
         int defaultOutput = Pa_GetDefaultOutputDevice();
-        DefaultInputId = defaultInput == NoDevice ? null : IdOf(defaultInput);
-        DefaultOutputId = defaultOutput == NoDevice ? null : IdOf(defaultOutput);
+        DefaultInputId = defaultInput >= 0 && defaultInput < ids.Length ? ids[defaultInput] : null;
+        DefaultOutputId = defaultOutput >= 0 && defaultOutput < ids.Length ? ids[defaultOutput] : null;
     }
 
     private int Find(string deviceId, bool input)
     {
-        int count = Pa_GetDeviceCount();
-        for (int i = 0; i < count; i++)
+        var ids = DeviceIds();
+        for (int i = 0; i < ids.Length; i++)
         {
             var info = Pa_GetDeviceInfo(i);
             bool fits = input ? info->MaxInputChannels > 0 : info->MaxOutputChannels > 0;
-            if (fits && IdOf(i) == deviceId) return i;
+            if (fits && ids[i] == deviceId) return i;
         }
 
         throw new InvalidOperationException(Texts.Get("Pa_DeviceGone"));
     }
 
-    private static string IdOf(int index)
+    /// <summary>
+    /// The id of every device by PortAudio index; listing, defaults and opening all use this. Two
+    /// identical devices (say two USB microphones of one model) report the same name, so the second
+    /// and later ones get "#2", "#3"… in PortAudio's order.
+    /// </summary>
+    private static string[] DeviceIds()
+    {
+        var ids = new string[Math.Max(0, Pa_GetDeviceCount())];
+        var seen = new Dictionary<string, int>(StringComparer.Ordinal);
+        for (int i = 0; i < ids.Length; i++)
+        {
+            var id = BaseId(i);
+            int n = seen[id] = seen.GetValueOrDefault(id) + 1;
+            ids[i] = n == 1 ? id : $"{id} #{n}";
+        }
+
+        return ids;
+    }
+
+    private static string BaseId(int index)
     {
         var info = Pa_GetDeviceInfo(index);
         return $"{Text(Pa_GetHostApiInfo(info->HostApi)->Name)}/{Text(info->Name)}";
     }
 
-    private static string DisplayName(DeviceInfo* info, bool withHost)
+    private static string DisplayName(DeviceInfo* info, string suffix, bool withHost)
     {
-        var name = Text(info->Name);
+        var name = Text(info->Name) + suffix;
         return withHost ? $"{name} ({Text(Pa_GetHostApiInfo(info->HostApi)->Name)})" : name;
     }
 }

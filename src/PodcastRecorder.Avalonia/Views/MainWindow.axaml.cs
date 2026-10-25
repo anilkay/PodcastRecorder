@@ -40,6 +40,9 @@ public partial class MainWindow : Window
 
         AddHandler(KeyDownEvent, JingleKey_KeyDown, RoutingStrategies.Bubble);
         AddHandler(KeyUpEvent, (_, e) => _heldKeys.Remove(e.Key), RoutingStrategies.Tunnel);
+        // A key released in another window never reaches this one; without this the next press
+        // would look like auto-repeat and be ignored.
+        Deactivated += (_, _) => _heldKeys.Clear();
         AddHandler(DragDrop.DragOverEvent, FileDrop_DragOver);
         AddHandler(DragDrop.DropEvent, FileDrop_Drop);
         BrowserList.AddHandler(PointerPressedEvent, BrowserList_PointerPressed, RoutingStrategies.Tunnel);
