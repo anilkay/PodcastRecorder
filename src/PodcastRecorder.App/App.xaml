@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="Themes/Light.xaml" />
                 <!-- The app's own buttons; merged last so they win over Fluent's. -->
                 <ResourceDictionary Source="Themes/Controls.xaml" />
+                <ResourceDictionary Source="Themes/Logo.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BoolToVisibility" />

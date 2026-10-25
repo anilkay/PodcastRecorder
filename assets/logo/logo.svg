@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <title>Podcast Recorder</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3B2A8F" />
+      <stop offset="1" stop-color="#14112E" />
+    </linearGradient>
+    <linearGradient id="mic" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" />
+      <stop offset="1" stop-color="#D9DCF5" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#bg)" />
+
+  <!-- Sound waves -->
+  <g fill="none" stroke="#8C7CFF" stroke-width="10" stroke-linecap="round">
+    <path d="M62 92 a72 72 0 0 0 0 64" opacity=".55" />
+    <path d="M40 74 a98 98 0 0 0 0 100" opacity=".3" />
+    <path d="M194 92 a72 72 0 0 1 0 64" opacity=".55" />
+    <path d="M216 74 a98 98 0 0 1 0 100" opacity=".3" />
+  </g>
+
+  <!-- Microphone capsule and grille -->
+  <rect x="96" y="44" width="64" height="112" rx="32" fill="url(#mic)" />
+  <g stroke="#B8BCE8" stroke-width="5" stroke-linecap="round">
+    <line x1="110" y1="80" x2="146" y2="80" />
+    <line x1="110" y1="96" x2="146" y2="96" />
+    <line x1="110" y1="112" x2="146" y2="112" />
+  </g>
+
+  <!-- Yoke and stand -->
+  <path d="M80 128 a48 48 0 0 0 96 0" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" />
+  <g stroke="#FFFFFF" stroke-width="12" stroke-linecap="round">
+    <line x1="128" y1="176" x2="128" y2="204" />
+    <line x1="100" y1="208" x2="156" y2="208" />
+  </g>
+
+  <!-- Record dot -->
+  <circle cx="190" cy="66" r="24" fill="#FF3B4E" stroke="#14112E" stroke-width="8" />
+</svg>

@@ -1,4 +1,5 @@
 <Window x:Class="PodcastRecorder.App.MainWindow"
+        Icon="pack://application:,,,/Assets/logo.ico"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:PodcastRecorder.App.Localization"
@@ -49,6 +50,9 @@
             </Border.Style>
             <DockPanel LastChildFill="False">
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- The app logo; the name and version are in the title bar and its tooltip. -->
+                    <Image Source="{StaticResource LogoImage}" Width="28" Height="28" Margin="0,0,12,0" VerticalAlignment="Center"
+                           ToolTip="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}" />
                     <!-- Red outline with a red dot; filled red with a pulsing white dot while recording. -->
                     <Button Style="{StaticResource RecordButton}" Command="{Binding StartRecordingCommand}" ToolTip="{loc:T Main_KaydiBaslatCtrlR}">
                         <StackPanel Orientation="Horizontal">

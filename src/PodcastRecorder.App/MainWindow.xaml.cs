@@ -83,15 +83,27 @@ public partial class MainWindow : Window
         var text = new TextBlock { Text = Loc.T("Help_Shortcuts"), FontFamily = new FontFamily("Consolas"), FontSize = 13 };
         var ok = new Button { Content = Loc.T("Help_Ok"), IsDefault = true, IsCancel = true, MinWidth = 90, Style = (Style)FindResource("PrimaryButton"),
             Margin = new Thickness(0, 16, 0, 0), HorizontalAlignment = HorizontalAlignment.Right };
+        // Header: the logo with the app name and version (the main window's title).
+        var header = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Margin = new Thickness(0, 0, 0, 14),
+            Children =
+            {
+                new Image { Source = (ImageSource)FindResource("LogoImage"), Width = 40, Height = 40, Margin = new Thickness(0, 0, 12, 0) },
+                new TextBlock { Text = Title, FontSize = 18, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center },
+            },
+        };
         var help = new Window
         {
             Title = Loc.T("Help_Title"),
             Owner = this,
+            Icon = Icon,
             SizeToContent = SizeToContent.WidthAndHeight,
             ResizeMode = ResizeMode.NoResize,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             ShowInTaskbar = false,
-            Content = new StackPanel { Margin = new Thickness(20, 16, 20, 16), Children = { text, ok } },
+            Content = new StackPanel { Margin = new Thickness(20, 16, 20, 16), Children = { header, text, ok } },
         };
         help.SetResourceReference(BackgroundProperty, "WindowBrush");
         help.SetResourceReference(ForegroundProperty, "TextBrush");

@@ -10,10 +10,17 @@
     <AssemblyName>PodcastRecorder</AssemblyName>
     <!-- Strings.resx is Turkish; Strings.en.resx becomes the en satellite assembly. -->
     <NeutralLanguage>tr</NeutralLanguage>
+    <!-- The exe icon (Explorer, taskbar, the release zip); drawn from assets/logo/logo.svg. -->
+    <ApplicationIcon>..\..\assets\logo\logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Window title bar icon: pack://application:,,,/Assets/logo.ico -->
+    <Resource Include="..\..\assets\logo\logo.ico" Link="Assets\logo.ico" />
   </ItemGroup>
 
   <ItemGroup>

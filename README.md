@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo/png/128.png" width="128" height="128" alt="Podcast Recorder logo"></p>
+
 # Podcast Recorder
 
 Windows için podcast kayıt uygulaması. Mikrofonu, çalma listesindeki şarkıları ve jingle panelini uygulamanın kendi mikserinde birleştirir ve tek bir MP3, WMA, FLAC veya WAV dosyasına kaydeder; isterseniz aynı anda Icecast sunucusuna canlı yayın yapar. Windows "Stereo Mix" ayarı gerekmez.
