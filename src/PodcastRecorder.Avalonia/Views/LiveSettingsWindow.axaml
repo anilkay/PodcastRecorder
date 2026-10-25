@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="using:PodcastRecorder.App.Localization"
         x:Class="PodcastRecorder.App.Views.LiveSettingsWindow"
+        Icon="avares://PodcastRecorder.Avalonia/Assets/logo.png"
         Title="{loc:T Live_CanliYayinAyarlari}" Width="460" SizeToContent="Height" CanResize="False"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
     <StackPanel Margin="16">

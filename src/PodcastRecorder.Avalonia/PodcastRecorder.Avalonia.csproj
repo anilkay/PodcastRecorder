@@ -14,7 +14,14 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <!-- Strings.resx (shared with the WPF app) is Turkish; Strings.en.resx becomes the en satellite assembly. -->
     <NeutralLanguage>tr</NeutralLanguage>
+    <!-- The exe icon on Windows; drawn from assets/logo/logo.svg like the WPF app's. -->
+    <ApplicationIcon>..\..\assets\logo\logo.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <!-- Window icon and the logo in the UI: avares://PodcastRecorder.Avalonia/Assets/logo.png -->
+  <ItemGroup>
+    <AvaloniaResource Include="..\..\assets\logo\png\256.png" Link="Assets\logo.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\PodcastRecorder.App\ViewModels\*.cs" Link="Shared\ViewModels\%(Filename)%(Extension)" />

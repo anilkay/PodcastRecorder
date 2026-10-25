@@ -6,6 +6,7 @@
         x:Class="PodcastRecorder.App.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Width="1280" Height="820" MinWidth="1000" MinHeight="640"
+        Icon="avares://PodcastRecorder.Avalonia/Assets/logo.png"
         WindowStartupLocation="CenterScreen">
     <!-- Keyboard shortcuts. Jingle pad keys (1-8, Q-I, A-K, Z-M by grid position) and F1 are handled in code-behind. -->
     <Window.KeyBindings>
@@ -27,6 +28,9 @@
         <Border Grid.Row="0" Classes="panel" Classes.alert="{Binding IsRecording}" Padding="12,10">
             <DockPanel LastChildFill="False">
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- The app logo; the name and version are in the title bar and its tooltip. -->
+                    <Image Source="avares://PodcastRecorder.Avalonia/Assets/logo.png" Width="28" Height="28"
+                           Margin="0,0,12,0" VerticalAlignment="Center" ToolTip.Tip="{Binding $parent[Window].Title}" />
                     <Button Classes="transport" Command="{Binding StartRecordingCommand}" ToolTip.Tip="{loc:T Main_KaydiBaslatCtrlR}">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="12" Height="12" Fill="{DynamicResource RecordBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />

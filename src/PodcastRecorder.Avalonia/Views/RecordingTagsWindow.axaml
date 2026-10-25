@@ -5,6 +5,7 @@
         xmlns:views="using:PodcastRecorder.App.Views"
         x:Class="PodcastRecorder.App.Views.RecordingTagsWindow"
         x:DataType="vm:RecordingTagsViewModel"
+        Icon="avares://PodcastRecorder.Avalonia/Assets/logo.png"
         Title="{loc:T Tags_DosyaBilgileri}" Width="640" SizeToContent="Height" CanResize="False"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
     <Window.Resources>

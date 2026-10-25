@@ -2,6 +2,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -24,6 +26,10 @@ public partial class MainWindow : Window
     private readonly HashSet<Key> _heldKeys = [];
     private PointerPressedEventArgs? _dragStart;
     private BrowserEntry? _dragEntry;
+
+    /// <summary>The logo in the help header (the window icon is the same picture).</summary>
+    private static readonly Lazy<Bitmap> LogoBitmap =
+        new(() => new Bitmap(AssetLoader.Open(new Uri("avares://PodcastRecorder.Avalonia/Assets/logo.png"))));
 
     public MainWindow()
     {
@@ -115,9 +121,27 @@ public partial class MainWindow : Window
             Margin = new Thickness(0, 16, 0, 0),
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
         };
+        // Header: the logo with the app name and version (the main window's title).
+        var header = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            Margin = new Thickness(0, 0, 0, 14),
+            Children =
+            {
+                new Image { Source = LogoBitmap.Value, Width = 40, Height = 40, Margin = new Thickness(0, 0, 12, 0) },
+                new TextBlock
+                {
+                    Text = Title,
+                    FontSize = 18,
+                    FontWeight = Avalonia.Media.FontWeight.SemiBold,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                },
+            },
+        };
         var help = new Window
         {
             Title = Loc.T("Help_Title"),
+            Icon = Icon,
             SizeToContent = SizeToContent.WidthAndHeight,
             CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -127,6 +151,7 @@ public partial class MainWindow : Window
                 Margin = new Thickness(20, 16, 20, 16),
                 Children =
                 {
+                    header,
                     new TextBlock { Text = Loc.T("Help_Shortcuts"), FontFamily = (Avalonia.Media.FontFamily)this.FindResource("MonoFont")!, FontSize = 13 },
                     ok,
                 },
