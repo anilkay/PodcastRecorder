@@ -78,6 +78,14 @@ internal static class FfmpegDecoder
                 : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".cache"),
         "PodcastRecorder", "decoded");
 
+    /// <summary>
+    /// An app opened from Finder gets only the system PATH (/usr/bin:/bin…), not Homebrew's, so
+    /// ffmpeg is looked for in Homebrew's folders too.
+    /// </summary>
+    private static readonly string Ffmpeg =
+        new[] { "/opt/homebrew/bin/ffmpeg", "/usr/local/bin/ffmpeg" }.FirstOrDefault(p => OperatingSystem.IsMacOS() && File.Exists(p))
+        ?? "ffmpeg";
+
     public static string ToWav(string path) => ToWav(path, CacheFolder);
 
     internal static string ToWav(string path, string cacheFolder)
@@ -93,7 +101,7 @@ internal static class FfmpegDecoder
         // A name of its own, so two conversions of the same file (playback and transcription) do not
         // write into one another.
         var partial = Path.Combine(cacheFolder, $"{key}.{Guid.NewGuid():N}.part");
-        var start = new ProcessStartInfo("ffmpeg")
+        var start = new ProcessStartInfo(Ffmpeg)
         {
             ArgumentList = { "-v", "error", "-nostdin", "-y", "-i", info.FullName, "-vn", "-ac", "2", "-acodec", "pcm_s16le", "-f", "wav", partial },
             RedirectStandardError = true,

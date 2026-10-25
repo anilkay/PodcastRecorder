@@ -1,7 +1,7 @@
 name: release
 
 # Push a tag such as v0.0.1 to build, test and publish a release: the Windows (WPF) app as a zip,
-# the Avalonia app for Linux and macOS as tar.gz files.
+# the Avalonia app for Linux as a tar.gz and for macOS as a zipped .app bundle.
 on:
   push:
     tags: ['v*']
@@ -18,6 +18,8 @@ jobs:
             rid: linux-x64
           - os: macos-latest
             rid: osx-arm64
+          - os: macos-latest
+            rid: osx-x64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
@@ -30,11 +32,20 @@ jobs:
           version=${version#v}
           dotnet publish src/PodcastRecorder.Avalonia --configuration Release --runtime ${{ matrix.rid }} --self-contained \
             -p:Version=$version --output publish/PodcastRecorder
-          tar -czf "PodcastRecorder-$version-${{ matrix.rid }}.tar.gz" -C publish PodcastRecorder
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            # "Podcast Recorder.app" in a zip, which Finder opens with a double click.
+            brew install librsvg
+            bash src/PodcastRecorder.Avalonia/macOS/package-app.sh publish/PodcastRecorder "$version" publish
+            ditto -c -k --keepParent "publish/Podcast Recorder.app" "PodcastRecorder-$version-${{ matrix.rid }}.zip"
+          else
+            tar -czf "PodcastRecorder-$version-${{ matrix.rid }}.tar.gz" -C publish PodcastRecorder
+          fi
       - uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.rid }}
-          path: PodcastRecorder-*.tar.gz
+          path: |
+            PodcastRecorder-*.tar.gz
+            PodcastRecorder-*.zip
 
   release:
     needs: cross-platform
