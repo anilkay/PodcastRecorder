@@ -193,205 +193,353 @@
         </Expander>
         </StackPanel>
 
-        <!-- Folder browser, playlist, jingle pad -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="1.3*" />
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="1.3*" />
-            </Grid.ColumnDefinitions>
+        <!-- Recording (folder browser, playlist, jingle pad) and Düzenle tabs -->
+        <TabControl Grid.Row="2" Padding="0,8,0,0" BorderThickness="0" Background="Transparent" SelectedIndex="{Binding SelectedTab}">
+            <TabItem Header="{loc:T Main_TabRecord}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="1.3*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="1.3*" />
+                    </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Style="{StaticResource PanelBorder}" DataContext="{Binding Browser}">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_KlasorGezgini}" Style="{StaticResource PanelTitle}" />
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
-                        <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE838;" Content="{loc:T Main_KlasorSec}" Command="{Binding ChooseFolderCommand}" />
-                        <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE74A;" Content="{loc:T Main_UstKlasor}" Command="{Binding UpCommand}" />
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentFolder}" Foreground="{DynamicResource MutedTextBrush}"
-                               TextTrimming="CharacterEllipsis" ToolTip="{Binding CurrentFolder}" Margin="0,0,0,6" />
-                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
-                    <TextBlock DockPanel.Dock="Bottom" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
-                               Text="{loc:T Main_CiftTikKlasoreGirYa}" />
-                    <ListBox x:Name="BrowserList" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}"
-                             PreviewMouseLeftButtonDown="BrowserList_PreviewMouseLeftButtonDown"
-                             PreviewMouseMove="BrowserList_PreviewMouseMove">
-                        <ListBox.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding OpenCommand}" />
-                            <KeyBinding Key="Enter" Command="{Binding OpenCommand}" />
-                        </ListBox.InputBindings>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Icon}" Margin="0,0,6,0" />
-                                    <TextBlock Text="{Binding Name}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-            </Border>
-
-            <Border Grid.Column="2" Style="{StaticResource PanelBorder}" DataContext="{Binding Playlist}">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_CalmaListesi}" Style="{StaticResource PanelTitle}" />
-                    <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
-                        <WrapPanel.Resources>
-                            <Style TargetType="Button" BasedOn="{StaticResource GhostButton}" />
-                        </WrapPanel.Resources>
-                        <Button services:ButtonAssist.Icon="&#xE768;" Content="{loc:T Main_Cal}" Command="{Binding PlayCommand}" ToolTip="{loc:T Main_SeciliSarkiyiCalF5}" />
-                        <Button services:ButtonAssist.Icon="&#xE71A;" Content="{loc:T Main_Durdur}" Command="{Binding StopCommand}" ToolTip="{loc:T Main_MuzigiDurdurF6}" />
-                        <Button services:ButtonAssist.Icon="&#xE893;" Content="{loc:T Main_Sonraki}" Command="{Binding NextCommand}" ToolTip="{loc:T Main_SonrakiSarkiF7}" />
-                        <Button services:ButtonAssist.Icon="&#xE710;" Content="{loc:T Main_Ekle2}" Command="{Binding BrowseCommand}" />
-                        <Button services:ButtonAssist.Icon="&#xE70E;" Command="{Binding MoveUpCommand}" ToolTip="{loc:T Main_YukariTasi}" />
-                        <Button services:ButtonAssist.Icon="&#xE70D;" Command="{Binding MoveDownCommand}" ToolTip="{loc:T Main_AsagiTasi}" />
-                        <Button services:ButtonAssist.Icon="&#xE74D;" Content="{loc:T Main_Kaldir}" Command="{Binding RemoveCommand}" />
-                        <Button services:ButtonAssist.Icon="&#xE894;" Content="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
-                    </WrapPanel>
-                    <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
-                        <ProgressBar Height="6" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}"
-                                     Foreground="{DynamicResource AccentBrush}" BorderThickness="0" />
-                        <DockPanel Margin="0,4,0,0">
-                            <CheckBox DockPanel.Dock="Right" Content="{loc:T Main_BitinceSonrakineGec}" IsChecked="{Binding AutoAdvance}" />
-                            <TextBlock Text="{Binding PositionText}" FontFamily="Consolas" />
+                    <Border Grid.Column="0" Style="{StaticResource PanelBorder}" DataContext="{Binding Browser}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_KlasorGezgini}" Style="{StaticResource PanelTitle}" />
+                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE838;" Content="{loc:T Main_KlasorSec}" Command="{Binding ChooseFolderCommand}" />
+                                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE74A;" Content="{loc:T Main_UstKlasor}" Command="{Binding UpCommand}" />
+                            </StackPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentFolder}" Foreground="{DynamicResource MutedTextBrush}"
+                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding CurrentFolder}" Margin="0,0,0,6" />
+                            <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
+                            <TextBlock DockPanel.Dock="Bottom" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
+                                       Text="{loc:T Main_CiftTikKlasoreGirYa}" />
+                            <ListBox x:Name="BrowserList" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}"
+                                     PreviewMouseLeftButtonDown="BrowserList_PreviewMouseLeftButtonDown"
+                                     PreviewMouseMove="BrowserList_PreviewMouseMove">
+                                <ListBox.InputBindings>
+                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding OpenCommand}" />
+                                    <KeyBinding Key="Enter" Command="{Binding OpenCommand}" />
+                                </ListBox.InputBindings>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Icon}" Margin="0,0,6,0" />
+                                            <TextBlock Text="{Binding Name}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
                         </DockPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
-                                    ToolTip="{loc:T Main_SarkilarArasindaBindirmeSuresi0}">
-                            <TextBlock Text="{loc:T Main_Crossfade}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                            <Slider Minimum="0" Maximum="10" Value="{Binding CrossfadeSeconds}" Width="140" VerticalAlignment="Center"
-                                    IsSnapToTickEnabled="True" TickFrequency="0.5" SmallChange="0.5" LargeChange="1" />
-                            <TextBlock Text="{Binding CrossfadeSeconds, StringFormat={loc:T Main_SecondsFormat}}" VerticalAlignment="Center" Margin="6,0,0,0" />
-                        </StackPanel>
-                        <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
-                    </StackPanel>
-                    <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" AllowDrop="True"
-                             DragOver="FileDrop_DragOver" Drop="Playlist_Drop">
-                        <ListBox.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding PlayCommand}" />
-                            <KeyBinding Key="Enter" Command="{Binding PlayCommand}" />
-                            <KeyBinding Key="Delete" Command="{Binding RemoveCommand}" />
-                        </ListBox.InputBindings>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="▶ " Foreground="{DynamicResource AccentBrush}"
-                                               Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVisibility}}" />
-                                    <TextBlock Text="{Binding Title}" ToolTip="{Binding FilePath}">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                                                        <Setter Property="FontWeight" Value="SemiBold" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-            </Border>
+                    </Border>
 
-            <Border Grid.Column="4" Style="{StaticResource PanelBorder}" DataContext="{Binding Jingles}">
-                <DockPanel>
-                    <DockPanel DockPanel.Dock="Top">
-                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE710;" Content="{loc:T Main_Sekme}"
-                                    Command="{Binding NewBankCommand}" ToolTip="{loc:T Main_YeniJingleSekmesi}" />
-                            <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE74D;" Content="{loc:T Main_Sil}"
-                                    Command="{Binding RemoveBankCommand}" ToolTip="{loc:T Main_SekmeyiSil}" />
-                            <Button services:ButtonAssist.Icon="&#xE71A;" Content="{loc:T Main_TumunuDurdur}" Command="{Binding StopAllCommand}" Margin="4,0,0,0"
-                                    ToolTip="{loc:T Main_CalanButunJingleLariDurdur}" />
-                        </StackPanel>
-                        <!-- The usage hint is a tooltip so the pads get the height. -->
-                        <TextBlock Text="{loc:T Main_JinglePaneli}" Style="{StaticResource PanelTitle}"
-                                   ToolTip="{loc:T Main_TiklaYaDaKosedekiTusa}" />
-                    </DockPanel>
-                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
-                    <TabControl ItemsSource="{Binding Banks}" SelectedItem="{Binding SelectedBank}">
-                        <TabControl.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" />
-                            </DataTemplate>
-                        </TabControl.ItemTemplate>
-                        <TabControl.ContentTemplate>
-                            <DataTemplate>
-                                <DockPanel Margin="0,6,0,0">
-                                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock Text="{loc:T Main_Ad}" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="96" Margin="0,0,10,0" />
-                                        <TextBlock Text="{loc:T Main_Satir}" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Rows}"
-                                                  Width="72" Margin="0,0,12,0" />
-                                        <TextBlock Text="{loc:T Main_Sutun}" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Columns}"
-                                                  Width="72" />
-                                    </StackPanel>
-                                    <ItemsControl ItemsSource="{Binding Cells}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Button Command="{Binding ToggleCommand}" AllowDrop="True" Margin="3"
-                                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                        DragOver="FileDrop_DragOver" Drop="JingleCell_Drop" ToolTip="{Binding FilePath}">
-                                                    <Button.ContextMenu>
-                                                        <ContextMenu>
-                                                            <MenuItem Header="{loc:T Main_DosyaSec}" Command="{Binding BrowseCommand}" />
-                                                            <MenuItem Header="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
-                                                        </ContextMenu>
-                                                    </Button.ContextMenu>
-                                                    <Button.Template>
-                                                        <ControlTemplate TargetType="Button">
-                                                            <Border x:Name="Cell" CornerRadius="6" BorderThickness="1"
-                                                                    BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource PanelBrush}" Padding="6">
-                                                                <Grid>
-                                                                    <TextBlock x:Name="KeyLabel" Text="{Binding Shortcut}" FontSize="10" FontWeight="SemiBold"
-                                                                               HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,-4,0,0"
-                                                                               Foreground="{DynamicResource MutedTextBrush}" />
-                                                                    <TextBlock x:Name="Label" Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
-                                                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                                                </Grid>
-                                                            </Border>
-                                                            <ControlTemplate.Triggers>
-                                                                <Trigger Property="IsMouseOver" Value="True">
-                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-                                                                    <Setter TargetName="Cell" Property="Background" Value="{DynamicResource BtnHoverBrush}" />
-                                                                </Trigger>
-                                                                <Trigger Property="IsPressed" Value="True">
-                                                                    <Setter TargetName="Cell" Property="Background" Value="{DynamicResource BtnPressedBrush}" />
-                                                                </Trigger>
-                                                                <DataTrigger Binding="{Binding HasFile}" Value="False">
-                                                                    <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                                                                    <Setter TargetName="Cell" Property="Background" Value="{DynamicResource AccentBrush}" />
-                                                                    <Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-                                                                    <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
-                                                                    <Setter TargetName="KeyLabel" Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
-                                                                    <Setter TargetName="Label" Property="FontWeight" Value="SemiBold" />
-                                                                </DataTrigger>
-                                                            </ControlTemplate.Triggers>
-                                                        </ControlTemplate>
-                                                    </Button.Template>
-                                                </Button>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                    <Border Grid.Column="2" Style="{StaticResource PanelBorder}" DataContext="{Binding Playlist}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_CalmaListesi}" Style="{StaticResource PanelTitle}" />
+                            <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                                <WrapPanel.Resources>
+                                    <Style TargetType="Button" BasedOn="{StaticResource GhostButton}" />
+                                </WrapPanel.Resources>
+                                <Button services:ButtonAssist.Icon="&#xE768;" Content="{loc:T Main_Cal}" Command="{Binding PlayCommand}" ToolTip="{loc:T Main_SeciliSarkiyiCalF5}" />
+                                <Button services:ButtonAssist.Icon="&#xE71A;" Content="{loc:T Main_Durdur}" Command="{Binding StopCommand}" ToolTip="{loc:T Main_MuzigiDurdurF6}" />
+                                <Button services:ButtonAssist.Icon="&#xE893;" Content="{loc:T Main_Sonraki}" Command="{Binding NextCommand}" ToolTip="{loc:T Main_SonrakiSarkiF7}" />
+                                <Button services:ButtonAssist.Icon="&#xE710;" Content="{loc:T Main_Ekle2}" Command="{Binding BrowseCommand}" />
+                                <Button services:ButtonAssist.Icon="&#xE70E;" Command="{Binding MoveUpCommand}" ToolTip="{loc:T Main_YukariTasi}" />
+                                <Button services:ButtonAssist.Icon="&#xE70D;" Command="{Binding MoveDownCommand}" ToolTip="{loc:T Main_AsagiTasi}" />
+                                <Button services:ButtonAssist.Icon="&#xE74D;" Content="{loc:T Main_Kaldir}" Command="{Binding RemoveCommand}" />
+                                <Button services:ButtonAssist.Icon="&#xE894;" Content="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
+                            </WrapPanel>
+                            <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                                <ProgressBar Height="6" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}"
+                                             Foreground="{DynamicResource AccentBrush}" BorderThickness="0" />
+                                <DockPanel Margin="0,4,0,0">
+                                    <CheckBox DockPanel.Dock="Right" Content="{loc:T Main_BitinceSonrakineGec}" IsChecked="{Binding AutoAdvance}" />
+                                    <TextBlock Text="{Binding PositionText}" FontFamily="Consolas" />
                                 </DockPanel>
-                            </DataTemplate>
-                        </TabControl.ContentTemplate>
-                    </TabControl>
-                </DockPanel>
-            </Border>
-        </Grid>
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
+                                            ToolTip="{loc:T Main_SarkilarArasindaBindirmeSuresi0}">
+                                    <TextBlock Text="{loc:T Main_Crossfade}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <Slider Minimum="0" Maximum="10" Value="{Binding CrossfadeSeconds}" Width="140" VerticalAlignment="Center"
+                                            IsSnapToTickEnabled="True" TickFrequency="0.5" SmallChange="0.5" LargeChange="1" />
+                                    <TextBlock Text="{Binding CrossfadeSeconds, StringFormat={loc:T Main_SecondsFormat}}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
+                            </StackPanel>
+                            <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" AllowDrop="True"
+                                     DragOver="FileDrop_DragOver" Drop="Playlist_Drop">
+                                <ListBox.InputBindings>
+                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding PlayCommand}" />
+                                    <KeyBinding Key="Enter" Command="{Binding PlayCommand}" />
+                                    <KeyBinding Key="Delete" Command="{Binding RemoveCommand}" />
+                                </ListBox.InputBindings>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="▶ " Foreground="{DynamicResource AccentBrush}"
+                                                       Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVisibility}}" />
+                                            <TextBlock Text="{Binding Title}" ToolTip="{Binding FilePath}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Grid.Column="4" Style="{StaticResource PanelBorder}" DataContext="{Binding Jingles}">
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Top">
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                    <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE710;" Content="{loc:T Main_Sekme}"
+                                            Command="{Binding NewBankCommand}" ToolTip="{loc:T Main_YeniJingleSekmesi}" />
+                                    <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE74D;" Content="{loc:T Main_Sil}"
+                                            Command="{Binding RemoveBankCommand}" ToolTip="{loc:T Main_SekmeyiSil}" />
+                                    <Button services:ButtonAssist.Icon="&#xE71A;" Content="{loc:T Main_TumunuDurdur}" Command="{Binding StopAllCommand}" Margin="4,0,0,0"
+                                            ToolTip="{loc:T Main_CalanButunJingleLariDurdur}" />
+                                </StackPanel>
+                                <!-- The usage hint is a tooltip so the pads get the height. -->
+                                <TextBlock Text="{loc:T Main_JinglePaneli}" Style="{StaticResource PanelTitle}"
+                                           ToolTip="{loc:T Main_TiklaYaDaKosedekiTusa}" />
+                            </DockPanel>
+                            <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" />
+                            <TabControl ItemsSource="{Binding Banks}" SelectedItem="{Binding SelectedBank}">
+                                <TabControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </TabControl.ItemTemplate>
+                                <TabControl.ContentTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Margin="0,6,0,0">
+                                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                                                <TextBlock Text="{loc:T Main_Ad}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="96" Margin="0,0,10,0" />
+                                                <TextBlock Text="{loc:T Main_Satir}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Rows}"
+                                                          Width="72" Margin="0,0,12,0" />
+                                                <TextBlock Text="{loc:T Main_Sutun}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Columns}"
+                                                          Width="72" />
+                                            </StackPanel>
+                                            <ItemsControl ItemsSource="{Binding Cells}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Command="{Binding ToggleCommand}" AllowDrop="True" Margin="3"
+                                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                                DragOver="FileDrop_DragOver" Drop="JingleCell_Drop" ToolTip="{Binding FilePath}">
+                                                            <Button.ContextMenu>
+                                                                <ContextMenu>
+                                                                    <MenuItem Header="{loc:T Main_DosyaSec}" Command="{Binding BrowseCommand}" />
+                                                                    <MenuItem Header="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
+                                                                </ContextMenu>
+                                                            </Button.ContextMenu>
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border x:Name="Cell" CornerRadius="6" BorderThickness="1"
+                                                                            BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource PanelBrush}" Padding="6">
+                                                                        <Grid>
+                                                                            <TextBlock x:Name="KeyLabel" Text="{Binding Shortcut}" FontSize="10" FontWeight="SemiBold"
+                                                                                       HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,-4,0,0"
+                                                                                       Foreground="{DynamicResource MutedTextBrush}" />
+                                                                            <TextBlock x:Name="Label" Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
+                                                                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                                        </Grid>
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                                                            <Setter TargetName="Cell" Property="Background" Value="{DynamicResource BtnHoverBrush}" />
+                                                                        </Trigger>
+                                                                        <Trigger Property="IsPressed" Value="True">
+                                                                            <Setter TargetName="Cell" Property="Background" Value="{DynamicResource BtnPressedBrush}" />
+                                                                        </Trigger>
+                                                                        <DataTrigger Binding="{Binding HasFile}" Value="False">
+                                                                            <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                            <Setter TargetName="Cell" Property="Background" Value="{DynamicResource AccentBrush}" />
+                                                                            <Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                                                            <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+                                                                            <Setter TargetName="KeyLabel" Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+                                                                            <Setter TargetName="Label" Property="FontWeight" Value="SemiBold" />
+                                                                        </DataTrigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </TabControl.ContentTemplate>
+                            </TabControl>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- Cutting silences and filler sounds out of a recording -->
+            <TabItem Header="{loc:T Main_TabEdit}">
+                <Border Style="{StaticResource PanelBorder}" DataContext="{Binding Edit}">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="{loc:T Edit_Title}" Style="{StaticResource PanelTitle}" />
+
+                        <!-- The recording -->
+                        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                            <TextBlock Text="{loc:T Edit_Recording}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="{Binding SourceName}" ToolTip="{Binding SourcePath}" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" Margin="0,0,10,0" MaxWidth="460" TextTrimming="CharacterEllipsis" />
+                            <Button services:ButtonAssist.Icon="&#xE8E5;" Content="{loc:T Edit_ChooseFile}" Command="{Binding ChooseFileCommand}" Margin="0,0,16,0" />
+                            <CheckBox Content="{Binding StemsText}" IsChecked="{Binding IncludeStems}" VerticalAlignment="Center"
+                                      ToolTip="{loc:T Edit_IncludeStemsTip}"
+                                      Visibility="{Binding HasStems, Converter={StaticResource BoolToVisibility}}" />
+                        </WrapPanel>
+
+                        <!-- How silences are found -->
+                        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6" IsEnabled="{Binding IsIdle}">
+                            <StackPanel Orientation="Horizontal" ToolTip="{loc:T Edit_ThresholdTip}" Margin="0,0,16,0">
+                                <TextBlock Text="{loc:T Edit_Threshold}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <Slider Minimum="-60" Maximum="-20" Value="{Binding SilenceThresholdDb}" Width="110" VerticalAlignment="Center"
+                                        IsSnapToTickEnabled="True" TickFrequency="1" SmallChange="1" LargeChange="5" />
+                                <TextBlock Text="{Binding SilenceThresholdDb, StringFormat={}{0:0} dB}" VerticalAlignment="Center" Margin="6,0,0,0" MinWidth="44" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" ToolTip="{loc:T Edit_MinSilenceTip}" Margin="0,0,16,0">
+                                <TextBlock Text="{loc:T Edit_MinSilence}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <Slider Minimum="0.3" Maximum="3" Value="{Binding MinimumSilenceSeconds}" Width="110" VerticalAlignment="Center"
+                                        IsSnapToTickEnabled="True" TickFrequency="0.1" SmallChange="0.1" LargeChange="0.5" />
+                                <TextBlock Text="{Binding MinimumSilenceSeconds, StringFormat={loc:T Main_SecondsFormat}}" VerticalAlignment="Center" Margin="6,0,0,0" MinWidth="44" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" ToolTip="{loc:T Edit_KeptGapTip}">
+                                <TextBlock Text="{loc:T Edit_KeptGap}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <Slider Minimum="0.1" Maximum="1" Value="{Binding KeptGapSeconds}" Width="110" VerticalAlignment="Center"
+                                        IsSnapToTickEnabled="True" TickFrequency="0.05" SmallChange="0.05" LargeChange="0.1" />
+                                <TextBlock Text="{Binding KeptGapSeconds, StringFormat={loc:T Edit_SecondsShort}}" VerticalAlignment="Center" Margin="6,0,0,0" MinWidth="50" />
+                            </StackPanel>
+                        </WrapPanel>
+
+                        <!-- Fillers, and the analysis -->
+                        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                            <CheckBox Content="{loc:T Edit_DetectFillers}" IsChecked="{Binding DetectFillers}" VerticalAlignment="Center"
+                                      Margin="0,0,12,0" ToolTip="{loc:T Edit_DetectFillersTip}" IsEnabled="{Binding IsIdle}" />
+                            <TextBlock Text="{loc:T Edit_FillerWords}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBox Text="{Binding FillerWords, UpdateSourceTrigger=PropertyChanged}" Width="320" Margin="0,0,12,0"
+                                     VerticalContentAlignment="Center" ToolTip="{loc:T Edit_FillerWordsTip}" IsEnabled="{Binding DetectFillers}" />
+                            <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE721;" Content="{loc:T Edit_Analyze}" Command="{Binding AnalyzeCommand}" />
+                            <Button services:ButtonAssist.Icon="&#xE711;" Content="{loc:T Main_Iptal}" Command="{Binding CancelCommand}" />
+                        </WrapPanel>
+                        <ProgressBar DockPanel.Dock="Top" Height="6" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}"
+                                     Foreground="{DynamicResource AccentBrush}" BorderThickness="0" Margin="0,0,0,4"
+                                     Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+                        <TextBlock DockPanel.Dock="Top" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,0,0,6"
+                                   Foreground="{DynamicResource MutedTextBrush}" />
+
+                        <!-- Selection, time saved and export -->
+                        <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding SummaryText}" FontWeight="SemiBold" Margin="0,0,0,6" />
+                            <WrapPanel>
+                                <TextBlock Text="{loc:T Edit_Silences}" VerticalAlignment="Center" Margin="0,0,4,0" />
+                                <Button Style="{StaticResource GhostButton}" Content="{loc:T Edit_All}" Command="{Binding SelectSilencesCommand}" CommandParameter="true" />
+                                <Button Style="{StaticResource GhostButton}" Content="{loc:T Edit_None}" Command="{Binding SelectSilencesCommand}" CommandParameter="false" Margin="0,0,12,0" />
+                                <TextBlock Text="{loc:T Edit_Fillers}" VerticalAlignment="Center" Margin="0,0,4,0" />
+                                <Button Style="{StaticResource GhostButton}" Content="{loc:T Edit_All}" Command="{Binding SelectFillersCommand}" CommandParameter="true" />
+                                <Button Style="{StaticResource GhostButton}" Content="{loc:T Edit_None}" Command="{Binding SelectFillersCommand}" CommandParameter="false" Margin="0,0,12,0" />
+                                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE71A;" Content="{loc:T Edit_StopPreview}" Command="{Binding StopPreviewCommand}"
+                                        ToolTip="{loc:T Edit_PreviewHint}" Margin="0,0,24,0" />
+                                <TextBlock Text="{loc:T Main_Format}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <ComboBox ItemsSource="{x:Static vm:EditViewModel.Encoders}" SelectedItem="{Binding SelectedEncoder}"
+                                          DisplayMemberPath="DisplayName" Width="150" Margin="0,0,8,0" />
+                                <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE74E;" Content="{loc:T Edit_Export}"
+                                        Command="{Binding ExportCommand}" ToolTip="{loc:T Edit_ExportTip}" />
+                                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE838;" Content="{loc:T Edit_RevealExport}"
+                                        Command="{Binding RevealExportCommand}" />
+                            </WrapPanel>
+                        </StackPanel>
+
+                        <!-- The cuts found; the column widths match the item template below. -->
+                        <Grid DockPanel.Dock="Top" Margin="13,0,6,4" TextElement.Foreground="{DynamicResource MutedTextBrush}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="34" />
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="220" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="1" Text="{loc:T Edit_ColTime}" />
+                            <TextBlock Grid.Column="2" Text="{loc:T Edit_ColDuration}" />
+                            <TextBlock Grid.Column="3" Text="{loc:T Edit_ColKind}" />
+                            <TextBlock Grid.Column="4" Text="{loc:T Edit_ColText}" />
+                            <TextBlock Grid.Column="5" Text="{loc:T Edit_ColConfidence}" />
+                        </Grid>
+                        <Grid>
+                            <ListBox ItemsSource="{Binding Cuts}" HorizontalContentAlignment="Stretch"
+                                     VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="34" />
+                                                <ColumnDefinition Width="90" />
+                                                <ColumnDefinition Width="80" />
+                                                <ColumnDefinition Width="100" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="70" />
+                                                <ColumnDefinition Width="220" />
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" MinWidth="0" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1" Text="{Binding StartText}" FontFamily="Consolas" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="2" Text="{Binding DurationText}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="3" Text="{Binding KindName}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="4" Text="{Binding Label}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Grid.Column="5" Text="{Binding ConfidenceText}" VerticalAlignment="Center"
+                                                       Foreground="{DynamicResource MutedTextBrush}" />
+                                            <StackPanel Grid.Column="6" Orientation="Horizontal">
+                                                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE768;" Content="{loc:T Edit_Original}"
+                                                        Command="{Binding PlayOriginalCommand}" ToolTip="{loc:T Edit_PlayOriginalTip}" MinHeight="26" Padding="6,2" />
+                                                <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE8C6;" Content="{loc:T Edit_Cut}"
+                                                        Command="{Binding PlayEditedCommand}" ToolTip="{loc:T Edit_PlayEditedTip}" MinHeight="26" Padding="6,2" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <TextBlock Text="{loc:T Edit_Empty}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24" IsHitTestVisible="False">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Cuts.Count}" Value="0">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </DockPanel>
+                </Border>
+            </TabItem>
+        </TabControl>
 
         <!-- AI tools open over the middle row, so they never push the panels off a small screen. -->
         <Border Grid.Row="2" Style="{StaticResource PanelBorder}" DataContext="{Binding Ai}" Panel.ZIndex="1"
@@ -546,7 +694,7 @@
         </Border>
 
         <!-- Mixer: channel strips scroll sideways when there are many microphones -->
-        <DockPanel Grid.Row="3" Margin="0,12,0,0" Height="250">
+        <DockPanel Grid.Row="3" Margin="0,12,0,0" Height="250" Visibility="{Binding IsMixerVisible, Converter={StaticResource BoolToVisibility}}">
             <Border DockPanel.Dock="Right" Style="{StaticResource PanelBorder}" Width="120" Margin="8,0,0,0" Padding="8"
                     ToolTip="{loc:T Main_KulakliktaDuyulanSesinSeviyesiMikrof}">
                 <DockPanel>

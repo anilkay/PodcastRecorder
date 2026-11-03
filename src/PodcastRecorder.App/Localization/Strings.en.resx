@@ -279,4 +279,61 @@ shown in each pad&apos;s corner)
   <data name="Cross_PasswordStored" xml:space="preserve"><value>Stored encrypted for your user</value></data>
   <data name="Cross_TagsIntro" xml:space="preserve"><value>When a recording ends this information is written into the file (and the separate tracks); music players and file managers show it. The episode number goes up by one after each recording.</value></data>
   <data name="Secrets_KeyDamaged" xml:space="preserve"><value>The encryption key file is damaged: {0}. It was left as it is so saved passwords are not lost; restore a good backup of it, or delete it and enter the passwords again.</value></data>
+  <data name="Main_TabRecord" xml:space="preserve"><value>Record</value></data>
+  <data name="Main_TabEdit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Edit_Title" xml:space="preserve"><value>Cut silences and filler sounds</value></data>
+  <data name="Edit_Recording" xml:space="preserve"><value>Recording:</value></data>
+  <data name="Edit_ChooseFile" xml:space="preserve"><value>Choose file…</value></data>
+  <data name="Edit_NoRecording" xml:space="preserve"><value>No recording selected</value></data>
+  <data name="Edit_IncludeStems" xml:space="preserve"><value>Cut the separate tracks at the same places ({0} tracks)</value></data>
+  <data name="Edit_IncludeStemsTip" xml:space="preserve"><value>In a multitrack recording every track gets the same cut list, so the tracks stay in sync with each other and with the mix.</value></data>
+  <data name="Edit_Threshold" xml:space="preserve"><value>Silence threshold:</value></data>
+  <data name="Edit_ThresholdTip" xml:space="preserve"><value>Anything quieter than this counts as silence (RMS over 20 ms windows, dBFS). Raise it if there is background hum.</value></data>
+  <data name="Edit_MinSilence" xml:space="preserve"><value>Shortest silence:</value></data>
+  <data name="Edit_MinSilenceTip" xml:space="preserve"><value>Pauses shorter than this are left alone.</value></data>
+  <data name="Edit_KeptGap" xml:space="preserve"><value>Gap kept:</value></data>
+  <data name="Edit_KeptGapTip" xml:space="preserve"><value>This much of every long pause stays (half at each end), so speech keeps its rhythm.</value></data>
+  <data name="Edit_DetectFillers" xml:space="preserve"><value>Find filler sounds (Whisper)</value></data>
+  <data name="Edit_DetectFillersTip" xml:space="preserve"><value>Transcribes the recording word by word with Whisper on this computer and finds the sounds on the list. The model is chosen in AI › Service settings › Whisper and downloaded on first use. Long recordings can take a few minutes; Whisper does not catch every filler.</value></data>
+  <data name="Edit_FillerWords" xml:space="preserve"><value>Filler sounds:</value></data>
+  <data name="Edit_FillerWordsTip" xml:space="preserve"><value>Separate with commas. Repeated letters do not matter: "eee" also finds "ee" and "eeeee". You can add words such as "şey" or "yani" too.</value></data>
+  <data name="Edit_Analyze" xml:space="preserve"><value>Analyze</value></data>
+  <data name="Edit_Silences" xml:space="preserve"><value>Silences:</value></data>
+  <data name="Edit_Fillers" xml:space="preserve"><value>Fillers:</value></data>
+  <data name="Edit_All" xml:space="preserve"><value>All</value></data>
+  <data name="Edit_None" xml:space="preserve"><value>None</value></data>
+  <data name="Edit_ColTime" xml:space="preserve"><value>Time</value></data>
+  <data name="Edit_ColDuration" xml:space="preserve"><value>Length</value></data>
+  <data name="Edit_ColKind" xml:space="preserve"><value>Type</value></data>
+  <data name="Edit_ColText" xml:space="preserve"><value>Heard</value></data>
+  <data name="Edit_ColConfidence" xml:space="preserve"><value>Confidence</value></data>
+  <data name="Edit_Original" xml:space="preserve"><value>Original</value></data>
+  <data name="Edit_Cut" xml:space="preserve"><value>Cut</value></data>
+  <data name="Edit_PlayOriginalTip" xml:space="preserve"><value>Hear a few seconds around the cut as recorded</value></data>
+  <data name="Edit_PlayEditedTip" xml:space="preserve"><value>Hear the same place with the cut made</value></data>
+  <data name="Edit_StopPreview" xml:space="preserve"><value>Stop preview</value></data>
+  <data name="Edit_PreviewHint" xml:space="preserve"><value>Previews play on the headphone output and never go into the recording or the stream.</value></data>
+  <data name="Edit_Export" xml:space="preserve"><value>Export</value></data>
+  <data name="Edit_ExportTip" xml:space="preserve"><value>Writes a new file next to the original with _duzenlenmis added to its name; the original is not changed.</value></data>
+  <data name="Edit_RevealExport" xml:space="preserve"><value>Show in folder</value></data>
+  <data name="Edit_Empty" xml:space="preserve"><value>Pick a recording and press "Analyze"; the cuts found are listed here.</value></data>
+  <data name="Edit_SecondsShort" xml:space="preserve"><value>{0:0.00} s</value></data>
+  <data name="Edit_KindSilence" xml:space="preserve"><value>Silence</value></data>
+  <data name="Edit_KindFiller" xml:space="preserve"><value>Filler</value></data>
+  <data name="Edit_Confidence" xml:space="preserve"><value>{0:0}%</value></data>
+  <data name="Edit_FileMissing" xml:space="preserve"><value>File not found: {0}</value></data>
+  <data name="Edit_FindingSilences" xml:space="preserve"><value>Looking for silences…</value></data>
+  <data name="Edit_NothingFound" xml:space="preserve"><value>No silences or filler sounds to cut were found.</value></data>
+  <data name="Edit_Found" xml:space="preserve"><value>Found {0} silences and {1} filler sounds. Untick any you want to keep, then "Export".</value></data>
+  <data name="Edit_Canceled" xml:space="preserve"><value>Analysis canceled.</value></data>
+  <data name="Edit_AnalyzeFailed" xml:space="preserve"><value>Analysis failed: {0}</value></data>
+  <data name="Edit_Summary" xml:space="preserve"><value>{0} of {1} cuts selected · {2} shorter ({3} → {4})</value></data>
+  <data name="Edit_Exporting" xml:space="preserve"><value>Writing the edited file…</value></data>
+  <data name="Edit_ExportProgress" xml:space="preserve"><value>Writing… {0:0}%</value></data>
+  <data name="Edit_Exported" xml:space="preserve"><value>Saved: {0}</value></data>
+  <data name="Edit_ExportedWithStems" xml:space="preserve"><value>Saved: {0} (and {1} separate tracks)</value></data>
+  <data name="Edit_ExportCanceled" xml:space="preserve"><value>Export canceled.</value></data>
+  <data name="Edit_ExportFailed" xml:space="preserve"><value>Export failed: {0}</value></data>
+  <data name="Edit_NeedOutput" xml:space="preserve"><value>Pick a device in the "Headphone output" box above to hear previews.</value></data>
+  <data name="Edit_PreviewFailed" xml:space="preserve"><value>Could not play the preview: {0}</value></data>
 </root>

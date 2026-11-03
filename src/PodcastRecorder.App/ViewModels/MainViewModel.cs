@@ -51,6 +51,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         MasterMeter = new LevelMeterViewModel(_engine.Mixer.MasterMeter);
         Live = new LiveStreamViewModel(_engine.Live, _settings.Live, liveDialog, () => _engine.IsOutputRunning, _ui);
         Ai = new AiViewModel(_settings.Ai, () => RecordingFolder, Playlist, Jingles, dialogs);
+        Edit = new EditViewModel(_settings.Edit, () => RecordingFolder, () => Ai.WhisperModel, () => Ai.Language,
+            _engine.Preview, () => _engine.IsOutputRunning, dialogs, _ui);
         Tags = new RecordingTagsViewModel(_settings.Tags, dialogs, () => LastRecordingPath, message => StatusMessage = message);
         SelectedTheme = ThemeService.Options.FirstOrDefault(o => o.Theme == _settings.Theme) ?? ThemeService.Options[0];
         _selectedLanguage = Loc.Languages.FirstOrDefault(l => l.Code == _settings.Language) ?? Loc.Languages[0];
@@ -72,8 +74,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public AiViewModel Ai { get; }
 
+    /// <summary>"Düzenle": cutting silences and filler sounds out of a recording.</summary>
+    public EditViewModel Edit { get; }
+
     /// <summary>"Dosya bilgileri" written into each finished recording.</summary>
     public RecordingTagsViewModel Tags { get; }
+
+    /// <summary>The open tab under the record bar: 0 is "Kayıt", 1 is "Düzenle".</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsMixerVisible))]
+    public partial int SelectedTab { get; set; }
+
+    /// <summary>The mixer row makes room for the list of cuts while editing.</summary>
+    public bool IsMixerVisible => SelectedTab == 0;
 
     public static IReadOnlyList<ThemeOption> Themes => ThemeService.Options;
 
@@ -208,6 +221,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial string? LastRecordingPath { get; set; }
 
+    partial void OnLastRecordingPathChanged(string? value) => Edit.UseRecording(value);
+
     public bool IsIdle => RecordingState == RecorderState.Idle && !IsNormalizing;
 
     public bool IsRecording => RecordingState == RecorderState.Recording;
@@ -259,6 +274,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             ? folder
             : AppSettings.MusicFolder);
 
+        Edit.Initialize();
         _initialized = true;
         SelectedOutput = Pick(OutputDevices, _settings.OutputDeviceId, _devices.DefaultOutputId);
         LoadMicrophones();
@@ -524,19 +540,24 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void OpenRecordingFolder()
     {
         Directory.CreateDirectory(RecordingFolder);
-        var last = LastRecordingPath is { } path && File.Exists(path) ? path : null;
+        RevealInFolder(RecordingFolder, LastRecordingPath is { } path && File.Exists(path) ? path : null);
+    }
+
+    /// <summary>Opens <paramref name="folder"/> in the file manager, with <paramref name="file"/> selected where the platform can.</summary>
+    internal static void RevealInFolder(string folder, string? file)
+    {
         if (OperatingSystem.IsWindows())
         {
-            var target = last is not null ? $"/select,\"{last}\"" : $"\"{RecordingFolder}\"";
+            var target = file is not null ? $"/select,\"{file}\"" : $"\"{folder}\"";
             Process.Start(new ProcessStartInfo("explorer.exe", target) { UseShellExecute = true });
         }
         else if (OperatingSystem.IsMacOS())
         {
-            Process.Start("open", last is not null ? ["-R", last] : [RecordingFolder]);
+            Process.Start("open", file is not null ? ["-R", file] : [folder]);
         }
         else
         {
-            Process.Start("xdg-open", [RecordingFolder]);
+            Process.Start("xdg-open", [folder]);
         }
     }
 
@@ -626,6 +647,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         Ai.Dispose();
+        Edit.Dispose();
         SaveSettings();
         _engine.Dispose();
         _devices.Dispose();
@@ -657,6 +679,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _settings.Playlist = Playlist.Items.Select(i => i.FilePath).ToList();
         Ai.SaveTo(_settings.Ai);
         Tags.SaveTo(_settings.Tags);
+        Edit.SaveTo(_settings.Edit);
         _settings.Theme = SelectedTheme.Theme;
         _settings.Language = SelectedLanguage.Code;
         _settings.Jingles = null;

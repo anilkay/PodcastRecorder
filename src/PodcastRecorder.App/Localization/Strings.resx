@@ -279,4 +279,61 @@ her hücrenin köşesinde yazar)
   <data name="Cross_PasswordStored" xml:space="preserve"><value>Kullanıcınıza özel şifrelenmiş olarak saklanır</value></data>
   <data name="Cross_TagsIntro" xml:space="preserve"><value>Kayıt bitince bu bilgiler dosyaya (ve ayrı izlere) yazılır; müzik çalarlar ve dosya yöneticileri bunları gösterir. Bölüm no her kayıttan sonra bir artar.</value></data>
   <data name="Secrets_KeyDamaged" xml:space="preserve"><value>Şifreleme anahtarı dosyası bozuk: {0}. Kayıtlı şifreler kaybolmasın diye dosyaya dokunulmadı; sağlam bir yedeği varsa geri koyun, yoksa dosyayı silin ve şifreleri yeniden girin.</value></data>
+  <data name="Main_TabRecord" xml:space="preserve"><value>Kayıt</value></data>
+  <data name="Main_TabEdit" xml:space="preserve"><value>Düzenle</value></data>
+  <data name="Edit_Title" xml:space="preserve"><value>Sessizlikleri ve dolgu seslerini kes</value></data>
+  <data name="Edit_Recording" xml:space="preserve"><value>Kayıt:</value></data>
+  <data name="Edit_ChooseFile" xml:space="preserve"><value>Dosya seç…</value></data>
+  <data name="Edit_NoRecording" xml:space="preserve"><value>Kayıt seçilmedi</value></data>
+  <data name="Edit_IncludeStems" xml:space="preserve"><value>Ayrı izleri de aynı yerlerden kes ({0} iz)</value></data>
+  <data name="Edit_IncludeStemsTip" xml:space="preserve"><value>Çok izli kayıtta her iz aynı kesim listesiyle yazılır, böylece izler birbiriyle ve karışımla senkron kalır.</value></data>
+  <data name="Edit_Threshold" xml:space="preserve"><value>Sessizlik eşiği:</value></data>
+  <data name="Edit_ThresholdTip" xml:space="preserve"><value>Bu seviyenin altındaki yerler sessizlik sayılır (20 ms'lik pencerelerde RMS, dBFS). Arka planda uğultu varsa eşiği yükseltin.</value></data>
+  <data name="Edit_MinSilence" xml:space="preserve"><value>En kısa sessizlik:</value></data>
+  <data name="Edit_MinSilenceTip" xml:space="preserve"><value>Bundan kısa duraklamalara dokunulmaz.</value></data>
+  <data name="Edit_KeptGap" xml:space="preserve"><value>Bırakılan boşluk:</value></data>
+  <data name="Edit_KeptGapTip" xml:space="preserve"><value>Her uzun sessizliğin bu kadarı yerinde kalır (yarısı başta, yarısı sonda), konuşmanın ritmi bozulmasın diye.</value></data>
+  <data name="Edit_DetectFillers" xml:space="preserve"><value>Dolgu seslerini bul (Whisper)</value></data>
+  <data name="Edit_DetectFillersTip" xml:space="preserve"><value>Kaydı bu bilgisayardaki Whisper ile kelime kelime yazıya çevirir ve listedeki sesleri bulur. Model, Yapay zeka › Servis ayarları › Whisper'dan seçilir ve ilk kullanımda indirilir. Uzun kayıtlarda birkaç dakika sürebilir; Whisper her dolgu sesini yakalayamaz.</value></data>
+  <data name="Edit_FillerWords" xml:space="preserve"><value>Dolgu sesleri:</value></data>
+  <data name="Edit_FillerWordsTip" xml:space="preserve"><value>Virgülle ayırın. Harf tekrarı önemsizdir: "eee" yazmak "ee" ve "eeeee"yi de bulur. "şey", "yani" gibi kelimeleri de ekleyebilirsiniz.</value></data>
+  <data name="Edit_Analyze" xml:space="preserve"><value>Analiz et</value></data>
+  <data name="Edit_Silences" xml:space="preserve"><value>Sessizlik:</value></data>
+  <data name="Edit_Fillers" xml:space="preserve"><value>Dolgu:</value></data>
+  <data name="Edit_All" xml:space="preserve"><value>Tümü</value></data>
+  <data name="Edit_None" xml:space="preserve"><value>Hiçbiri</value></data>
+  <data name="Edit_ColTime" xml:space="preserve"><value>Zaman</value></data>
+  <data name="Edit_ColDuration" xml:space="preserve"><value>Süre</value></data>
+  <data name="Edit_ColKind" xml:space="preserve"><value>Tür</value></data>
+  <data name="Edit_ColText" xml:space="preserve"><value>Duyulan</value></data>
+  <data name="Edit_ColConfidence" xml:space="preserve"><value>Güven</value></data>
+  <data name="Edit_Original" xml:space="preserve"><value>Orijinal</value></data>
+  <data name="Edit_Cut" xml:space="preserve"><value>Kesilmiş</value></data>
+  <data name="Edit_PlayOriginalTip" xml:space="preserve"><value>Kesimin çevresindeki birkaç saniyeyi olduğu gibi dinle</value></data>
+  <data name="Edit_PlayEditedTip" xml:space="preserve"><value>Aynı yeri kesilmiş hâliyle dinle</value></data>
+  <data name="Edit_StopPreview" xml:space="preserve"><value>Önizlemeyi durdur</value></data>
+  <data name="Edit_PreviewHint" xml:space="preserve"><value>Önizleme kulaklık çıkışından çalar, kayda ve yayına girmez.</value></data>
+  <data name="Edit_Export" xml:space="preserve"><value>Dışa aktar</value></data>
+  <data name="Edit_ExportTip" xml:space="preserve"><value>Orijinalin yanına _duzenlenmis ekiyle yeni bir dosya yazar; orijinal dosya değişmez.</value></data>
+  <data name="Edit_RevealExport" xml:space="preserve"><value>Klasörde göster</value></data>
+  <data name="Edit_Empty" xml:space="preserve"><value>Bir kayıt seçip "Analiz et"e basın; bulunan kesimler burada listelenir.</value></data>
+  <data name="Edit_SecondsShort" xml:space="preserve"><value>{0:0.00} sn</value></data>
+  <data name="Edit_KindSilence" xml:space="preserve"><value>Sessizlik</value></data>
+  <data name="Edit_KindFiller" xml:space="preserve"><value>Dolgu sesi</value></data>
+  <data name="Edit_Confidence" xml:space="preserve"><value>%{0:0}</value></data>
+  <data name="Edit_FileMissing" xml:space="preserve"><value>Dosya bulunamadı: {0}</value></data>
+  <data name="Edit_FindingSilences" xml:space="preserve"><value>Sessizlikler aranıyor…</value></data>
+  <data name="Edit_NothingFound" xml:space="preserve"><value>Kesilecek sessizlik ya da dolgu sesi bulunamadı.</value></data>
+  <data name="Edit_Found" xml:space="preserve"><value>{0} sessizlik ve {1} dolgu sesi bulundu. Kalmasını istediklerinin işaretini kaldırın, sonra "Dışa aktar".</value></data>
+  <data name="Edit_Canceled" xml:space="preserve"><value>Analiz iptal edildi.</value></data>
+  <data name="Edit_AnalyzeFailed" xml:space="preserve"><value>Analiz yapılamadı: {0}</value></data>
+  <data name="Edit_Summary" xml:space="preserve"><value>{0} / {1} kesim seçili · {2} kısalır ({3} → {4})</value></data>
+  <data name="Edit_Exporting" xml:space="preserve"><value>Düzenlenmiş dosya yazılıyor…</value></data>
+  <data name="Edit_ExportProgress" xml:space="preserve"><value>Yazılıyor… %{0:0}</value></data>
+  <data name="Edit_Exported" xml:space="preserve"><value>Kaydedildi: {0}</value></data>
+  <data name="Edit_ExportedWithStems" xml:space="preserve"><value>Kaydedildi: {0} (ve {1} ayrı iz)</value></data>
+  <data name="Edit_ExportCanceled" xml:space="preserve"><value>Dışa aktarma iptal edildi.</value></data>
+  <data name="Edit_ExportFailed" xml:space="preserve"><value>Dışa aktarılamadı: {0}</value></data>
+  <data name="Edit_NeedOutput" xml:space="preserve"><value>Önizlemeyi duymak için üstteki "Dinleme çıkışı" kutusundan bir cihaz seçin.</value></data>
+  <data name="Edit_PreviewFailed" xml:space="preserve"><value>Önizleme çalınamadı: {0}</value></data>
 </root>

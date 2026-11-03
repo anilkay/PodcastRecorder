@@ -110,6 +110,12 @@
             <Setter Property="Fill" Value="{DynamicResource MeterBrush}" />
             <Setter Property="Track" Value="{DynamicResource MeterTrackBrush}" />
         </Style>
+        <!-- "Kayıt" / "Düzenle": Fluent's tab headers are sized for page titles. -->
+        <Style Selector="TabControl.main > TabItem">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Padding" Value="10,0" />
+        </Style>
         <Style Selector="ProgressBar.thin">
             <Setter Property="Height" Value="6" />
             <Setter Property="MinHeight" Value="6" />
