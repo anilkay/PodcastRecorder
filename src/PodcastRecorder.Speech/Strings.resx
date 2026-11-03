@@ -26,4 +26,5 @@
   <data name="Windows_VoiceMissing" xml:space="preserve"><value>Windows&apos;ta &quot;{0}&quot; sesi yüklü değil.</value></data>
   <data name="System_SayFailed" xml:space="preserve"><value>&quot;say&quot; komutu çalıştırılamadı.</value></data>
   <data name="System_EspeakMissing" xml:space="preserve"><value>Seslendirme için espeak-ng gerekli: sudo apt install espeak-ng</value></data>
+  <data name="Stage_FindingFillers" xml:space="preserve"><value>Dolgu sesleri aranıyor</value></data>
 </root>
