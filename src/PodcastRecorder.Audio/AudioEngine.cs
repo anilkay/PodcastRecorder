@@ -45,7 +45,7 @@ public sealed class AudioEngine : IDisposable
         JingleChannel = new MixerChannel(Texts.Get("Channel_Jingle"), Jingles);
         Mixer.Add(MusicChannel);
         Mixer.Add(JingleChannel);
-        Bus = new OutputBus(Mixer, Recorder, [Live], AfterMix);
+        Bus = new OutputBus(Mixer, Recorder, [Live], AfterMix, Preview);
     }
 
     public AudioMixer Mixer { get; } = new();
@@ -58,6 +58,9 @@ public sealed class AudioEngine : IDisposable
     public PlaybackDeck Playlist { get; }
 
     public JinglePlayer Jingles { get; }
+
+    /// <summary>Edit previews: heard on the monitor output, never recorded or streamed.</summary>
+    public PreviewPlayer Preview { get; } = new();
 
     public MixerChannel MusicChannel { get; }
 

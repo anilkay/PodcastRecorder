@@ -46,4 +46,5 @@
   <data name="Pa_DeviceGone" xml:space="preserve"><value>Ses cihazı bulunamadı; çıkarılmış olabilir.</value></data>
   <data name="Pa_MicOpenFailed" xml:space="preserve"><value>Mikrofon açılamadı ({0})</value></data>
   <data name="Pa_MicStartFailed" xml:space="preserve"><value>Mikrofon başlatılamadı ({0})</value></data>
+  <data name="Edit_WouldOverwrite" xml:space="preserve"><value>Düzenlenmiş dosya orijinalin üzerine yazılamaz.</value></data>
 </root>

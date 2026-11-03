@@ -46,4 +46,5 @@
   <data name="Pa_DeviceGone" xml:space="preserve"><value>The audio device was not found; it may have been unplugged.</value></data>
   <data name="Pa_MicOpenFailed" xml:space="preserve"><value>Could not open the microphone ({0})</value></data>
   <data name="Pa_MicStartFailed" xml:space="preserve"><value>Could not start the microphone ({0})</value></data>
+  <data name="Edit_WouldOverwrite" xml:space="preserve"><value>The edited file cannot overwrite the original.</value></data>
 </root>

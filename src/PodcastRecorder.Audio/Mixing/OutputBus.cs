@@ -9,11 +9,15 @@ namespace PodcastRecorder.Audio.Mixing;
 /// </summary>
 /// <param name="sinks">Also receive the program bus, such as the live stream.</param>
 /// <param name="afterMix">Called on the audio thread after each block, with its frame count.</param>
-public sealed class OutputBus(AudioMixer mixer, Recorder recorder, IReadOnlyList<IProgramSink>? sinks = null, Action<int>? afterMix = null) : ISampleProvider
+/// <param name="monitorOnly">Added to the monitor bus only, never recorded or streamed (edit previews).</param>
+public sealed class OutputBus(
+    AudioMixer mixer, Recorder recorder, IReadOnlyList<IProgramSink>? sinks = null, Action<int>? afterMix = null,
+    ISampleProvider? monitorOnly = null) : ISampleProvider
 {
     private readonly ChannelSink _stemSink = recorder.WriteStem;
     private float[] _program = [];
     private float[] _monitor = [];
+    private float[] _extra = [];
 
     public WaveFormat WaveFormat => AudioFormat.Mix;
 
@@ -26,6 +30,7 @@ public sealed class OutputBus(AudioMixer mixer, Recorder recorder, IReadOnlyList
         {
             _program = new float[count];
             _monitor = new float[count];
+            _extra = new float[count];
         }
 
         var program = _program.AsSpan(0, count);
@@ -35,6 +40,12 @@ public sealed class OutputBus(AudioMixer mixer, Recorder recorder, IReadOnlyList
         if (sinks is not null) foreach (var sink in sinks) sink.Write(program);
         Loudness.Process(program, integrate: recorder.State == RecorderState.Recording);
         afterMix?.Invoke(count / AudioFormat.Channels);
+        if (monitorOnly is not null)
+        {
+            int read = monitorOnly.Read(_extra, 0, count);
+            for (int i = 0; i < read; i++) monitor[i] += _extra[i];
+        }
+
         monitor.CopyTo(buffer.AsSpan(offset, count));
         return count;
     }
