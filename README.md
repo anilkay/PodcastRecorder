@@ -29,6 +29,7 @@ Windows için podcast kayıt uygulaması; Linux ve macOS için de [Avalonia sür
 - **Dil / Language:** Türkçe ya da English; durum çubuğundaki "Dil" kutusundan değişir ve hemen uygulanır (kayıt ve yayın kesilmez). "Sistem" Windows'un görüntü diline göre seçer.
 - **Dosya bilgileri:** Başlık, sunucu, program, bölüm no, yıl, tür, açıklama ve kapak resmi her kayda (ve ayrı izlere) yazılır
 - **Yapay zeka:** kayıtlardan transkript ve altyazı (yerel Whisper, OpenAI, Azure OpenAI / Foundry, Azure AI Speech), metinden anons ve jingle sesi (Windows sesleri, OpenAI, Azure)
+- **Düzenle:** kayıttaki uzun sessizlikleri kısaltır, "ııı", "eee", "hmm" gibi dolgu seslerini bulur; her kesimi dinleyip seçtikten sonra orijinalin yanına `_duzenlenmis` ekli yeni bir dosya yazar (ayrı izler de aynı yerlerden kesilir)
 
 Mikrofon varsayılan olarak kulaklığa verilmez (konuşurken kendi sesinizi gecikmeli duymamanız için) ama her zaman kayda girer.
 
@@ -48,6 +49,17 @@ Mikrofon varsayılan olarak kulaklığa verilmez (konuşurken kendi sesinizi gec
 | Azure AI Speech (Foundry) | Fast transcription | Neural sesler (ör. tr-TR-EmelNeural) | Bölge ve anahtar |
 
 Anahtarlar ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Yeni bir servis eklemek için `PodcastRecorder.Speech` projesinde `ISpeechToText` ya da `ITextToSpeech` arayüzünü uygulayıp `SpeechProviders` listesine ekleyin.
+
+### Düzenle: sessizlik ve dolgu seslerini kesme
+
+Orta bölümdeki **Düzenle** sekmesi bir kaydı (varsayılan olarak son kaydı) tarar ve kesilebilecek yerleri listeler. Sekme açıkken alttaki mikser satırı listeye yer açmak için gizlenir.
+
+- **Sessizlikler:** Ses 20 ms'lik pencerelerde ölçülür (RMS, dBFS). "Sessizlik eşiği"nin (varsayılan -40 dB) altında kalan ve "En kısa sessizlik"ten (0,8 sn) uzun her duraklama tamamen silinmez, "Bırakılan boşluk" (0,3 sn; yarısı başta, yarısı sonda) kadarı kalır.
+- **Dolgu sesleri:** "Dolgu seslerini bul" işaretliyse kayıt bu bilgisayardaki Whisper ile kelime kelime (token zaman damgalarıyla) yazıya çevrilir ve listedeki sesler kesim olur. Whisper normalde "eee"leri yazmaz; bu yüzden modele dolgu sesleriyle dolu bir başlangıç metni verilir. Liste virgülle ayrılır, harf tekrarı önemsizdir ("eee" yazmak "ee" ve "eeeee"yi de bulur); "şey", "yani" gibi kelimeler eklenebilir. Model Yapay zeka › Servis ayarları › Whisper'dan seçilir, ilk kullanımda indirilir.
+- **Liste:** Her kesimin zamanı, süresi, türü, duyulan metin ve Whisper'ın güveni görünür. **Orijinal** kesimin çevresindeki birkaç saniyeyi olduğu gibi, **Kesilmiş** aynı yeri kesilmiş hâliyle çalar; önizleme yalnızca kulaklık çıkışından duyulur, kayda ve yayına girmez. "Tümü / Hiçbiri" ile türe göre seçilir; altta toplam kazanılan süre yazar.
+- **Dışa aktar:** Seçili kesimler atlanarak yeni dosya yazılır (varsayılan FLAC, WAV kayıtlarda WAV; diğer biçimler de seçilebilir). Her kesim noktasında tıkırtı olmasın diye 15 ms'lik eşit güçlü (equal-power) crossfade yapılır; dosya tam olarak "orijinal süre - kesimler" uzunluğundadır. Orijinal dosyaya dokunulmaz, dosya bilgileri (başlık, kapak…) kopyalanır. Çok izli kayıtlarda `izler` klasöründeki her iz aynı kesim listesiyle yazılır, böylece izler senkron kalır.
+
+Sınırlamalar: Whisper'ın kelime zamanları yaklaşıktır (onlarca milisaniye), bu yüzden dolgu kesimleri komşu kelimelere değmeyecek kadar küçük bir payla (40 ms) genişletilir. Whisper her dolgu sesini yakalamaz; özellikle kısa "e"ler ve kelimeye yapışık uzatmalar kaçabilir, modelden modele de sonuç değişir. Bulunanları önizleyip gerekirse işaretini kaldırın. Uzun kayıtlarda dolgu taraması işlemcide birkaç dakika sürebilir (Base modeliyle 3 dakikalık kayıt yaklaşık 15 saniye); sessizlik taraması saniyeler içinde biter. Kesim motoru arayüzden bağımsızdır (`PodcastRecorder.Audio/Editing`, dolgu tarafı `PodcastRecorder.Speech/Fillers`), ileride komut satırı aracı olarak da kullanılabilir.
 
 ### Dosya bilgileri
 

@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json.Serialization;
 using PodcastRecorder.Audio;
+using PodcastRecorder.Speech.Fillers;
 using PodcastRecorder.Speech.Providers;
 using PodcastRecorder.App.Localization;
 
@@ -72,6 +73,8 @@ public sealed class AppSettings
 
     public RecordingTagsSettings Tags { get; set; } = new();
 
+    public EditSettings Edit { get; set; } = new();
+
     public AppTheme Theme { get; set; } = AppTheme.System;
 
     /// <summary>"system" (follow Windows), "tr" or "en".</summary>
@@ -125,6 +128,27 @@ public sealed class AiSettings
 
     /// <summary>Last voice used with each synthesis provider.</summary>
     public Dictionary<string, string> Voices { get; set; } = [];
+}
+
+/// <summary>The "Düzenle" tab: how silences and fillers are found and the edit is written.</summary>
+public sealed class EditSettings
+{
+    public double SilenceThresholdDb { get; set; } = -40;
+
+    public double MinimumSilenceSeconds { get; set; } = 0.8;
+
+    public double KeptGapSeconds { get; set; } = 0.3;
+
+    public bool DetectFillers { get; set; } = true;
+
+    /// <summary>Comma-separated; compared with repeated letters folded ("eee" also finds "ee" and "eeeee").</summary>
+    public string FillerWords { get; set; } = string.Join(", ", FillerMatcher.DefaultWords);
+
+    /// <summary>Format of the edited copy, the last one used; empty means WAV for WAV recordings, otherwise FLAC.</summary>
+    public string? EncoderId { get; set; }
+
+    /// <summary>Also edit the separate tracks of a multitrack recording.</summary>
+    public bool IncludeStems { get; set; } = true;
 }
 
 /// <summary>

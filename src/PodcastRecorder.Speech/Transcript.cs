@@ -6,6 +6,9 @@ namespace PodcastRecorder.Speech;
 /// <summary>One stretch of recognised speech, timed from the start of the recording.</summary>
 public sealed record TranscriptSegment(TimeSpan Start, TimeSpan End, string Text);
 
+/// <summary>One recognised word with its time and the model's confidence (0 to 1).</summary>
+public sealed record TimedWord(TimeSpan Start, TimeSpan End, string Text, double Probability);
+
 public sealed class Transcript(IReadOnlyList<TranscriptSegment> segments)
 {
     public IReadOnlyList<TranscriptSegment> Segments { get; } = segments;

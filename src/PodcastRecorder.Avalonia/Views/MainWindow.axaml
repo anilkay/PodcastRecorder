@@ -113,156 +113,267 @@
             </Expander>
         </StackPanel>
 
-        <!-- Folder browser, playlist, jingle pad -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,12,1.3*,12,1.3*">
+        <!-- Recording (folder browser, playlist, jingle pad) and Düzenle tabs -->
+        <TabControl Grid.Row="2" Classes="main" Padding="0,8,0,0" SelectedIndex="{Binding SelectedTab}">
+            <TabItem Header="{loc:T Main_TabRecord}">
+                <Grid ColumnDefinitions="*,12,1.3*,12,1.3*">
 
-            <Border Grid.Column="0" Classes="panel" x:DataType="vm:FolderBrowserViewModel" DataContext="{Binding Browser}">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_KlasorGezgini}" Classes="title" />
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
-                        <Button Content="{loc:T Main_KlasorSec}" Command="{Binding ChooseFolderCommand}" />
-                        <Button Content="{loc:T Main_UstKlasor, Prefix='↑ '}" Command="{Binding UpCommand}" />
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentFolder}" Classes="muted"
-                               TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding CurrentFolder}" Margin="0,0,0,6" />
-                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Classes="error" />
-                    <TextBlock DockPanel.Dock="Bottom" Classes="muted" TextWrapping="Wrap" Margin="0,6,0,0"
-                               Text="{loc:T Main_CiftTikKlasoreGirYa}" />
-                    <ListBox x:Name="BrowserList" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}"
-                             DoubleTapped="BrowserList_DoubleTapped">
-                        <ListBox.KeyBindings>
-                            <KeyBinding Gesture="Enter" Command="{Binding OpenCommand}" />
-                        </ListBox.KeyBindings>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="vm:BrowserEntry">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Icon}" Margin="0,0,6,0" />
-                                    <TextBlock Text="{Binding Name}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-            </Border>
-
-            <Border Grid.Column="2" Classes="panel" x:DataType="vm:PlaylistViewModel" DataContext="{Binding Playlist}">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_CalmaListesi}" Classes="title" />
-                    <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
-                        <Button Content="{loc:T Main_Cal, Prefix='▶ '}" Command="{Binding PlayCommand}" ToolTip.Tip="{loc:T Main_SeciliSarkiyiCalF5}" />
-                        <Button Content="{loc:T Main_Durdur, Prefix='■ '}" Command="{Binding StopCommand}" ToolTip.Tip="{loc:T Main_MuzigiDurdurF6}" />
-                        <Button Content="{loc:T Main_Sonraki, Prefix='⏭ '}" Command="{Binding NextCommand}" ToolTip.Tip="{loc:T Main_SonrakiSarkiF7}" />
-                        <Button Content="{loc:T Main_Ekle2}" Command="{Binding BrowseCommand}" />
-                        <Button Content="↑" Command="{Binding MoveUpCommand}" ToolTip.Tip="{loc:T Main_YukariTasi}" />
-                        <Button Content="↓" Command="{Binding MoveDownCommand}" ToolTip.Tip="{loc:T Main_AsagiTasi}" />
-                        <Button Content="{loc:T Main_Kaldir}" Command="{Binding RemoveCommand}" />
-                        <Button Content="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
-                    </WrapPanel>
-                    <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
-                        <ProgressBar Classes="thin" Value="{Binding Progress}" />
-                        <DockPanel Margin="0,4,0,0">
-                            <CheckBox DockPanel.Dock="Right" Content="{loc:T Main_BitinceSonrakineGec}" IsChecked="{Binding AutoAdvance}" />
-                            <TextBlock Text="{Binding PositionText}" FontFamily="{StaticResource MonoFont}" VerticalAlignment="Center" />
+                    <Border Grid.Column="0" Classes="panel" x:DataType="vm:FolderBrowserViewModel" DataContext="{Binding Browser}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_KlasorGezgini}" Classes="title" />
+                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                                <Button Content="{loc:T Main_KlasorSec}" Command="{Binding ChooseFolderCommand}" />
+                                <Button Content="{loc:T Main_UstKlasor, Prefix='↑ '}" Command="{Binding UpCommand}" />
+                            </StackPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="{Binding CurrentFolder}" Classes="muted"
+                                       TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding CurrentFolder}" Margin="0,0,0,6" />
+                            <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Classes="error" />
+                            <TextBlock DockPanel.Dock="Bottom" Classes="muted" TextWrapping="Wrap" Margin="0,6,0,0"
+                                       Text="{loc:T Main_CiftTikKlasoreGirYa}" />
+                            <ListBox x:Name="BrowserList" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}"
+                                     DoubleTapped="BrowserList_DoubleTapped">
+                                <ListBox.KeyBindings>
+                                    <KeyBinding Gesture="Enter" Command="{Binding OpenCommand}" />
+                                </ListBox.KeyBindings>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:BrowserEntry">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Icon}" Margin="0,0,6,0" />
+                                            <TextBlock Text="{Binding Name}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
                         </DockPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
-                                    ToolTip.Tip="{loc:T Main_SarkilarArasindaBindirmeSuresi0}">
-                            <TextBlock Text="{loc:T Main_Crossfade}" Classes="label" Margin="0,0,8,0" />
-                            <Slider Minimum="0" Maximum="10" Value="{Binding CrossfadeSeconds}" Width="140"
-                                    IsSnapToTickEnabled="True" TickFrequency="0.5" SmallChange="0.5" LargeChange="1" />
-                            <TextBlock Text="{Binding CrossfadeSeconds, StringFormat={loc:T Main_SecondsFormat}}" VerticalAlignment="Center" Margin="6,0,0,0" />
-                        </StackPanel>
-                        <TextBlock Text="{Binding ErrorMessage}" Classes="error" />
-                    </StackPanel>
-                    <ListBox x:Name="PlaylistList" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
-                             DragDrop.AllowDrop="True" DoubleTapped="PlaylistList_DoubleTapped">
-                        <ListBox.KeyBindings>
-                            <KeyBinding Gesture="Enter" Command="{Binding PlayCommand}" />
-                            <KeyBinding Gesture="Delete" Command="{Binding RemoveCommand}" />
-                        </ListBox.KeyBindings>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="vm:PlaylistItemViewModel">
-                                <StackPanel Orientation="Horizontal" ToolTip.Tip="{Binding FilePath}">
-                                    <TextBlock Text="▶ " Foreground="{DynamicResource AccentBrush}" IsVisible="{Binding IsPlaying}" />
-                                    <TextBlock Text="{Binding Title}" Classes.playing="{Binding IsPlaying}">
-                                        <TextBlock.Styles>
-                                            <Style Selector="TextBlock.playing">
-                                                <Setter Property="FontWeight" Value="SemiBold" />
-                                            </Style>
-                                        </TextBlock.Styles>
-                                    </TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-            </Border>
+                    </Border>
 
-            <Border Grid.Column="4" Classes="panel" x:DataType="vm:JinglePadViewModel" DataContext="{Binding Jingles}">
-                <DockPanel>
-                    <DockPanel DockPanel.Dock="Top">
-                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <Button Content="{loc:T Main_Sekme, Prefix='+ '}" Command="{Binding NewBankCommand}" />
-                            <Button Content="{loc:T Main_SekmeyiSil}" Command="{Binding RemoveBankCommand}" />
-                            <Button Content="{loc:T Main_TumunuDurdur}" Command="{Binding StopAllCommand}" Margin="0"
-                                    ToolTip.Tip="{loc:T Main_CalanButunJingleLariDurdur}" />
-                        </StackPanel>
-                        <!-- The usage hint is a tooltip so the pads get the height. -->
-                        <TextBlock Text="{loc:T Main_JinglePaneli}" Classes="title"
-                                   ToolTip.Tip="{loc:T Main_TiklaYaDaKosedekiTusa}" />
-                    </DockPanel>
-                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Classes="error" />
-                    <TabControl ItemsSource="{Binding Banks}" SelectedItem="{Binding SelectedBank}" Padding="0">
-                        <TabControl.ItemTemplate>
-                            <DataTemplate x:DataType="vm:JingleBankViewModel">
-                                <TextBlock Text="{Binding Name}" FontSize="13" />
-                            </DataTemplate>
-                        </TabControl.ItemTemplate>
-                        <TabControl.ContentTemplate>
-                            <DataTemplate x:DataType="vm:JingleBankViewModel">
-                                <DockPanel Margin="0,6,0,0">
-                                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock Text="{loc:T Main_Ad}" Classes="label" />
-                                        <TextBox Text="{Binding Name}" Width="120" Margin="0,0,12,0" />
-                                        <TextBlock Text="{loc:T Main_Satir}" Classes="label" />
-                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Rows}"
-                                                  Width="72" Margin="0,0,12,0" />
-                                        <TextBlock Text="{loc:T Main_Sutun}" Classes="label" />
-                                        <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Columns}"
-                                                  Width="72" />
-                                    </StackPanel>
-                                    <ItemsControl ItemsSource="{Binding Cells}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate x:DataType="vm:JingleCellViewModel">
-                                                <Button Classes="pad" Classes.playing="{Binding IsPlaying}" Classes.empty="{Binding !HasFile}"
-                                                        Command="{Binding ToggleCommand}" DragDrop.AllowDrop="True" ToolTip.Tip="{Binding FilePath}">
-                                                    <Button.ContextMenu>
-                                                        <ContextMenu>
-                                                            <MenuItem Header="{loc:T Main_DosyaSec}" Command="{Binding BrowseCommand}" />
-                                                            <MenuItem Header="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
-                                                        </ContextMenu>
-                                                    </Button.ContextMenu>
-                                                    <Grid>
-                                                        <TextBlock Classes="key" Text="{Binding Shortcut}"
-                                                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
-                                                        <TextBlock Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
-                                                                   HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                                    </Grid>
-                                                </Button>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                    <Border Grid.Column="2" Classes="panel" x:DataType="vm:PlaylistViewModel" DataContext="{Binding Playlist}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="{loc:T Main_CalmaListesi}" Classes="title" />
+                            <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                                <Button Content="{loc:T Main_Cal, Prefix='▶ '}" Command="{Binding PlayCommand}" ToolTip.Tip="{loc:T Main_SeciliSarkiyiCalF5}" />
+                                <Button Content="{loc:T Main_Durdur, Prefix='■ '}" Command="{Binding StopCommand}" ToolTip.Tip="{loc:T Main_MuzigiDurdurF6}" />
+                                <Button Content="{loc:T Main_Sonraki, Prefix='⏭ '}" Command="{Binding NextCommand}" ToolTip.Tip="{loc:T Main_SonrakiSarkiF7}" />
+                                <Button Content="{loc:T Main_Ekle2}" Command="{Binding BrowseCommand}" />
+                                <Button Content="↑" Command="{Binding MoveUpCommand}" ToolTip.Tip="{loc:T Main_YukariTasi}" />
+                                <Button Content="↓" Command="{Binding MoveDownCommand}" ToolTip.Tip="{loc:T Main_AsagiTasi}" />
+                                <Button Content="{loc:T Main_Kaldir}" Command="{Binding RemoveCommand}" />
+                                <Button Content="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
+                            </WrapPanel>
+                            <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                                <ProgressBar Classes="thin" Value="{Binding Progress}" />
+                                <DockPanel Margin="0,4,0,0">
+                                    <CheckBox DockPanel.Dock="Right" Content="{loc:T Main_BitinceSonrakineGec}" IsChecked="{Binding AutoAdvance}" />
+                                    <TextBlock Text="{Binding PositionText}" FontFamily="{StaticResource MonoFont}" VerticalAlignment="Center" />
                                 </DockPanel>
-                            </DataTemplate>
-                        </TabControl.ContentTemplate>
-                    </TabControl>
-                </DockPanel>
-            </Border>
-        </Grid>
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
+                                            ToolTip.Tip="{loc:T Main_SarkilarArasindaBindirmeSuresi0}">
+                                    <TextBlock Text="{loc:T Main_Crossfade}" Classes="label" Margin="0,0,8,0" />
+                                    <Slider Minimum="0" Maximum="10" Value="{Binding CrossfadeSeconds}" Width="140"
+                                            IsSnapToTickEnabled="True" TickFrequency="0.5" SmallChange="0.5" LargeChange="1" />
+                                    <TextBlock Text="{Binding CrossfadeSeconds, StringFormat={loc:T Main_SecondsFormat}}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding ErrorMessage}" Classes="error" />
+                            </StackPanel>
+                            <ListBox x:Name="PlaylistList" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
+                                     DragDrop.AllowDrop="True" DoubleTapped="PlaylistList_DoubleTapped">
+                                <ListBox.KeyBindings>
+                                    <KeyBinding Gesture="Enter" Command="{Binding PlayCommand}" />
+                                    <KeyBinding Gesture="Delete" Command="{Binding RemoveCommand}" />
+                                </ListBox.KeyBindings>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:PlaylistItemViewModel">
+                                        <StackPanel Orientation="Horizontal" ToolTip.Tip="{Binding FilePath}">
+                                            <TextBlock Text="▶ " Foreground="{DynamicResource AccentBrush}" IsVisible="{Binding IsPlaying}" />
+                                            <TextBlock Text="{Binding Title}" Classes.playing="{Binding IsPlaying}">
+                                                <TextBlock.Styles>
+                                                    <Style Selector="TextBlock.playing">
+                                                        <Setter Property="FontWeight" Value="SemiBold" />
+                                                    </Style>
+                                                </TextBlock.Styles>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Grid.Column="4" Classes="panel" x:DataType="vm:JinglePadViewModel" DataContext="{Binding Jingles}">
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Top">
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                    <Button Content="{loc:T Main_Sekme, Prefix='+ '}" Command="{Binding NewBankCommand}" />
+                                    <Button Content="{loc:T Main_SekmeyiSil}" Command="{Binding RemoveBankCommand}" />
+                                    <Button Content="{loc:T Main_TumunuDurdur}" Command="{Binding StopAllCommand}" Margin="0"
+                                            ToolTip.Tip="{loc:T Main_CalanButunJingleLariDurdur}" />
+                                </StackPanel>
+                                <!-- The usage hint is a tooltip so the pads get the height. -->
+                                <TextBlock Text="{loc:T Main_JinglePaneli}" Classes="title"
+                                           ToolTip.Tip="{loc:T Main_TiklaYaDaKosedekiTusa}" />
+                            </DockPanel>
+                            <TextBlock DockPanel.Dock="Bottom" Text="{Binding ErrorMessage}" Classes="error" />
+                            <TabControl ItemsSource="{Binding Banks}" SelectedItem="{Binding SelectedBank}" Padding="0">
+                                <TabControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:JingleBankViewModel">
+                                        <TextBlock Text="{Binding Name}" FontSize="13" />
+                                    </DataTemplate>
+                                </TabControl.ItemTemplate>
+                                <TabControl.ContentTemplate>
+                                    <DataTemplate x:DataType="vm:JingleBankViewModel">
+                                        <DockPanel Margin="0,6,0,0">
+                                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+                                                <TextBlock Text="{loc:T Main_Ad}" Classes="label" />
+                                                <TextBox Text="{Binding Name}" Width="120" Margin="0,0,12,0" />
+                                                <TextBlock Text="{loc:T Main_Satir}" Classes="label" />
+                                                <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Rows}"
+                                                          Width="72" Margin="0,0,12,0" />
+                                                <TextBlock Text="{loc:T Main_Sutun}" Classes="label" />
+                                                <ComboBox ItemsSource="{x:Static vm:JinglePadViewModel.SizeOptions}" SelectedItem="{Binding Columns}"
+                                                          Width="72" />
+                                            </StackPanel>
+                                            <ItemsControl ItemsSource="{Binding Cells}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:JingleCellViewModel">
+                                                        <Button Classes="pad" Classes.playing="{Binding IsPlaying}" Classes.empty="{Binding !HasFile}"
+                                                                Command="{Binding ToggleCommand}" DragDrop.AllowDrop="True" ToolTip.Tip="{Binding FilePath}">
+                                                            <Button.ContextMenu>
+                                                                <ContextMenu>
+                                                                    <MenuItem Header="{loc:T Main_DosyaSec}" Command="{Binding BrowseCommand}" />
+                                                                    <MenuItem Header="{loc:T Main_Temizle}" Command="{Binding ClearCommand}" />
+                                                                </ContextMenu>
+                                                            </Button.ContextMenu>
+                                                            <Grid>
+                                                                <TextBlock Classes="key" Text="{Binding Shortcut}"
+                                                                           HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                                                <TextBlock Text="{Binding Title}" TextWrapping="Wrap" TextAlignment="Center"
+                                                                           HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                            </Grid>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </TabControl.ContentTemplate>
+                            </TabControl>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- Cutting silences and filler sounds out of a recording -->
+            <TabItem Header="{loc:T Main_TabEdit}">
+                <Border Classes="panel" x:DataType="vm:EditViewModel" DataContext="{Binding Edit}">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="{loc:T Edit_Title}" Classes="title" />
+
+                        <!-- The recording -->
+                        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                            <TextBlock Text="{loc:T Edit_Recording}" Classes="label" />
+                            <TextBlock Text="{Binding SourceName}" ToolTip.Tip="{Binding SourcePath}" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" Margin="0,0,10,0" MaxWidth="460" TextTrimming="CharacterEllipsis" />
+                            <Button Content="{loc:T Edit_ChooseFile}" Command="{Binding ChooseFileCommand}" Margin="0,0,16,4" />
+                            <CheckBox Content="{Binding StemsText}" IsChecked="{Binding IncludeStems}"
+                                      ToolTip.Tip="{loc:T Edit_IncludeStemsTip}" IsVisible="{Binding HasStems}" />
+                        </WrapPanel>
+
+                        <!-- How silences are found -->
+                        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6" IsEnabled="{Binding IsIdle}">
+                            <StackPanel Orientation="Horizontal" ToolTip.Tip="{loc:T Edit_ThresholdTip}" Margin="0,0,16,4">
+                                <TextBlock Text="{loc:T Edit_Threshold}" Classes="label" />
+                                <Slider Minimum="-60" Maximum="-20" Value="{Binding SilenceThresholdDb}" Width="110"
+                                        IsSnapToTickEnabled="True" TickFrequency="1" SmallChange="1" LargeChange="5" />
+                                <TextBlock Text="{Binding SilenceThresholdDb, StringFormat='{}{0:0} dB'}" VerticalAlignment="Center" Margin="6,0,0,0" MinWidth="44" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" ToolTip.Tip="{loc:T Edit_MinSilenceTip}" Margin="0,0,16,4">
+                                <TextBlock Text="{loc:T Edit_MinSilence}" Classes="label" />
+                                <Slider Minimum="0.3" Maximum="3" Value="{Binding MinimumSilenceSeconds}" Width="110"
+                                        IsSnapToTickEnabled="True" TickFrequency="0.1" SmallChange="0.1" LargeChange="0.5" />
+                                <TextBlock Text="{Binding MinimumSilenceSeconds, StringFormat={loc:T Main_SecondsFormat}}" VerticalAlignment="Center" Margin="6,0,0,0" MinWidth="44" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" ToolTip.Tip="{loc:T Edit_KeptGapTip}" Margin="0,0,0,4">
+                                <TextBlock Text="{loc:T Edit_KeptGap}" Classes="label" />
+                                <Slider Minimum="0.1" Maximum="1" Value="{Binding KeptGapSeconds}" Width="110"
+                                        IsSnapToTickEnabled="True" TickFrequency="0.05" SmallChange="0.05" LargeChange="0.1" />
+                                <TextBlock Text="{Binding KeptGapSeconds, StringFormat={loc:T Edit_SecondsShort}}" VerticalAlignment="Center" Margin="6,0,0,0" MinWidth="50" />
+                            </StackPanel>
+                        </WrapPanel>
+
+                        <!-- Fillers, and the analysis -->
+                        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                            <CheckBox Content="{loc:T Edit_DetectFillers}" IsChecked="{Binding DetectFillers}" Margin="0,0,12,4"
+                                      ToolTip.Tip="{loc:T Edit_DetectFillersTip}" IsEnabled="{Binding IsIdle}" />
+                            <TextBlock Text="{loc:T Edit_FillerWords}" Classes="label" />
+                            <TextBox Text="{Binding FillerWords}" Width="320" Margin="0,0,12,4"
+                                     ToolTip.Tip="{loc:T Edit_FillerWordsTip}" IsEnabled="{Binding DetectFillers}" />
+                            <Button Classes="accent" Content="{loc:T Edit_Analyze}" Command="{Binding AnalyzeCommand}" />
+                            <Button Content="{loc:T Main_Iptal}" Command="{Binding CancelCommand}" />
+                        </WrapPanel>
+                        <ProgressBar DockPanel.Dock="Top" Classes="thin" Value="{Binding Progress}" Margin="0,0,0,4" IsVisible="{Binding IsBusy}" />
+                        <TextBlock DockPanel.Dock="Top" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,0,0,6" Classes="muted" />
+
+                        <!-- Selection, time saved and export -->
+                        <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding SummaryText}" FontWeight="SemiBold" Margin="0,0,0,6" />
+                            <WrapPanel>
+                                <TextBlock Text="{loc:T Edit_Silences}" Classes="label" />
+                                <Button Content="{loc:T Edit_All}" Command="{Binding SelectSilencesCommand}" CommandParameter="true" />
+                                <Button Content="{loc:T Edit_None}" Command="{Binding SelectSilencesCommand}" CommandParameter="false" Margin="0,0,16,4" />
+                                <TextBlock Text="{loc:T Edit_Fillers}" Classes="label" />
+                                <Button Content="{loc:T Edit_All}" Command="{Binding SelectFillersCommand}" CommandParameter="true" />
+                                <Button Content="{loc:T Edit_None}" Command="{Binding SelectFillersCommand}" CommandParameter="false" Margin="0,0,16,4" />
+                                <Button Content="{loc:T Edit_StopPreview, Prefix='■ '}" Command="{Binding StopPreviewCommand}"
+                                        ToolTip.Tip="{loc:T Edit_PreviewHint}" Margin="0,0,24,4" />
+                                <TextBlock Text="{loc:T Main_Format}" Classes="label" />
+                                <ComboBox ItemsSource="{x:Static vm:EditViewModel.Encoders}" SelectedItem="{Binding SelectedEncoder}"
+                                          DisplayMemberBinding="{ReflectionBinding DisplayName}" Width="150" Margin="0,0,8,4" />
+                                <Button Classes="accent" Content="{loc:T Edit_Export}" Command="{Binding ExportCommand}" ToolTip.Tip="{loc:T Edit_ExportTip}" />
+                                <Button Content="{loc:T Edit_RevealExport}" Command="{Binding RevealExportCommand}" />
+                            </WrapPanel>
+                        </StackPanel>
+
+                        <!-- The cuts found; the column widths match the item template below. -->
+                        <Grid DockPanel.Dock="Top" Margin="12,0,12,4" ColumnDefinitions="34,90,80,100,*,70,220">
+                            <TextBlock Grid.Column="1" Text="{loc:T Edit_ColTime}" Classes="muted" />
+                            <TextBlock Grid.Column="2" Text="{loc:T Edit_ColDuration}" Classes="muted" />
+                            <TextBlock Grid.Column="3" Text="{loc:T Edit_ColKind}" Classes="muted" />
+                            <TextBlock Grid.Column="4" Text="{loc:T Edit_ColText}" Classes="muted" />
+                            <TextBlock Grid.Column="5" Text="{loc:T Edit_ColConfidence}" Classes="muted" />
+                        </Grid>
+                        <Grid>
+                            <ListBox ItemsSource="{Binding Cuts}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:CutItemViewModel">
+                                        <Grid ColumnDefinitions="34,90,80,100,*,70,220">
+                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" MinWidth="0" />
+                                            <TextBlock Grid.Column="1" Text="{Binding StartText}" FontFamily="{StaticResource MonoFont}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="2" Text="{Binding DurationText}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="3" Text="{Binding KindName}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="4" Text="{Binding Label}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Grid.Column="5" Text="{Binding ConfidenceText}" VerticalAlignment="Center" Classes="muted" />
+                                            <StackPanel Grid.Column="6" Orientation="Horizontal">
+                                                <Button Content="{loc:T Edit_Original, Prefix='▶ '}" Command="{Binding PlayOriginalCommand}"
+                                                        ToolTip.Tip="{loc:T Edit_PlayOriginalTip}" />
+                                                <Button Content="{loc:T Edit_Cut, Prefix='✂ '}" Command="{Binding PlayEditedCommand}"
+                                                        ToolTip.Tip="{loc:T Edit_PlayEditedTip}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <TextBlock Text="{loc:T Edit_Empty}" Classes="muted" TextWrapping="Wrap" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" Margin="24" IsHitTestVisible="False" IsVisible="{Binding !Cuts.Count}" />
+                        </Grid>
+                    </DockPanel>
+                </Border>
+            </TabItem>
+        </TabControl>
 
         <!-- AI tools open over the middle row, so they never push the panels off a small screen. -->
         <Border Grid.Row="2" Classes="panel" x:DataType="vm:AiViewModel" DataContext="{Binding Ai}" ZIndex="1"
@@ -405,7 +516,7 @@
         </Border>
 
         <!-- Mixer: channel strips scroll sideways when there are many microphones -->
-        <DockPanel Grid.Row="3" Margin="0,12,0,0" Height="250">
+        <DockPanel Grid.Row="3" Margin="0,12,0,0" Height="250" IsVisible="{Binding IsMixerVisible}">
             <Border DockPanel.Dock="Right" Classes="panel" Width="120" Margin="8,0,0,0" Padding="8"
                     ToolTip.Tip="{loc:T Main_KulakliktaDuyulanSesinSeviyesiMikrof}">
                 <DockPanel>

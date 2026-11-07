@@ -21,6 +21,7 @@ public sealed class LocalWhisperTranscriber(string modelFolder, string modelSize
 
     private WhisperFactory? _factory;
     private WhisperProcessor? _processor;
+    private WhisperProcessor? _wordProcessor;
 
     private WhisperModelOption Model =>
         Models.FirstOrDefault(m => m.Id == modelSize) ?? throw new SpeechException($"Bilinmeyen Whisper modeli: {modelSize}");
@@ -57,6 +58,48 @@ public sealed class LocalWhisperTranscriber(string modelFolder, string modelSize
         }
 
         return segments;
+    }
+
+    /// <summary>
+    /// Transcribes one piece word by word, each word timed from the start of the chunk. Uses
+    /// whisper.cpp's token timestamps with one word per segment; they are approximate (tens of
+    /// milliseconds), good enough to find a filler sound but not to cut at the exact sample.
+    /// </summary>
+    /// <param name="prompt">
+    /// Text the model takes as what came before. Whisper leaves out "eee" and "ııı" unless the
+    /// prompt shows them, so a prompt full of fillers makes it write them down.
+    /// </param>
+    public async Task<IReadOnlyList<TimedWord>> TranscribeWordsAsync(AudioChunk chunk, string? language, string? prompt, CancellationToken cancellationToken)
+    {
+        if (_factory is null)
+        {
+            throw new InvalidOperationException("PrepareAsync must run first.");
+        }
+
+        if (_wordProcessor is null)
+        {
+            var builder = _factory.CreateBuilder()
+                .WithTokenTimestamps()
+                .SplitOnWord()
+                .WithMaxSegmentLength(1)
+                .WithCarryInitialPrompt(true);
+            builder = string.IsNullOrWhiteSpace(language) ? builder.WithLanguageDetection() : builder.WithLanguage(language);
+            if (!string.IsNullOrWhiteSpace(prompt)) builder = builder.WithPrompt(prompt);
+            _wordProcessor = builder.Build();
+        }
+
+        var words = new List<TimedWord>();
+        using var wav = new MemoryStream(chunk.Wav, writable: false);
+        await foreach (var segment in _wordProcessor.ProcessAsync(wav, cancellationToken))
+        {
+            var text = segment.Text.Trim();
+            if (text.Length == 0) continue;
+            // The segment's own probability is not filled in this mode; average its text tokens'.
+            var tokens = segment.Tokens.Where(t => t.Text is { Length: > 0 } token && !token.StartsWith("[_", StringComparison.Ordinal)).ToList();
+            words.Add(new TimedWord(segment.Start, segment.End, text, tokens.Count > 0 ? tokens.Average(t => t.Probability) : segment.Probability));
+        }
+
+        return words;
     }
 
     private async Task DownloadModelAsync(IProgress<TranscriptionProgress>? progress, CancellationToken cancellationToken)
@@ -97,6 +140,7 @@ public sealed class LocalWhisperTranscriber(string modelFolder, string modelSize
     public void Dispose()
     {
         _processor?.Dispose();
+        _wordProcessor?.Dispose();
         _factory?.Dispose();
     }
 }
