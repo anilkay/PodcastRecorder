@@ -82,7 +82,7 @@ internal static class FfmpegDecoder
     /// An app opened from Finder gets only the system PATH (/usr/bin:/bin…), not Homebrew's, so
     /// ffmpeg is looked for in Homebrew's folders too.
     /// </summary>
-    private static readonly string Ffmpeg =
+    internal static readonly string Ffmpeg =
         new[] { "/opt/homebrew/bin/ffmpeg", "/usr/local/bin/ffmpeg" }.FirstOrDefault(p => OperatingSystem.IsMacOS() && File.Exists(p))
         ?? "ffmpeg";
 

@@ -217,11 +217,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle), nameof(IsRecording), nameof(IsPaused), nameof(StateText), nameof(PauseButtonText))]
-    [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand), nameof(AddMicrophoneCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand), nameof(AddMicrophoneCommand), nameof(AddChapterMarkerCommand))]
     public partial RecorderState RecordingState { get; set; }
 
     [ObservableProperty]
     public partial string ElapsedText { get; set; } = "00:00:00";
+
+    /// <summary>Chapter markers dropped in the current recording.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ChapterButtonText))]
+    public partial int MarkerCount { get; set; }
+
+    public string ChapterButtonText => MarkerCount == 0 ? Loc.T("Main_ChapterMarker") : Loc.F("Main_ChapterMarkerCount", MarkerCount);
 
     [ObservableProperty]
     public partial string? StatusMessage { get; set; }
@@ -449,6 +456,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
             var stems = RecordStems ? StemTargets(Path.Combine(RecordingFolder, name + " " + Loc.T("Main_StemsFolderSuffix"))) : null;
             _engine.Recorder.Start(mix, stems);
+            MarkerCount = 0;
             _engine.Loudness.ResetIntegrated();
             StatusMessage = Loc.F("Main_RecordingTo", finalPath) + (stems is null ? "" : Loc.F("Main_RecordingStems", stems.Count));
         }
@@ -489,12 +497,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var pending = _pendingNormalization;
         _pendingNormalization = null;
         var stems = _engine.Recorder.StemPaths;
+        var chapters = Chapters.FromMarkers(_engine.Recorder.Markers, n => Loc.F("Main_ChapterTitle", n));
         if (pending is null)
         {
             RecordingState = _engine.Recorder.State;
             LastRecordingPath = path;
             StatusMessage = path is null ? null : Loc.F("Main_Saved", path);
-            if (path is not null) await WriteTagsAsync(path, stems);
+            if (path is not null)
+            {
+                await WriteTagsAsync(path, stems);
+                await WriteChaptersAsync(path, stems, chapters);
+            }
+
             TranscribeIfEnabled(path);
             return;
         }
@@ -511,6 +525,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             LastRecordingPath = pending.Final.Path;
             StatusMessage = Loc.F("Main_SavedNormalized", pending.Final.Path, FormatLufs(measured), Normalizer.PodcastTargetLufs, gain);
             await WriteTagsAsync(pending.Final.Path, stems);
+            await WriteChaptersAsync(pending.Final.Path, stems, chapters);
             TranscribeIfEnabled(pending.Final.Path);
         }
         catch (Exception ex)
@@ -521,6 +536,45 @@ public partial class MainViewModel : ObservableObject, IDisposable
         finally
         {
             IsNormalizing = false;
+        }
+    }
+
+    /// <summary>Drops a chapter marker at the current point of the recording (Ctrl+B).</summary>
+    [RelayCommand(CanExecute = nameof(CanStop))]
+    private void AddChapterMarker()
+    {
+        if (_engine.Recorder.AddMarker() is not { } time) return;
+        MarkerCount = _engine.Recorder.Markers.Count;
+        // Chapter 1 is the opening, so the first marker starts chapter 2.
+        int number = Chapters.FromMarkers(_engine.Recorder.Markers, n => "").Count;
+        StatusMessage = Loc.F("Main_ChapterAdded", Math.Max(number, 1), time.ToString(@"hh\:mm\:ss"));
+    }
+
+    /// <summary>
+    /// Writes the chapters into the finished file and its tracks, after the tags (so writing tags
+    /// cannot drop them) and after normalizing or converting, which make a new file.
+    /// </summary>
+    private async Task WriteChaptersAsync(string path, IReadOnlyList<string> stems, IReadOnlyList<Chapter> chapters)
+    {
+        if (chapters.Count == 0 || !File.Exists(path)) return;
+        var saved = StatusMessage;
+        if (!Chapters.IsSupported(path))
+        {
+            StatusMessage = $"{saved} · {Loc.T("Main_ChaptersNotSupported")}";
+            return;
+        }
+
+        try
+        {
+            await Task.Run(() =>
+            {
+                foreach (var file in stems.Where(File.Exists).Prepend(path)) Chapters.Write(file, chapters);
+            });
+            StatusMessage = $"{saved} · {Loc.F("Main_ChaptersWritten", chapters.Count)}";
+        }
+        catch (IOException ex)
+        {
+            StatusMessage = $"{saved} · {ex.Message}";
         }
     }
 

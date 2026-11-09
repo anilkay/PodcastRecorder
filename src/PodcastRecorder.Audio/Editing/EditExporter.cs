@@ -106,7 +106,23 @@ public static class EditExporter
         }
 
         CopyTags(track.SourcePath, track.Output.Path);
+        CopyChapters(track.SourcePath, track.Output.Path, cuts);
         return frames;
+    }
+
+    /// <summary>The original's chapters, moved earlier by what was cut before each.</summary>
+    private static void CopyChapters(string from, string to, IReadOnlyList<TimeRange> cuts)
+    {
+        var chapters = Chapters.Read(from);
+        if (chapters.Count == 0 || !Chapters.IsSupported(to)) return;
+        try
+        {
+            Chapters.Write(to, Chapters.AfterCuts(chapters, cuts));
+        }
+        catch (IOException)
+        {
+            // Like tags, chapters are a nicety.
+        }
     }
 
     /// <summary>"Dosya bilgileri" (title, cover…) of the original, so the edit shows up the same in players.</summary>

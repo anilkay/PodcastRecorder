@@ -25,6 +25,7 @@ public sealed class Recorder : IProgramSink
     private Track? _mix;
     private Dictionary<MixerChannel, Track> _stems = [];
     private long _frames;
+    private readonly List<TimeSpan> _markers = [];
     private volatile RecorderState _state = RecorderState.Idle;
 
     public RecorderState State => _state;
@@ -38,6 +39,31 @@ public sealed class Recorder : IProgramSink
 
     /// <summary>Length of audio written so far, excluding paused time.</summary>
     public TimeSpan Elapsed => AudioFormat.FramesToTime(Interlocked.Read(ref _frames));
+
+    /// <summary>
+    /// Where chapter markers were dropped in the current or last recording, in file time (paused
+    /// time does not count). Kept after <see cref="StopAsync"/> so the chapters can be written.
+    /// </summary>
+    public IReadOnlyList<TimeSpan> Markers
+    {
+        get
+        {
+            lock (_gate) return [.. _markers];
+        }
+    }
+
+    /// <summary>Drops a chapter marker at the current position.</summary>
+    /// <returns>The marker's time, or null when nothing is being recorded.</returns>
+    public TimeSpan? AddMarker()
+    {
+        lock (_gate)
+        {
+            if (_state == RecorderState.Idle) return null;
+            var time = Elapsed;
+            _markers.Add(time);
+            return time;
+        }
+    }
 
     /// <summary>Raised on a background thread if an encoder fails; that file stops being written.</summary>
     public event EventHandler<Exception>? Faulted;
@@ -65,6 +91,7 @@ public sealed class Recorder : IProgramSink
             OutputPath = mix.Path;
             StemPaths = stems?.Values.Select(t => t.Path).ToList() ?? [];
             Interlocked.Exchange(ref _frames, 0);
+            _markers.Clear();
             _state = RecorderState.Recording;
         }
     }

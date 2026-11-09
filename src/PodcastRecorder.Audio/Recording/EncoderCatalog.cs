@@ -21,6 +21,8 @@ public static class EncoderCatalog
         new("mp3-320", "Encoder_Mp3_320", () => new Mp3Encoder(320)),
         new("wma-128", "Encoder_Wma_128", () => new WmaEncoder(128)),
         new("wma-192", "Encoder_Wma_192", () => new WmaEncoder(192)),
+        new("m4a-128", "Encoder_M4a_128", () => new M4aEncoder(128)),
+        new("m4a-192", "Encoder_M4a_192", () => new M4aEncoder(192)),
         new("wav", "Encoder_Wav", () => new WavEncoder()),
         new("flac", "Encoder_Flac", () => new FlacEncoder()),
     ];

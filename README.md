@@ -2,14 +2,15 @@
 
 # Podcast Recorder
 
-Windows için podcast kayıt uygulaması; Linux ve macOS için de [Avalonia sürümü](#linux-ve-macos-avalonia-sürümü) var. Mikrofonu, çalma listesindeki şarkıları ve jingle panelini uygulamanın kendi mikserinde birleştirir ve tek bir MP3, WMA, FLAC veya WAV dosyasına kaydeder; isterseniz aynı anda Icecast sunucusuna canlı yayın yapar. Windows "Stereo Mix" ayarı gerekmez.
+Windows için podcast kayıt uygulaması; Linux ve macOS için de [Avalonia sürümü](#linux-ve-macos-avalonia-sürümü) var. Mikrofonu, çalma listesindeki şarkıları ve jingle panelini uygulamanın kendi mikserinde birleştirir ve tek bir MP3, M4A (AAC), WMA, FLAC veya WAV dosyasına kaydeder; isterseniz aynı anda Icecast sunucusuna canlı yayın yapar. Windows "Stereo Mix" ayarı gerekmez.
 
-*A podcast recorder for Windows: mixes microphones, a playlist and jingle pads, records MP3/WMA/FLAC/WAV and can stream live to Icecast. The interface is available in Turkish and English (status bar › Language).*
+*A podcast recorder for Windows: mixes microphones, a playlist and jingle pads, records MP3/M4A/WMA/FLAC/WAV with chapter markers and can stream live to Icecast. The interface is available in Turkish and English (status bar › Language).*
 
 ## Özellikler
 
 - Birden fazla mikrofon: "Mikrofon ekle" ile her konuk için ayrı kanal, ✕ ile kaldırma; dinleme (kulaklık) cihazı seçimi (WASAPI)
-- Kaydet / duraklat / durdur, süre sayacı; MP3 128/192/320 kbps, WMA 128/192 kbps, WAV veya FLAC (kayıpsız)
+- Kaydet / duraklat / durdur, süre sayacı; MP3 128/192/320 kbps, M4A (AAC) 128/192 kbps, WMA 128/192 kbps, WAV veya FLAC (kayıpsız)
+- Kayıt sırasında **Ctrl+B** (ya da "Bölüm" düğmesi) ile bölüm işareti; bkz. [Bölümler](#bölümler)
 - **Ayrı izler (multitrack):** Karışıma ek olarak her kanal (her mikrofon, müzik, jingle) `podcast-TARİH izler` klasörüne ayrı dosya olarak kaydedilir; kurguda konuşmacıları ayrı ayrı düzeltmek için
 - Mikser: Mikrofon, Müzik, Jingle kanalları; seviye, sessiz, "kulaklıkta duy", VU metre ve clip uyarısı; Master (kayıt) ve Kulaklık seviyesi
 - Jingle paneli: sürükle-bırak ya da sağ tık ile dosya ata, tıkla ya da tuşuna basarak çal/durdur
@@ -58,7 +59,7 @@ Orta bölümdeki **Düzenle** sekmesi bir kaydı (varsayılan olarak son kaydı)
 - **Sessizlikler:** Ses 20 ms'lik pencerelerde ölçülür (RMS, dBFS). "Sessizlik eşiği"nin (varsayılan -40 dB) altında kalan ve "En kısa sessizlik"ten (0,8 sn) uzun her duraklama tamamen silinmez, "Bırakılan boşluk" (0,3 sn; yarısı başta, yarısı sonda) kadarı kalır.
 - **Dolgu sesleri:** "Dolgu seslerini bul" işaretliyse kayıt bu bilgisayardaki Whisper ile kelime kelime (token zaman damgalarıyla) yazıya çevrilir ve listedeki sesler kesim olur. Whisper normalde "eee"leri yazmaz; bu yüzden modele dolgu sesleriyle dolu bir başlangıç metni verilir. Liste virgülle ayrılır, harf tekrarı önemsizdir ("eee" yazmak "ee" ve "eeeee"yi de bulur); "şey", "yani" gibi kelimeler eklenebilir. Model Yapay zeka › Servis ayarları › Whisper'dan seçilir, ilk kullanımda indirilir.
 - **Liste:** Her kesimin zamanı, süresi, türü, duyulan metin ve Whisper'ın güveni görünür. **Orijinal** kesimin çevresindeki birkaç saniyeyi olduğu gibi, **Kesilmiş** aynı yeri kesilmiş hâliyle çalar; önizleme yalnızca kulaklık çıkışından duyulur, kayda ve yayına girmez. "Tümü / Hiçbiri" ile türe göre seçilir; altta toplam kazanılan süre yazar.
-- **Dışa aktar:** Seçili kesimler atlanarak yeni dosya yazılır (varsayılan FLAC, WAV kayıtlarda WAV; diğer biçimler de seçilebilir). Her kesim noktasında tıkırtı olmasın diye 15 ms'lik eşit güçlü (equal-power) crossfade yapılır; dosya tam olarak "orijinal süre - kesimler" uzunluğundadır. Orijinal dosyaya dokunulmaz, dosya bilgileri (başlık, kapak…) kopyalanır. Çok izli kayıtlarda `izler` klasöründeki her iz aynı kesim listesiyle yazılır, böylece izler senkron kalır.
+- **Dışa aktar:** Seçili kesimler atlanarak yeni dosya yazılır (varsayılan FLAC, WAV kayıtlarda WAV; diğer biçimler de seçilebilir). Her kesim noktasında tıkırtı olmasın diye 15 ms'lik eşit güçlü (equal-power) crossfade yapılır; dosya tam olarak "orijinal süre - kesimler" uzunluğundadır. Orijinal dosyaya dokunulmaz, dosya bilgileri (başlık, kapak…) kopyalanır. Bölümler de kopyalanır, kesilen süre kadar öne kaydırılarak. Çok izli kayıtlarda `izler` klasöründeki her iz aynı kesim listesiyle yazılır, böylece izler senkron kalır.
 
 Sınırlamalar: Whisper'ın kelime zamanları yaklaşıktır (onlarca milisaniye), bu yüzden dolgu kesimleri komşu kelimelere değmeyecek kadar küçük bir payla (40 ms) genişletilir. Whisper her dolgu sesini yakalamaz; özellikle kısa "e"ler ve kelimeye yapışık uzatmalar kaçabilir, modelden modele de sonuç değişir. Bulunanları önizleyip gerekirse işaretini kaldırın. Uzun kayıtlarda dolgu taraması işlemcide birkaç dakika sürebilir (Base modeliyle 3 dakikalık kayıt yaklaşık 15 saniye); sessizlik taraması saniyeler içinde biter. Kesim motoru arayüzden bağımsızdır (`PodcastRecorder.Audio/Editing`, dolgu tarafı `PodcastRecorder.Speech/Fillers`), ileride komut satırı aracı olarak da kullanılabilir.
 
@@ -79,6 +80,7 @@ Biçimler: MP3'te ID3v2.3 (Windows Gezgini ve çoğu çalar bunu okur), FLAC'ta 
 | Ctrl+P | Duraklat / devam |
 | Ctrl+Shift+R | Kaydı durdur ve kaydet |
 | Ctrl+M | Mikrofonu kapat / aç |
+| Ctrl+B | Bölüm işareti koy |
 | Ctrl+L / Ctrl+Shift+L | Yayına başla / yayını durdur |
 | F5 / F6 / F7 | Çalma listesi: çal / durdur / sonraki |
 | 1–8, Q–I, A–K, Z–M | Açık sekmedeki jingle hücreleri, paneldeki yerleriyle aynı (4x4 sekmede 1234 / QWER / ASDF / ZXCV); tuş her hücrenin köşesinde yazar |
@@ -90,6 +92,21 @@ Durdurma tuşları kazara basılmasın diye Shift ister.
 ### Canlı yayın
 
 "Canlı yayın" panelindeki **Ayarlar…** ile sunucu, port, mount (ör. `/canli`), kullanıcı (Icecast'te genelde `source`), şifre ve kaliteyi girin. Yayın Icecast 2.4+ kaynak protokolüyle (HTTP PUT) gönderilir; çalma listesinde şarkı değişince dinleyicilerin gördüğü başlık güncellenir. Bağlantı yavaşlarsa ses kuyrukta birikmez, bir kısmı atlanır ve panelde uyarı görünür; bağlantı koparsa 3 saniye arayla 10 kez yeniden bağlanmayı dener.
+
+### Bölümler
+
+Kayıt sürerken **Ctrl+B** ya da kayıt çubuğundaki **Bölüm** düğmesi o ana bir işaret koyar (duraklatılmış süre sayılmaz, işaret dosyadaki yere denk gelir). Kayıt bitince işaretler bölüm olarak dosyaya yazılır: ilk bölüm kaydın başından ilk işarete kadardır, sonra her işaret yeni bir bölüm başlatır ("Bölüm 1", "Bölüm 2"…). Bir saniyeden yakın iki işaretten ikincisi atlanır. Bölümler dosya bilgilerinden sonra, normalizasyon ve çevirmeden sonraki son dosyaya ve ayrı izlere yazılır; Düzenle sekmesinde dışa aktarırken kesilen süre kadar öne kaydırılır.
+
+- **MP3:** ID3v2 CHAP çerçeveleri ve onları sıralayan üst düzey CTOC (Apple Podcasts, Overcast, Pocket Casts, foobar2000…).
+- **M4A:** ffmpeg'in yazdığı gibi iki biçim birden: ses izinin `chap` ile gösterdiği QuickTime metin izi (Apple Podcasts, iTunes, QuickTime) ve Nero `chpl` listesi (VLC, mpv, birçok Android çalar). Ses verisine dokunulmaz.
+- **FLAC:** `CHAPTER001=00:00:00.000` / `CHAPTER001NAME=…` Vorbis yorumları.
+- WAV ve WMA bölüm tutmaz; bu biçimlerde durum çubuğu bunu söyler.
+
+Kod: `Recording/Chapters.cs`, `Recording/Mp4Chapters.cs`.
+
+### M4A (AAC)
+
+Windows'ta Media Foundation AAC kodlayıcısıyla, Linux ve macOS'ta ffmpeg ile yazılır. WMA gibi kayıt önce geçici bir WAV (`.m4a.kayit.wav`) olarak yazılır ve durdurulunca çevrilir; çevirme başarısız olursa kayıt `.wav` olarak saklanır.
 
 ### WMA
 
@@ -107,7 +124,7 @@ Windows sürümünden farkları:
 
 | Özellik | Linux / macOS |
 | --- | --- |
-| WMA kaydı | Yok (Media Foundation yalnızca Windows'ta). MP3, FLAC ve WAV var. |
+| WMA kaydı | Yok (Media Foundation yalnızca Windows'ta). MP3, M4A (ffmpeg ile), FLAC ve WAV var. |
 | MP3 kaydı ve canlı yayın | Sistemdeki LAME kütüphanesi gerekir: `sudo apt install libmp3lame0` ya da `brew install lame` |
 | Çalma | MP3 ve WAV doğrudan; FLAC, M4A, AAC ve WMA için `ffmpeg` gerekir (`sudo apt install ffmpeg`, `brew install ffmpeg`) |
 | Seslendirme (bu bilgisayarda) | Windows sesleri yerine Linux'ta espeak-ng (`sudo apt install espeak-ng`, Türkçe için ses adı `tr`), macOS'ta `say` (Türkçe ses "Yelda") |

@@ -37,6 +37,7 @@
   Ctrl+P          Pause / resume
   Ctrl+Shift+R    Stop recording and save
   Ctrl+M          Microphone off / on
+  Ctrl+B          Drop a chapter marker (MP3/M4A/FLAC chapters)
 
 Live stream
   Ctrl+L          Go live
@@ -341,4 +342,11 @@ shown in each pad&apos;s corner)
   <data name="Main_NoiseReductionUnavailable" xml:space="preserve"><value>Noise reduction (RNNoise) is not available on this system.</value></data>
   <data name="Edit_ReduceNoise" xml:space="preserve"><value>Reduce noise (RNNoise)</value></data>
   <data name="Edit_ReduceNoiseTip" xml:space="preserve"><value>Cleans hum, fans and keyboard noise out of the edited copy with RNNoise. With no cuts ticked it only writes a cleaned copy; no analysis needed.</value></data>
+  <data name="Main_ChapterMarker" xml:space="preserve"><value>Chapter</value></data>
+  <data name="Main_ChapterMarkerCount" xml:space="preserve"><value>Chapter ({0})</value></data>
+  <data name="Main_ChapterMarkerTip" xml:space="preserve"><value>Drop a chapter marker here (Ctrl+B). Written as chapters into MP3, M4A and FLAC recordings; podcast apps show them as a chapter list.</value></data>
+  <data name="Main_ChapterAdded" xml:space="preserve"><value>Chapter {0} marked at {1}</value></data>
+  <data name="Main_ChapterTitle" xml:space="preserve"><value>Chapter {0}</value></data>
+  <data name="Main_ChaptersWritten" xml:space="preserve"><value>{0} chapters written</value></data>
+  <data name="Main_ChaptersNotSupported" xml:space="preserve"><value>this format holds no chapters (choose MP3, M4A or FLAC)</value></data>
 </root>

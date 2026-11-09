@@ -48,4 +48,9 @@
   <data name="Pa_MicStartFailed" xml:space="preserve"><value>Mikrofon başlatılamadı ({0})</value></data>
   <data name="Edit_WouldOverwrite" xml:space="preserve"><value>Düzenlenmiş dosya orijinalin üzerine yazılamaz.</value></data>
   <data name="Denoise_Unavailable" xml:space="preserve"><value>Gürültü azaltma (RNNoise) bu sistemde kullanılamıyor.</value></data>
+  <data name="Encoder_M4a_128" xml:space="preserve"><value>M4A (AAC) 128 kbps</value></data>
+  <data name="Encoder_M4a_192" xml:space="preserve"><value>M4A (AAC) 192 kbps</value></data>
+  <data name="M4a_ConvertFailed" xml:space="preserve"><value>M4A&apos;ya çevrilemedi, kayıt WAV olarak saklandı: {0}</value></data>
+  <data name="M4a_NoEncoder" xml:space="preserve"><value>M4A (AAC) kodlayıcısı bulunamadı. Linux/macOS&apos;ta ffmpeg gerekli (sudo apt install ffmpeg, brew install ffmpeg).</value></data>
+  <data name="Chapters_WriteFailed" xml:space="preserve"><value>Bölümler yazılamadı ({0}): {1}</value></data>
 </root>

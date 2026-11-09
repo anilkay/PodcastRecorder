@@ -91,6 +91,7 @@ public static class TagWriter
         ".mp3" => TagLib.TagTypes.Id3v2,
         ".flac" => TagLib.TagTypes.Xiph | TagLib.TagTypes.FlacMetadata,
         ".wma" => TagLib.TagTypes.Asf,
+        ".m4a" => TagLib.TagTypes.Apple,
         ".wav" => TagLib.TagTypes.RiffInfo | TagLib.TagTypes.Id3v2,
         _ => TagLib.TagTypes.None,
     };

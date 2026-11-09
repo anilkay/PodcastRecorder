@@ -48,4 +48,9 @@
   <data name="Pa_MicStartFailed" xml:space="preserve"><value>Could not start the microphone ({0})</value></data>
   <data name="Edit_WouldOverwrite" xml:space="preserve"><value>The edited file cannot overwrite the original.</value></data>
   <data name="Denoise_Unavailable" xml:space="preserve"><value>Noise reduction (RNNoise) is not available on this system.</value></data>
+  <data name="Encoder_M4a_128" xml:space="preserve"><value>M4A (AAC) 128 kbps</value></data>
+  <data name="Encoder_M4a_192" xml:space="preserve"><value>M4A (AAC) 192 kbps</value></data>
+  <data name="M4a_ConvertFailed" xml:space="preserve"><value>Could not convert to M4A; the recording was kept as WAV: {0}</value></data>
+  <data name="M4a_NoEncoder" xml:space="preserve"><value>No M4A (AAC) encoder was found. On Linux/macOS ffmpeg is needed (sudo apt install ffmpeg, brew install ffmpeg).</value></data>
+  <data name="Chapters_WriteFailed" xml:space="preserve"><value>Could not write chapters ({0}): {1}</value></data>
 </root>

@@ -37,6 +37,7 @@
   Ctrl+P          Duraklat / devam
   Ctrl+Shift+R    Kaydı durdur ve kaydet
   Ctrl+M          Mikrofonu kapat / aç
+  Ctrl+B          Bölüm işareti koy (MP3/M4A/FLAC bölümleri)
 
 Canlı yayın
   Ctrl+L          Yayına başla
@@ -341,4 +342,11 @@ her hücrenin köşesinde yazar)
   <data name="Main_NoiseReductionUnavailable" xml:space="preserve"><value>Gürültü azaltma (RNNoise) bu sistemde kullanılamıyor.</value></data>
   <data name="Edit_ReduceNoise" xml:space="preserve"><value>Gürültüyü azalt (RNNoise)</value></data>
   <data name="Edit_ReduceNoiseTip" xml:space="preserve"><value>Düzenlenmiş kopyadaki uğultu, fan ve klavye sesini RNNoise ile temizler. Hiç kesim seçilmezse yalnızca temizlenmiş bir kopya yazılır; analiz gerekmez.</value></data>
+  <data name="Main_ChapterMarker" xml:space="preserve"><value>Bölüm</value></data>
+  <data name="Main_ChapterMarkerCount" xml:space="preserve"><value>Bölüm ({0})</value></data>
+  <data name="Main_ChapterMarkerTip" xml:space="preserve"><value>Buraya bölüm işareti koy (Ctrl+B). MP3, M4A ve FLAC kayıtlarına bölüm olarak yazılır; podcast uygulamaları bölüm listesi olarak gösterir.</value></data>
+  <data name="Main_ChapterAdded" xml:space="preserve"><value>Bölüm {0} işaretlendi: {1}</value></data>
+  <data name="Main_ChapterTitle" xml:space="preserve"><value>Bölüm {0}</value></data>
+  <data name="Main_ChaptersWritten" xml:space="preserve"><value>{0} bölüm yazıldı</value></data>
+  <data name="Main_ChaptersNotSupported" xml:space="preserve"><value>bu biçim bölüm tutmuyor (MP3, M4A ya da FLAC seçin)</value></data>
 </root>

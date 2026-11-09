@@ -14,6 +14,7 @@
         <KeyBinding Gesture="Ctrl+P" Command="{Binding TogglePauseCommand}" />
         <KeyBinding Gesture="Ctrl+Shift+R" Command="{Binding StopRecordingCommand}" />
         <KeyBinding Gesture="Ctrl+M" Command="{Binding ToggleMicrophoneCommand}" />
+        <KeyBinding Gesture="Ctrl+B" Command="{Binding AddChapterMarkerCommand}" />
         <KeyBinding Gesture="Ctrl+L" Command="{Binding Live.StartCommand}" />
         <KeyBinding Gesture="Ctrl+Shift+L" Command="{Binding Live.StopCommand}" />
         <KeyBinding Gesture="F5" Command="{Binding Playlist.PlayCommand}" />
@@ -41,6 +42,8 @@
                             ToolTip.Tip="{loc:T Main_DuraklatDevamCtrlP}" />
                     <Button Classes="transport" Command="{Binding StopRecordingCommand}" Content="{loc:T Main_Durdur}"
                             ToolTip.Tip="{loc:T Main_KaydiDurdurVeDosyayiKaydet}" />
+                    <Button Classes="transport" Command="{Binding AddChapterMarkerCommand}" Content="{Binding ChapterButtonText}"
+                            ToolTip.Tip="{loc:T Main_ChapterMarkerTip}" />
                     <ToggleButton Classes="onair" IsChecked="{Binding IsMicrophoneLive}" Content="{Binding MicrophoneButtonText}"
                                   Margin="10,0,0,0"
                                   ToolTip.Tip="{loc:T Main_KapaliykenMikrofonKaydaGirmezAcikken}" />
