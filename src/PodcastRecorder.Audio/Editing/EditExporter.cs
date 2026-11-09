@@ -1,11 +1,12 @@
 using NAudio.Wave;
+using PodcastRecorder.Audio.Denoising;
 using PodcastRecorder.Audio.Recording;
 using PodcastRecorder.Audio.Sources;
 
 namespace PodcastRecorder.Audio.Editing;
 
-/// <summary>A file to edit and where its edited copy goes.</summary>
-public sealed record EditTrack(string SourcePath, RecordingTarget Output);
+/// <summary>A file to edit and where its edited copy goes; <paramref name="ReduceNoise"/> also cleans it with RNNoise.</summary>
+public sealed record EditTrack(string SourcePath, RecordingTarget Output, bool ReduceNoise = false);
 
 /// <summary>
 /// Writes edited copies of a recording, leaving the original untouched. A multitrack recording's
@@ -92,6 +93,8 @@ public static class EditExporter
             using var reader = AudioFiles.Open(track.SourcePath);
             using var encoder = track.Output.Encoder;
             var source = FormatConversion.ToMixFormat(reader.ToSampleProvider());
+            using var denoised = track.ReduceNoise ? new DenoisedFile(source) : null;
+            source = (ISampleProvider?)denoised ?? source;
             long total = CutList.ToFrame(reader.TotalTime, AudioFormat.SampleRate);
             encoder.Open(track.Output.Path, AudioFormat.Mix);
             frames = CutRenderer.Render(source, cuts, crossfade, total, encoder.Write, progress, cancellationToken);

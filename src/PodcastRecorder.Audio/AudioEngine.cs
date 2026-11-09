@@ -1,4 +1,5 @@
 using NAudio.Wave;
+using PodcastRecorder.Audio.Denoising;
 using PodcastRecorder.Audio.Devices;
 using PodcastRecorder.Audio.Mixing;
 using PodcastRecorder.Audio.Recording;
@@ -25,6 +26,7 @@ public sealed class AudioEngine : IDisposable
     private static readonly TimeSpan MicrophoneSwitchTime = TimeSpan.FromMilliseconds(30);
 
     private readonly Dictionary<MixerChannel, ISampleProvider> _microphones = [];
+    private readonly Dictionary<MixerChannel, DenoisedSource> _denoisers = [];
 
     // Snapshot of the microphone channels for the audio thread, replaced on every change.
     private volatile MixerChannel[] _microphoneChannels = [];
@@ -36,6 +38,7 @@ public sealed class AudioEngine : IDisposable
     private float _voiceThreshold = DecibelsToGain(-40);
     private int _voiceHoldFrames;
     private bool _voiceDucked;
+    private bool _noiseReduction;
 
     public AudioEngine(AudioFileOpener? opener = null)
     {
@@ -141,6 +144,23 @@ public sealed class AudioEngine : IDisposable
     /// <summary>Whether a microphone is currently above the voice threshold (with hold).</summary>
     public bool IsVoiceDetected => _voiceDucked;
 
+    /// <summary>Whether RNNoise can run here; when not, <see cref="NoiseReductionEnabled"/> does nothing.</summary>
+    public static bool IsNoiseReductionAvailable => NoiseSuppressor.IsAvailable;
+
+    /// <summary>
+    /// Cleans every microphone with RNNoise (hum, fans, keyboard) before it reaches the mix, the
+    /// recording and the stream. Can be switched while on air; while on, microphones run a little behind.
+    /// </summary>
+    public bool NoiseReductionEnabled
+    {
+        get => _noiseReduction;
+        set
+        {
+            _noiseReduction = value;
+            foreach (var denoiser in _denoisers.Values) denoiser.Enabled = value;
+        }
+    }
+
     /// <summary>Raised when the output device stops, with the error if it failed.</summary>
     public event EventHandler<Exception?>? OutputStopped;
 
@@ -150,9 +170,11 @@ public sealed class AudioEngine : IDisposable
     /// </summary>
     public MixerChannel AddMicrophone(ISampleProvider microphone, string name)
     {
-        var channel = new MixerChannel(name, microphone, monitorEnabled: false);
+        DenoisedSource? denoiser = IsNoiseReductionAvailable ? new DenoisedSource(microphone, _noiseReduction) : null;
+        var channel = new MixerChannel(name, (ISampleProvider?)denoiser ?? microphone, monitorEnabled: false);
         channel.FadeTo(_microphoneLive ? 1f : 0f, TimeSpan.Zero);
         _microphones[channel] = microphone;
+        if (denoiser is not null) _denoisers[channel] = denoiser;
         _microphoneChannels = [.. _microphones.Keys];
         Mixer.Add(channel);
         if (microphone is IAudioInput device) device.Start();
@@ -168,6 +190,7 @@ public sealed class AudioEngine : IDisposable
             disposable.Dispose();
         }
 
+        if (_denoisers.Remove(channel, out var denoiser)) denoiser.Dispose();
         _microphoneChannels = [.. _microphones.Keys];
 
         UpdateDucking();

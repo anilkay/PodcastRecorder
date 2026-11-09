@@ -198,6 +198,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial bool LimiterEnabled { get; set; }
 
+    /// <summary>RNNoise on every microphone: removes hum, fans and keyboard noise live.</summary>
+    [ObservableProperty]
+    public partial bool NoiseReductionEnabled { get; set; }
+
+    public bool IsNoiseReductionAvailable => AudioEngine.IsNoiseReductionAvailable;
+
+    public string NoiseReductionTip => Loc.T(IsNoiseReductionAvailable ? "Main_NoiseReductionTip" : "Main_NoiseReductionUnavailable");
+
     [ObservableProperty]
     public partial bool IsLimiting { get; set; }
 
@@ -261,6 +269,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _engine.VoiceThresholdDb = VoiceThresholdDb;
         LimiterEnabled = _settings.LimiterEnabled;
         _engine.Mixer.Limiter.Enabled = LimiterEnabled;
+        NoiseReductionEnabled = _settings.NoiseReductionEnabled && IsNoiseReductionAvailable;
+        _engine.NoiseReductionEnabled = NoiseReductionEnabled;
         Playlist.CrossfadeSeconds = _settings.CrossfadeSeconds;
         SelectedEncoder = EncoderCatalog.Find(_settings.EncoderId);
         RecordingFolder = _settings.RecordingFolder;
@@ -403,6 +413,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnVoiceThresholdDbChanged(double value) => _engine.VoiceThresholdDb = value;
 
     partial void OnLimiterEnabledChanged(bool value) => _engine.Mixer.Limiter.Enabled = value;
+
+    partial void OnNoiseReductionEnabledChanged(bool value) => _engine.NoiseReductionEnabled = value;
 
     [RelayCommand]
     private void ToggleMicrophone() => IsMicrophoneLive = !IsMicrophoneLive;
@@ -676,6 +688,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _settings.DuckingMode = SelectedDuckingMode?.Mode ?? DuckingMode.WhileMicrophoneLive;
         _settings.VoiceThresholdDb = VoiceThresholdDb;
         _settings.LimiterEnabled = LimiterEnabled;
+        if (IsNoiseReductionAvailable) _settings.NoiseReductionEnabled = NoiseReductionEnabled;
         _settings.Playlist = Playlist.Items.Select(i => i.FilePath).ToList();
         Ai.SaveTo(_settings.Ai);
         Tags.SaveTo(_settings.Tags);

@@ -47,4 +47,5 @@
   <data name="Pa_MicOpenFailed" xml:space="preserve"><value>Mikrofon açılamadı ({0})</value></data>
   <data name="Pa_MicStartFailed" xml:space="preserve"><value>Mikrofon başlatılamadı ({0})</value></data>
   <data name="Edit_WouldOverwrite" xml:space="preserve"><value>Düzenlenmiş dosya orijinalin üzerine yazılamaz.</value></data>
+  <data name="Denoise_Unavailable" xml:space="preserve"><value>Gürültü azaltma (RNNoise) bu sistemde kullanılamıyor.</value></data>
 </root>

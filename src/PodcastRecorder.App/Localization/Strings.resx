@@ -336,4 +336,9 @@ her hücrenin köşesinde yazar)
   <data name="Edit_ExportFailed" xml:space="preserve"><value>Dışa aktarılamadı: {0}</value></data>
   <data name="Edit_NeedOutput" xml:space="preserve"><value>Önizlemeyi duymak için üstteki "Dinleme çıkışı" kutusundan bir cihaz seçin.</value></data>
   <data name="Edit_PreviewFailed" xml:space="preserve"><value>Önizleme çalınamadı: {0}</value></data>
+  <data name="Main_NoiseReduction" xml:space="preserve"><value>Gürültü azaltma</value></data>
+  <data name="Main_NoiseReductionTip" xml:space="preserve"><value>Mikrofonları RNNoise ile temizler: uğultu, fan ve klavye sesi kayda ve yayına gitmez. Kayıt sırasında da açılıp kapatılabilir.</value></data>
+  <data name="Main_NoiseReductionUnavailable" xml:space="preserve"><value>Gürültü azaltma (RNNoise) bu sistemde kullanılamıyor.</value></data>
+  <data name="Edit_ReduceNoise" xml:space="preserve"><value>Gürültüyü azalt (RNNoise)</value></data>
+  <data name="Edit_ReduceNoiseTip" xml:space="preserve"><value>Düzenlenmiş kopyadaki uğultu, fan ve klavye sesini RNNoise ile temizler. Hiç kesim seçilmezse yalnızca temizlenmiş bir kopya yazılır; analiz gerekmez.</value></data>
 </root>

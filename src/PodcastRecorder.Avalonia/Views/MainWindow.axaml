@@ -79,6 +79,8 @@
                 <ComboBox ItemsSource="{Binding InputDevices}" SelectedItem="{Binding InputToAdd}" DisplayMemberBinding="{ReflectionBinding Name}"
                           Width="210" IsEnabled="{Binding IsIdle}" Margin="0,0,6,4" />
                 <Button Content="{loc:T Main_Ekle}" Command="{Binding AddMicrophoneCommand}" Margin="0,0,16,4" />
+                <CheckBox Content="{loc:T Main_NoiseReduction}" IsChecked="{Binding NoiseReductionEnabled}" IsEnabled="{Binding IsNoiseReductionAvailable}"
+                          Margin="0,0,16,4" ToolTip.Tip="{Binding NoiseReductionTip}" ToolTip.ShowOnDisabled="True" />
                 <TextBlock Text="{loc:T Main_DinlemeCikisiKulaklik}" Classes="label" />
                 <ComboBox ItemsSource="{Binding OutputDevices}" SelectedItem="{Binding SelectedOutput}" DisplayMemberBinding="{ReflectionBinding Name}"
                           Width="220" IsEnabled="{Binding IsIdle}" Margin="0,0,16,4" />
@@ -330,6 +332,8 @@
                                 <Button Content="{loc:T Edit_None}" Command="{Binding SelectFillersCommand}" CommandParameter="false" Margin="0,0,16,4" />
                                 <Button Content="{loc:T Edit_StopPreview, Prefix='■ '}" Command="{Binding StopPreviewCommand}"
                                         ToolTip.Tip="{loc:T Edit_PreviewHint}" Margin="0,0,24,4" />
+                                <CheckBox Content="{loc:T Edit_ReduceNoise}" IsChecked="{Binding ReduceNoise}" IsEnabled="{Binding CanChangeReduceNoise}"
+                                          Margin="0,0,16,4" ToolTip.Tip="{Binding ReduceNoiseTip}" ToolTip.ShowOnDisabled="True" />
                                 <TextBlock Text="{loc:T Main_Format}" Classes="label" />
                                 <ComboBox ItemsSource="{x:Static vm:EditViewModel.Encoders}" SelectedItem="{Binding SelectedEncoder}"
                                           DisplayMemberBinding="{ReflectionBinding DisplayName}" Width="150" Margin="0,0,8,4" />

@@ -59,6 +59,9 @@ public sealed class AppSettings
 
     public bool LimiterEnabled { get; set; } = true;
 
+    /// <summary>Clean the microphones with RNNoise while recording.</summary>
+    public bool NoiseReductionEnabled { get; set; }
+
     public List<string> Playlist { get; set; } = [];
 
     public List<JingleBankSettings> JingleBanks { get; set; } = [];
@@ -149,6 +152,9 @@ public sealed class EditSettings
 
     /// <summary>Also edit the separate tracks of a multitrack recording.</summary>
     public bool IncludeStems { get; set; } = true;
+
+    /// <summary>Clean the edited copy with RNNoise.</summary>
+    public bool ReduceNoise { get; set; }
 }
 
 /// <summary>

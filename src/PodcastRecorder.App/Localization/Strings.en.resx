@@ -336,4 +336,9 @@ shown in each pad&apos;s corner)
   <data name="Edit_ExportFailed" xml:space="preserve"><value>Export failed: {0}</value></data>
   <data name="Edit_NeedOutput" xml:space="preserve"><value>Pick a device in the "Headphone output" box above to hear previews.</value></data>
   <data name="Edit_PreviewFailed" xml:space="preserve"><value>Could not play the preview: {0}</value></data>
+  <data name="Main_NoiseReduction" xml:space="preserve"><value>Noise reduction</value></data>
+  <data name="Main_NoiseReductionTip" xml:space="preserve"><value>Cleans the microphones with RNNoise: hum, fans and keyboard noise stay out of the recording and the stream. Can be switched during a recording.</value></data>
+  <data name="Main_NoiseReductionUnavailable" xml:space="preserve"><value>Noise reduction (RNNoise) is not available on this system.</value></data>
+  <data name="Edit_ReduceNoise" xml:space="preserve"><value>Reduce noise (RNNoise)</value></data>
+  <data name="Edit_ReduceNoiseTip" xml:space="preserve"><value>Cleans hum, fans and keyboard noise out of the edited copy with RNNoise. With no cuts ticked it only writes a cleaned copy; no analysis needed.</value></data>
 </root>

@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PodcastRecorder.App.Localization;
 using PodcastRecorder.App.Services;
+using PodcastRecorder.Audio;
 using PodcastRecorder.Audio.Editing;
 using PodcastRecorder.Audio.Recording;
 using PodcastRecorder.Audio.Sources;
@@ -80,6 +81,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
         DetectFillers = settings.DetectFillers;
         FillerWords = settings.FillerWords;
         IncludeStems = settings.IncludeStems;
+        ReduceNoise = settings.ReduceNoise && IsNoiseReductionAvailable;
         _preview.Ended += (_, _) => _ui.Post(_ => IsPreviewing = false, null);
     }
 
@@ -108,6 +110,17 @@ public partial class EditViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial bool IncludeStems { get; set; }
 
+    /// <summary>Also clean the edited copy with RNNoise; with no cuts ticked, the copy is only cleaned.</summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ExportCommand))]
+    public partial bool ReduceNoise { get; set; }
+
+    public bool IsNoiseReductionAvailable => AudioEngine.IsNoiseReductionAvailable;
+
+    public bool CanChangeReduceNoise => IsIdle && IsNoiseReductionAvailable;
+
+    public string ReduceNoiseTip => Loc.T(IsNoiseReductionAvailable ? "Edit_ReduceNoiseTip" : "Main_NoiseReductionUnavailable");
+
     [ObservableProperty]
     public partial double SilenceThresholdDb { get; set; }
 
@@ -127,12 +140,12 @@ public partial class EditViewModel : ObservableObject, IDisposable
     public partial EncoderOption? SelectedEncoder { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle))]
+    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise))]
     [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(ExportCommand), nameof(CancelCommand), nameof(ChooseFileCommand))]
     public partial bool IsAnalyzing { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle))]
+    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise))]
     [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(ExportCommand), nameof(CancelCommand), nameof(ChooseFileCommand))]
     public partial bool IsExporting { get; set; }
 
@@ -309,12 +322,18 @@ public partial class EditViewModel : ObservableObject, IDisposable
 
     private List<CutRegion> Regions() => Cuts.Where(c => c.IsEnabled).Select(c => c.Region with { Enabled = true }).ToList();
 
-    private bool CanExport() => !IsBusy && AnalyzedPath is not null && Cuts.Any(c => c.IsEnabled) && SelectedEncoder is not null;
+    /// <summary>Needs cuts to make, or noise reduction on (which works without analysing first).</summary>
+    private bool CanExport() => !IsBusy && SelectedEncoder is not null
+        && ((AnalyzedPath is not null && Cuts.Any(c => c.IsEnabled)) || (ReduceNoise && SourcePath is not null));
 
     [RelayCommand(CanExecute = nameof(CanExport))]
     private async Task Export()
     {
-        if (AnalyzedPath is not { } path || SelectedEncoder is not { } format) return;
+        if (SelectedEncoder is not { } format) return;
+        // Cuts belong to the analysed file; a clean-only export works on whatever file is picked.
+        bool withCuts = AnalyzedPath is not null && AnalyzedPath == SourcePath && Cuts.Any(c => c.IsEnabled);
+        if ((withCuts ? AnalyzedPath : SourcePath) is not { } path) return;
+        bool reduceNoise = ReduceNoise && IsNoiseReductionAvailable;
 
         StopPreview();
         IsExporting = true;
@@ -332,12 +351,12 @@ public partial class EditViewModel : ObservableObject, IDisposable
         var tracks = sources.Select(source =>
         {
             var encoder = format.Create();
-            return new EditTrack(source, new RecordingTarget(EditExporter.EditedPath(source, encoder.FileExtension), encoder));
+            return new EditTrack(source, new RecordingTarget(EditExporter.EditedPath(source, encoder.FileExtension), encoder), reduceNoise);
         }).ToList();
 
         try
         {
-            var written = await EditExporter.ExportAsync(tracks, Regions(), progress: progress, cancellationToken: token);
+            var written = await EditExporter.ExportAsync(tracks, withCuts ? Regions() : [], progress: progress, cancellationToken: token);
             LastExportPath = written[0];
             Status = written.Count > 1
                 ? Loc.F("Edit_ExportedWithStems", written[0], written.Count - 1)
@@ -408,6 +427,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
         settings.DetectFillers = DetectFillers;
         settings.FillerWords = FillerWords;
         settings.IncludeStems = IncludeStems;
+        if (IsNoiseReductionAvailable) settings.ReduceNoise = ReduceNoise;
         settings.EncoderId = SelectedEncoder?.Id ?? settings.EncoderId;
     }
 

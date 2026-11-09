@@ -5,6 +5,7 @@
     <RootNamespace>PodcastRecorder.Audio</RootNamespace>
     <!-- Strings.resx is Turkish; Strings.en.resx becomes the en satellite assembly. -->
     <NeutralLanguage>tr</NeutralLanguage>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +14,8 @@
     <PackageReference Include="NAudio.Lame" Version="2.1.0" />
     <PackageReference Include="NLayer" Version="3.0.0" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
+    <!-- Only for its native RNNoise builds (win-x64/x86, linux-x64/arm64); the interop is our own. -->
+    <PackageReference Include="YellowDogMan.RRNoise.NET" Version="0.1.9" ExcludeAssets="compile" />
   </ItemGroup>
 
   <ItemGroup>

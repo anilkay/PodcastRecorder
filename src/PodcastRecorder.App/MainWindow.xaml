@@ -148,6 +148,9 @@
             <ComboBox ItemsSource="{Binding InputDevices}" SelectedItem="{Binding InputToAdd}" DisplayMemberPath="Name"
                       Width="210" IsEnabled="{Binding IsIdle}" Margin="0,0,6,0" />
             <Button Content="{loc:T Main_Ekle}" services:ButtonAssist.Icon="&#xE710;" Command="{Binding AddMicrophoneCommand}" Margin="0,0,16,0" />
+            <CheckBox Content="{loc:T Main_NoiseReduction}" IsChecked="{Binding NoiseReductionEnabled}" IsEnabled="{Binding IsNoiseReductionAvailable}"
+                      MinWidth="0" VerticalAlignment="Center" Margin="0,0,16,0"
+                      ToolTip="{Binding NoiseReductionTip}" ToolTipService.ShowOnDisabled="True" />
             <TextBlock Text="{loc:T Main_DinlemeCikisiKulaklik}" VerticalAlignment="Center" Margin="0,0,6,0" />
             <ComboBox ItemsSource="{Binding OutputDevices}" SelectedItem="{Binding SelectedOutput}" DisplayMemberPath="Name"
                       Width="220" IsEnabled="{Binding IsIdle}" Margin="0,0,16,0" />
@@ -463,6 +466,8 @@
                                 <Button Style="{StaticResource GhostButton}" Content="{loc:T Edit_None}" Command="{Binding SelectFillersCommand}" CommandParameter="false" Margin="0,0,12,0" />
                                 <Button Style="{StaticResource GhostButton}" services:ButtonAssist.Icon="&#xE71A;" Content="{loc:T Edit_StopPreview}" Command="{Binding StopPreviewCommand}"
                                         ToolTip="{loc:T Edit_PreviewHint}" Margin="0,0,24,0" />
+                                <CheckBox Content="{loc:T Edit_ReduceNoise}" IsChecked="{Binding ReduceNoise}" MinWidth="0" VerticalAlignment="Center" Margin="0,0,16,0"
+                                          IsEnabled="{Binding CanChangeReduceNoise}" ToolTip="{Binding ReduceNoiseTip}" ToolTipService.ShowOnDisabled="True" />
                                 <TextBlock Text="{loc:T Main_Format}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <ComboBox ItemsSource="{x:Static vm:EditViewModel.Encoders}" SelectedItem="{Binding SelectedEncoder}"
                                           DisplayMemberPath="DisplayName" Width="150" Margin="0,0,8,0" />
