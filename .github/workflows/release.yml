@@ -26,6 +26,12 @@ jobs:
       - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
+      # Noise reduction: no RNNoise package for macOS, so build it (one file for both CPUs).
+      - name: Build RNNoise for macOS
+        if: runner.os == 'macOS'
+        run: |
+          bash src/PodcastRecorder.Avalonia/macOS/build-rnnoise.sh "$RUNNER_TEMP/rnnoise/librnnoise.dylib"
+          echo "RNNOISE_DYLIB=$RUNNER_TEMP/rnnoise/librnnoise.dylib" >> "$GITHUB_ENV"
       - name: Publish
         run: |
           version='${{ github.ref_name }}'
@@ -36,6 +42,7 @@ jobs:
             # "Podcast Recorder.app" in a zip, which Finder opens with a double click.
             brew install librsvg
             bash src/PodcastRecorder.Avalonia/macOS/package-app.sh publish/PodcastRecorder "$version" publish
+            test -f "publish/Podcast Recorder.app/Contents/MacOS/librnnoise.dylib"
             ditto -c -k --keepParent "publish/Podcast Recorder.app" "PodcastRecorder-$version-${{ matrix.rid }}.zip"
           else
             tar -czf "PodcastRecorder-$version-${{ matrix.rid }}.tar.gz" -C publish PodcastRecorder

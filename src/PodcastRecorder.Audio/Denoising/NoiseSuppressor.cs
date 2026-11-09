@@ -3,7 +3,7 @@ namespace PodcastRecorder.Audio.Denoising;
 /// <summary>
 /// Removes steady background noise (hum, fans, keyboard clatter) from interleaved 48 kHz audio
 /// with RNNoise, one model state per channel. While it is on the output runs exactly
-/// <see cref="LatencyFrames"/> frames (20 ms) behind the input. While it is off the audio passes
+/// <see cref="LatencyFrames"/> frames (20 or 30 ms) behind the input. While it is off the audio passes
 /// straight through with no delay; switching it on mid-stream replays the last 10 ms once
 /// instead of leaving a gap.
 /// </summary>
@@ -11,9 +11,9 @@ public sealed class NoiseSuppressor : IDisposable
 {
     /// <summary>
     /// The fixed delay between input and output while enabled, in frames: 10 ms of buffering
-    /// (RNNoise takes whole frames) plus RNNoise's own 10 ms overlap-add window.
+    /// (RNNoise takes whole frames) plus RNNoise's own delay (10 ms, or 20 ms from version 0.2).
     /// </summary>
-    public const int LatencyFrames = 2 * RnnoiseNative.FrameSize;
+    public static int LatencyFrames => BufferFrames + RnnoiseNative.ModelDelayFrames;
 
     private const int BufferFrames = RnnoiseNative.FrameSize;
 
@@ -38,7 +38,16 @@ public sealed class NoiseSuppressor : IDisposable
 
         _channels = channels;
         _states = new nint[channels];
-        for (int c = 0; c < channels; c++) _states[c] = RnnoiseNative.rnnoise_create(0);
+        for (int c = 0; c < channels; c++)
+        {
+            _states[c] = RnnoiseNative.rnnoise_create(0);
+            if (_states[c] == 0)
+            {
+                for (int k = 0; k < c; k++) RnnoiseNative.rnnoise_destroy(_states[k]);
+                throw new InvalidOperationException(Texts.Get("Denoise_Unavailable"));
+            }
+        }
+
         _pending = new float[RnnoiseNative.FrameSize * channels];
         _ready = new float[RnnoiseNative.FrameSize * 4 * channels];
         _history = new float[BufferFrames * channels];
@@ -62,10 +71,10 @@ public sealed class NoiseSuppressor : IDisposable
 
     private void ProcessLocked(ReadOnlySpan<float> input, Span<float> output)
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
         if (output.Length != input.Length) throw new ArgumentException("Input and output must be the same length.");
 
-        if (!Enabled)
+        // A last block on the audio thread after the channel was removed: let it through untouched.
+        if (!Enabled || _disposed)
         {
             _active = false;
             input.CopyTo(output);

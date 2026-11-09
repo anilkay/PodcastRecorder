@@ -4,7 +4,7 @@ namespace PodcastRecorder.Audio.Denoising;
 
 /// <summary>
 /// A live source (a microphone) with RNNoise in its path, switchable while on air. On, it runs
-/// 20 ms behind the microphone; off, it costs nothing and adds no delay.
+/// 20–30 ms behind the microphone; off, it costs nothing and adds no delay.
 /// </summary>
 public sealed class DenoisedSource : ISampleProvider, IDisposable
 {
@@ -46,8 +46,7 @@ public sealed class DenoisedSource : ISampleProvider, IDisposable
 }
 
 /// <summary>
-/// A file-length source cleaned with RNNoise, sample-aligned with the original: the 20 ms
-/// processing delay is dropped at the start and flushed out at the end, so a cleaned track keeps
+/// A file-length source cleaned with RNNoise, sample-aligned with the original: the processing delay is dropped at the start and flushed out at the end, so a cleaned track keeps
 /// the exact length and timing of its original (and of the other tracks of the recording).
 /// </summary>
 public sealed class DenoisedFile : ISampleProvider, IDisposable
@@ -98,7 +97,7 @@ public sealed class DenoisedFile : ISampleProvider, IDisposable
             }
             else
             {
-                // Push silence through to get the last 20 ms of real audio out.
+                // Push silence through to get the last of the real audio out.
                 got = Math.Min(want, _flushLeft);
                 if (got == 0) break;
                 _scratch.AsSpan(0, got).Clear();

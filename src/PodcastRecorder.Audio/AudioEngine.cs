@@ -170,7 +170,7 @@ public sealed class AudioEngine : IDisposable
     /// </summary>
     public MixerChannel AddMicrophone(ISampleProvider microphone, string name)
     {
-        DenoisedSource? denoiser = IsNoiseReductionAvailable ? new DenoisedSource(microphone, _noiseReduction) : null;
+        DenoisedSource? denoiser = CreateDenoiser(microphone);
         var channel = new MixerChannel(name, (ISampleProvider?)denoiser ?? microphone, monitorEnabled: false);
         channel.FadeTo(_microphoneLive ? 1f : 0f, TimeSpan.Zero);
         _microphones[channel] = microphone;
@@ -180,6 +180,20 @@ public sealed class AudioEngine : IDisposable
         if (microphone is IAudioInput device) device.Start();
         UpdateDucking();
         return channel;
+    }
+
+    /// <summary>RNNoise for a new microphone; null (the plain microphone) if it cannot run here.</summary>
+    private DenoisedSource? CreateDenoiser(ISampleProvider microphone)
+    {
+        if (!IsNoiseReductionAvailable) return null;
+        try
+        {
+            return new DenoisedSource(microphone, _noiseReduction);
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or PlatformNotSupportedException or ArgumentException)
+        {
+            return null;
+        }
     }
 
     public void RemoveMicrophone(MixerChannel channel)

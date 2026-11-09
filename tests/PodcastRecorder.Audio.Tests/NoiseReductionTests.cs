@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using PodcastRecorder.Audio.Denoising;
@@ -9,9 +10,12 @@ public class NoiseReductionTests
     private const int Rate = AudioFormat.SampleRate;
 
     [Fact]
-    public void RNNoise_is_available_on_windows_and_linux()
+    public void RNNoise_is_available_where_a_build_ships()
     {
-        if (OperatingSystem.IsWindows() || (OperatingSystem.IsLinux() && System.Runtime.InteropServices.RuntimeInformation.OSArchitecture is System.Runtime.InteropServices.Architecture.X64 or System.Runtime.InteropServices.Architecture.Arm64))
+        // Windows and Linux: from the NuGet package. macOS: when the CI built it (RNNOISE_DYLIB).
+        bool linux = OperatingSystem.IsLinux() && RuntimeInformation.OSArchitecture is Architecture.X64 or Architecture.Arm64;
+        bool mac = OperatingSystem.IsMacOS() && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RNNOISE_DYLIB"));
+        if (OperatingSystem.IsWindows() || linux || mac)
         {
             Assert.True(NoiseSuppressor.IsAvailable);
         }

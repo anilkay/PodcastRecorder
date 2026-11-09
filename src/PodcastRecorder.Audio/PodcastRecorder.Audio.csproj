@@ -18,6 +18,16 @@
     <PackageReference Include="YellowDogMan.RRNoise.NET" Version="0.1.9" ExcludeAssets="compile" />
   </ItemGroup>
 
+  <!--
+    macOS has no RNNoise package: the CI builds librnnoise.dylib with macOS/build-rnnoise.sh (in the
+    Avalonia project) and passes its path as RNNOISE_DYLIB. It then lands next to the app, the tests
+    and every publish, where the runtime finds it under the name "rnnoise".
+  -->
+  <ItemGroup Condition="'$(RNNOISE_DYLIB)' != '' And Exists('$(RNNOISE_DYLIB)')">
+    <None Include="$(RNNOISE_DYLIB)" Link="librnnoise.dylib"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Visible="false" />
+  </ItemGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="PodcastRecorder.Audio.Tests" />
     <InternalsVisibleTo Include="PodcastRecorder.Audio.PortAudio" />
