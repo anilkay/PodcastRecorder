@@ -155,7 +155,7 @@ MP3 ve ffmpeg için yukarıdaki `brew install lame ffmpeg` yeterlidir; uygulama 
 ## Gereksinimler
 
 - Windows 10/11
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0)
 
 ## Çalıştırma
 

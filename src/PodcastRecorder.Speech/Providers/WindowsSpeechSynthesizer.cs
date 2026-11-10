@@ -18,7 +18,7 @@ public sealed class WindowsSpeechSynthesizer : ITextToSpeech
     public static IReadOnlyList<string> InstalledVoices()
     {
         using var synthesizer = new SpeechSynthesizer();
-        return synthesizer.GetInstalledVoices().Where(v => v.Enabled).Select(v => v.VoiceInfo.Name).ToList();
+        return synthesizer.GetInstalledVoices().Where(v => v.Enabled).Select(v => v.VoiceInfo.Name).OfType<string>().ToList();
     }
 
     public Task SynthesizeAsync(string text, string voice, string outputPath, CancellationToken cancellationToken) =>
