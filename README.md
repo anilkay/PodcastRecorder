@@ -52,6 +52,18 @@ Mikrofon varsayılan olarak kulaklığa verilmez (konuşurken kendi sesinizi gec
 
 Anahtarlar ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Yeni bir servis eklemek için `PodcastRecorder.Speech` projesinde `ISpeechToText` ya da `ITextToSpeech` arayüzünü uygulayıp `SpeechProviders` listesine ekleyin.
 
+### Otomatik kurgu: tek tuşla yayına hazır dosya
+
+**Düzenle** sekmesindeki **Otomatik kurgula** düğmesi seçili kaydı (varsayılan olarak son kaydı) hiçbir onay sormadan yayına hazır hâle getirir ve orijinalin yanına `_yayin` ekli yeni bir dosya yazar; orijinal değişmez. Sırasıyla:
+
+1. Uzun sessizlikleri, dolgu seslerini ve tekrarları bulur (aşağıdaki ayarlarla) ve hepsini keser.
+2. "Gürültüyü azalt" işaretliyse kaydı RNNoise ile temizler. Kayıtta müzik ya da jingle varsa kapalı bırakın; RNNoise müziği de bastırır.
+3. Kesimlerden sonra konuşmanın yüksekliğini ölçer, -16 LUFS'a getirir; limiter tepeleri -1 dB'de tutar.
+4. Seçildiyse **intro** ve **outro** müziğini ekler: intro tek başına çalar, sonu ilk sözlerin altında kısılarak biter; outro son sözlerin altında kısık başlar, konuşma bitince yükselir. Müzik konuşmadan 3 dB aşağıda, konuşmanın altındayken 14 dB daha kısık çalar; bindirme en çok 4 saniyedir.
+5. Dosya bilgilerini ve bölümleri taşır; bölümler kesilen süre kadar öne, intro kadar ileri kayar.
+
+**Tekrarları bul** işaretliyse Whisper dökümünden arka arkaya iki kez söylenen ifadeler ("bugün sizinle, bugün sizinle konuşacağız"), duraksayıp yeniden söylenen kelimeler ("ben, eee, ben") ve yarıda kesilip baştan başlanan kelimeler bulunur; ilk deneme kesilir. Duraksamadan söylenen ikilemelere ("yavaş yavaş") dokunulmaz. Whisper tekrarları çoğu zaman kendisi düzelterek yazdığı için hepsi yakalanmaz. Otomatik kurgudan sonra kesimler listede kalır; beğenmediğinizin işaretini kaldırıp "Dışa aktar" ile elle de yazabilirsiniz.
+
 ### Düzenle: sessizlik ve dolgu seslerini kesme
 
 Orta bölümdeki **Düzenle** sekmesi bir kaydı (varsayılan olarak son kaydı) tarar ve kesilebilecek yerleri listeler. Sekme açıkken alttaki mikser satırı listeye yer açmak için gizlenir.

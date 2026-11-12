@@ -155,6 +155,21 @@ public sealed class EditSettings
 
     /// <summary>Clean the edited copy with RNNoise.</summary>
     public bool ReduceNoise { get; set; }
+
+    /// <summary>Also find phrases said twice in a row and words started over (needs Whisper).</summary>
+    public bool DetectRepeats { get; set; } = true;
+
+    /// <summary>Automatic edit: bring the speech to -16 LUFS.</summary>
+    public bool NormalizeLoudness { get; set; } = true;
+
+    /// <summary>Automatic edit: music put before the recording.</summary>
+    public string? IntroPath { get; set; }
+
+    /// <summary>Automatic edit: music put after the recording.</summary>
+    public string? OutroPath { get; set; }
+
+    /// <summary>Format of the file the automatic edit writes; empty means MP3.</summary>
+    public string? AutoEncoderId { get; set; }
 }
 
 /// <summary>

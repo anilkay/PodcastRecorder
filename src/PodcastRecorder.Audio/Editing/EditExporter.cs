@@ -20,10 +20,10 @@ public static class EditExporter
     public static TimeSpan DefaultCrossfade { get; } = TimeSpan.FromMilliseconds(15);
 
     /// <summary>A free name next to <paramref name="sourcePath"/>; numbered if an edit already exists.</summary>
-    public static string EditedPath(string sourcePath, string extension)
+    public static string EditedPath(string sourcePath, string extension, string suffix = Suffix)
     {
         var folder = Path.GetDirectoryName(sourcePath) ?? "";
-        var name = Path.GetFileNameWithoutExtension(sourcePath) + Suffix;
+        var name = Path.GetFileNameWithoutExtension(sourcePath) + suffix;
         var path = Path.Combine(folder, name + extension);
         for (int n = 2; File.Exists(path); n++)
         {
@@ -110,14 +110,23 @@ public static class EditExporter
         return frames;
     }
 
-    /// <summary>The original's chapters, moved earlier by what was cut before each.</summary>
-    private static void CopyChapters(string from, string to, IReadOnlyList<TimeRange> cuts)
+    /// <summary>
+    /// The original's chapters, moved earlier by what was cut before each, then later by
+    /// <paramref name="offset"/> (an intro put in front); the first chapter still starts at zero.
+    /// </summary>
+    internal static void CopyChapters(string from, string to, IReadOnlyList<TimeRange> cuts, TimeSpan offset = default)
     {
         var chapters = Chapters.Read(from);
         if (chapters.Count == 0 || !Chapters.IsSupported(to)) return;
         try
         {
-            Chapters.Write(to, Chapters.AfterCuts(chapters, cuts));
+            var moved = Chapters.AfterCuts(chapters, cuts);
+            if (offset > TimeSpan.Zero)
+            {
+                moved = moved.Select((c, i) => i == 0 ? c : c with { Start = c.Start + offset }).ToList();
+            }
+
+            Chapters.Write(to, moved);
         }
         catch (IOException)
         {
@@ -126,7 +135,7 @@ public static class EditExporter
     }
 
     /// <summary>"Dosya bilgileri" (title, cover…) of the original, so the edit shows up the same in players.</summary>
-    private static void CopyTags(string from, string to)
+    internal static void CopyTags(string from, string to)
     {
         try
         {
@@ -141,7 +150,7 @@ public static class EditExporter
         }
     }
 
-    private static void TryDelete(string path)
+    internal static void TryDelete(string path)
     {
         try
         {

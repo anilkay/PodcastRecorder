@@ -282,7 +282,7 @@ shown in each pad&apos;s corner)
   <data name="Secrets_KeyDamaged" xml:space="preserve"><value>The encryption key file is damaged: {0}. It was left as it is so saved passwords are not lost; restore a good backup of it, or delete it and enter the passwords again.</value></data>
   <data name="Main_TabRecord" xml:space="preserve"><value>Record</value></data>
   <data name="Main_TabEdit" xml:space="preserve"><value>Edit</value></data>
-  <data name="Edit_Title" xml:space="preserve"><value>Cut silences and filler sounds</value></data>
+  <data name="Edit_Title" xml:space="preserve"><value>Automatic edit: cut silences, filler sounds and repeats</value></data>
   <data name="Edit_Recording" xml:space="preserve"><value>Recording:</value></data>
   <data name="Edit_ChooseFile" xml:space="preserve"><value>Choose file…</value></data>
   <data name="Edit_NoRecording" xml:space="preserve"><value>No recording selected</value></data>
@@ -300,7 +300,7 @@ shown in each pad&apos;s corner)
   <data name="Edit_FillerWordsTip" xml:space="preserve"><value>Separate with commas. Repeated letters do not matter: "eee" also finds "ee" and "eeeee". You can add words such as "şey" or "yani" too.</value></data>
   <data name="Edit_Analyze" xml:space="preserve"><value>Analyze</value></data>
   <data name="Edit_Silences" xml:space="preserve"><value>Silences:</value></data>
-  <data name="Edit_Fillers" xml:space="preserve"><value>Fillers:</value></data>
+  <data name="Edit_Fillers" xml:space="preserve"><value>Fillers and repeats:</value></data>
   <data name="Edit_All" xml:space="preserve"><value>All</value></data>
   <data name="Edit_None" xml:space="preserve"><value>None</value></data>
   <data name="Edit_ColTime" xml:space="preserve"><value>Time</value></data>
@@ -317,15 +317,15 @@ shown in each pad&apos;s corner)
   <data name="Edit_Export" xml:space="preserve"><value>Export</value></data>
   <data name="Edit_ExportTip" xml:space="preserve"><value>Writes a new file next to the original with _duzenlenmis added to its name; the original is not changed.</value></data>
   <data name="Edit_RevealExport" xml:space="preserve"><value>Show in folder</value></data>
-  <data name="Edit_Empty" xml:space="preserve"><value>Pick a recording and press "Analyze"; the cuts found are listed here.</value></data>
+  <data name="Edit_Empty" xml:space="preserve"><value>Choose a recording and press &quot;Edit automatically&quot;; the file ready to publish is written in one go. To pick the cuts one by one, press &quot;Analyze&quot;; what is found is listed here.</value></data>
   <data name="Edit_SecondsShort" xml:space="preserve"><value>{0:0.00} s</value></data>
   <data name="Edit_KindSilence" xml:space="preserve"><value>Silence</value></data>
   <data name="Edit_KindFiller" xml:space="preserve"><value>Filler</value></data>
   <data name="Edit_Confidence" xml:space="preserve"><value>{0:0}%</value></data>
   <data name="Edit_FileMissing" xml:space="preserve"><value>File not found: {0}</value></data>
   <data name="Edit_FindingSilences" xml:space="preserve"><value>Looking for silences…</value></data>
-  <data name="Edit_NothingFound" xml:space="preserve"><value>No silences or filler sounds to cut were found.</value></data>
-  <data name="Edit_Found" xml:space="preserve"><value>Found {0} silences and {1} filler sounds. Untick any you want to keep, then "Export".</value></data>
+  <data name="Edit_NothingFound" xml:space="preserve"><value>No silence, filler sound or repeat to cut was found.</value></data>
+  <data name="Edit_Found" xml:space="preserve"><value>Found {0} silences, {1} filler sounds and {2} repeats. Untick any you want to keep, then &quot;Export&quot;.</value></data>
   <data name="Edit_Canceled" xml:space="preserve"><value>Analysis canceled.</value></data>
   <data name="Edit_AnalyzeFailed" xml:space="preserve"><value>Analysis failed: {0}</value></data>
   <data name="Edit_Summary" xml:space="preserve"><value>{0} of {1} cuts selected · {2} shorter ({3} → {4})</value></data>
@@ -349,4 +349,24 @@ shown in each pad&apos;s corner)
   <data name="Main_ChapterTitle" xml:space="preserve"><value>Chapter {0}</value></data>
   <data name="Main_ChaptersWritten" xml:space="preserve"><value>{0} chapters written</value></data>
   <data name="Main_ChaptersNotSupported" xml:space="preserve"><value>this format holds no chapters (choose MP3, M4A or FLAC)</value></data>
+  <data name="Edit_KindRepeat" xml:space="preserve"><value>Repeat</value></data>
+  <data name="Edit_DetectRepeats" xml:space="preserve"><value>Find repeats</value></data>
+  <data name="Edit_DetectRepeatsTip" xml:space="preserve"><value>Finds phrases said twice in a row, words said again after a hesitation and words broken off and started over; the first attempt is cut, the second stays. Uses the Whisper transcript. Words doubled on purpose without a pause are left alone.</value></data>
+  <data name="Edit_AutoTitle" xml:space="preserve"><value>Automatic edit</value></data>
+  <data name="Edit_AutoButton" xml:space="preserve"><value>Edit automatically</value></data>
+  <data name="Edit_AutoTip" xml:space="preserve"><value>A file ready to publish with one button: finds what can go and cuts all of it without asking, reduces noise (if the box is ticked), brings the level to -16 LUFS and adds the intro and outro music. Writes a new file next to the original with _yayin added to its name; the original is not changed. Uses the silence and filler settings above.</value></data>
+  <data name="Edit_Normalize" xml:space="preserve"><value>Bring the level to -16 LUFS</value></data>
+  <data name="Edit_NormalizeTip" xml:space="preserve"><value>Measures the loudness of the speech after the cuts and brings it to -16 LUFS, the podcast standard; the limiter holds peaks at -1 dB.</value></data>
+  <data name="Edit_Intro" xml:space="preserve"><value>Intro:</value></data>
+  <data name="Edit_Outro" xml:space="preserve"><value>Outro:</value></data>
+  <data name="Edit_NoMusic" xml:space="preserve"><value>none</value></data>
+  <data name="Edit_ChooseMusic" xml:space="preserve"><value>Choose…</value></data>
+  <data name="Edit_ClearMusic" xml:space="preserve"><value>Remove</value></data>
+  <data name="Edit_IntroTip" xml:space="preserve"><value>Music put before the recording. Its end fades out under the first words.</value></data>
+  <data name="Edit_OutroTip" xml:space="preserve"><value>Music put after the recording. It starts quietly under the last words and rises when the speech ends.</value></data>
+  <data name="Edit_AutoWriting" xml:space="preserve"><value>Writing the file ready to publish…</value></data>
+  <data name="Edit_AutoProgress" xml:space="preserve"><value>Writing the file ready to publish… {0:0}%</value></data>
+  <data name="Edit_AutoDone" xml:space="preserve"><value>Ready to publish: {0} · {1} cuts, {2} shorter, length {3}{4}</value></data>
+  <data name="Edit_AutoLoudness" xml:space="preserve"><value> · {0:0.0} → {1:0.0} LUFS</value></data>
+  <data name="Edit_AutoLoudnessKept" xml:space="preserve"><value> · {0:0.0} LUFS</value></data>
 </root>

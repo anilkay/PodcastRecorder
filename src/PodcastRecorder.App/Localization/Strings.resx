@@ -282,7 +282,7 @@ her hücrenin köşesinde yazar)
   <data name="Secrets_KeyDamaged" xml:space="preserve"><value>Şifreleme anahtarı dosyası bozuk: {0}. Kayıtlı şifreler kaybolmasın diye dosyaya dokunulmadı; sağlam bir yedeği varsa geri koyun, yoksa dosyayı silin ve şifreleri yeniden girin.</value></data>
   <data name="Main_TabRecord" xml:space="preserve"><value>Kayıt</value></data>
   <data name="Main_TabEdit" xml:space="preserve"><value>Düzenle</value></data>
-  <data name="Edit_Title" xml:space="preserve"><value>Sessizlikleri ve dolgu seslerini kes</value></data>
+  <data name="Edit_Title" xml:space="preserve"><value>Otomatik kurgu: sessizlikleri, dolgu seslerini ve tekrarları kes</value></data>
   <data name="Edit_Recording" xml:space="preserve"><value>Kayıt:</value></data>
   <data name="Edit_ChooseFile" xml:space="preserve"><value>Dosya seç…</value></data>
   <data name="Edit_NoRecording" xml:space="preserve"><value>Kayıt seçilmedi</value></data>
@@ -300,7 +300,7 @@ her hücrenin köşesinde yazar)
   <data name="Edit_FillerWordsTip" xml:space="preserve"><value>Virgülle ayırın. Harf tekrarı önemsizdir: "eee" yazmak "ee" ve "eeeee"yi de bulur. "şey", "yani" gibi kelimeleri de ekleyebilirsiniz.</value></data>
   <data name="Edit_Analyze" xml:space="preserve"><value>Analiz et</value></data>
   <data name="Edit_Silences" xml:space="preserve"><value>Sessizlik:</value></data>
-  <data name="Edit_Fillers" xml:space="preserve"><value>Dolgu:</value></data>
+  <data name="Edit_Fillers" xml:space="preserve"><value>Dolgu ve tekrar:</value></data>
   <data name="Edit_All" xml:space="preserve"><value>Tümü</value></data>
   <data name="Edit_None" xml:space="preserve"><value>Hiçbiri</value></data>
   <data name="Edit_ColTime" xml:space="preserve"><value>Zaman</value></data>
@@ -317,15 +317,15 @@ her hücrenin köşesinde yazar)
   <data name="Edit_Export" xml:space="preserve"><value>Dışa aktar</value></data>
   <data name="Edit_ExportTip" xml:space="preserve"><value>Orijinalin yanına _duzenlenmis ekiyle yeni bir dosya yazar; orijinal dosya değişmez.</value></data>
   <data name="Edit_RevealExport" xml:space="preserve"><value>Klasörde göster</value></data>
-  <data name="Edit_Empty" xml:space="preserve"><value>Bir kayıt seçip "Analiz et"e basın; bulunan kesimler burada listelenir.</value></data>
+  <data name="Edit_Empty" xml:space="preserve"><value>Bir kayıt seçip &quot;Otomatik kurgula&quot;ya basın; yayına hazır dosya tek seferde yazılır. Kesimleri tek tek seçmek isterseniz &quot;Analiz et&quot;e basın; bulunanlar burada listelenir.</value></data>
   <data name="Edit_SecondsShort" xml:space="preserve"><value>{0:0.00} sn</value></data>
   <data name="Edit_KindSilence" xml:space="preserve"><value>Sessizlik</value></data>
   <data name="Edit_KindFiller" xml:space="preserve"><value>Dolgu sesi</value></data>
   <data name="Edit_Confidence" xml:space="preserve"><value>%{0:0}</value></data>
   <data name="Edit_FileMissing" xml:space="preserve"><value>Dosya bulunamadı: {0}</value></data>
   <data name="Edit_FindingSilences" xml:space="preserve"><value>Sessizlikler aranıyor…</value></data>
-  <data name="Edit_NothingFound" xml:space="preserve"><value>Kesilecek sessizlik ya da dolgu sesi bulunamadı.</value></data>
-  <data name="Edit_Found" xml:space="preserve"><value>{0} sessizlik ve {1} dolgu sesi bulundu. Kalmasını istediklerinin işaretini kaldırın, sonra "Dışa aktar".</value></data>
+  <data name="Edit_NothingFound" xml:space="preserve"><value>Kesilecek sessizlik, dolgu sesi ya da tekrar bulunamadı.</value></data>
+  <data name="Edit_Found" xml:space="preserve"><value>{0} sessizlik, {1} dolgu sesi ve {2} tekrar bulundu. Kalmasını istediklerinin işaretini kaldırın, sonra &quot;Dışa aktar&quot;.</value></data>
   <data name="Edit_Canceled" xml:space="preserve"><value>Analiz iptal edildi.</value></data>
   <data name="Edit_AnalyzeFailed" xml:space="preserve"><value>Analiz yapılamadı: {0}</value></data>
   <data name="Edit_Summary" xml:space="preserve"><value>{0} / {1} kesim seçili · {2} kısalır ({3} → {4})</value></data>
@@ -349,4 +349,24 @@ her hücrenin köşesinde yazar)
   <data name="Main_ChapterTitle" xml:space="preserve"><value>Bölüm {0}</value></data>
   <data name="Main_ChaptersWritten" xml:space="preserve"><value>{0} bölüm yazıldı</value></data>
   <data name="Main_ChaptersNotSupported" xml:space="preserve"><value>bu biçim bölüm tutmuyor (MP3, M4A ya da FLAC seçin)</value></data>
+  <data name="Edit_KindRepeat" xml:space="preserve"><value>Tekrar</value></data>
+  <data name="Edit_DetectRepeats" xml:space="preserve"><value>Tekrarları bul</value></data>
+  <data name="Edit_DetectRepeatsTip" xml:space="preserve"><value>Arka arkaya iki kez söylenen ifadeleri, duraksayıp yeniden söylenen kelimeleri ve yarıda kesilip baştan başlanan kelimeleri bulur; ilk deneme kesilir, ikincisi kalır. Whisper dökümünü kullanır. &quot;Yavaş yavaş&quot; gibi ikilemelere dokunmaz.</value></data>
+  <data name="Edit_AutoTitle" xml:space="preserve"><value>Otomatik kurgu</value></data>
+  <data name="Edit_AutoButton" xml:space="preserve"><value>Otomatik kurgula</value></data>
+  <data name="Edit_AutoTip" xml:space="preserve"><value>Tek tuşla yayına hazır dosya: kesilecek yerleri bulur ve sormadan hepsini keser, gürültüyü azaltır (kutu işaretliyse), sesi -16 LUFS&apos;a getirir, intro ve outro müziğini ekler. Orijinalin yanına _yayin ekiyle yeni bir dosya yazar; orijinal dosya değişmez. Yukarıdaki sessizlik ve dolgu ayarlarını kullanır.</value></data>
+  <data name="Edit_Normalize" xml:space="preserve"><value>Seviyeyi -16 LUFS&apos;a getir</value></data>
+  <data name="Edit_NormalizeTip" xml:space="preserve"><value>Kesimlerden sonra konuşmanın yüksekliğini ölçer ve podcast standardı olan -16 LUFS&apos;a getirir; limiter tepeleri -1 dB&apos;de tutar.</value></data>
+  <data name="Edit_Intro" xml:space="preserve"><value>Intro:</value></data>
+  <data name="Edit_Outro" xml:space="preserve"><value>Outro:</value></data>
+  <data name="Edit_NoMusic" xml:space="preserve"><value>yok</value></data>
+  <data name="Edit_ChooseMusic" xml:space="preserve"><value>Seç…</value></data>
+  <data name="Edit_ClearMusic" xml:space="preserve"><value>Kaldır</value></data>
+  <data name="Edit_IntroTip" xml:space="preserve"><value>Kaydın başına eklenecek müzik. Sonu, ilk sözlerin altında kısılarak biter.</value></data>
+  <data name="Edit_OutroTip" xml:space="preserve"><value>Kaydın sonuna eklenecek müzik. Son sözlerin altında kısık başlar, konuşma bitince yükselir.</value></data>
+  <data name="Edit_AutoWriting" xml:space="preserve"><value>Yayına hazır dosya yazılıyor…</value></data>
+  <data name="Edit_AutoProgress" xml:space="preserve"><value>Yayına hazır dosya yazılıyor… %{0:0}</value></data>
+  <data name="Edit_AutoDone" xml:space="preserve"><value>Yayına hazır: {0} · {1} kesim, {2} kısaldı, süre {3}{4}</value></data>
+  <data name="Edit_AutoLoudness" xml:space="preserve"><value> · {0:0.0} → {1:0.0} LUFS</value></data>
+  <data name="Edit_AutoLoudnessKept" xml:space="preserve"><value> · {0:0.0} LUFS</value></data>
 </root>

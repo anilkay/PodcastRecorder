@@ -419,6 +419,33 @@
                                       Visibility="{Binding HasStems, Converter={StaticResource BoolToVisibility}}" />
                         </WrapPanel>
 
+                        <!-- The one-button edit: everything below, without asking -->
+                        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                            <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE945;" Content="{loc:T Edit_AutoButton}"
+                                    Command="{Binding AutoEditCommand}" ToolTip="{loc:T Edit_AutoTip}" Margin="0,0,16,0" />
+                            <CheckBox Content="{loc:T Edit_Normalize}" IsChecked="{Binding NormalizeLoudness}" MinWidth="0" VerticalAlignment="Center"
+                                      Margin="0,0,16,0" ToolTip="{loc:T Edit_NormalizeTip}" IsEnabled="{Binding IsIdle}" />
+                            <StackPanel Orientation="Horizontal" ToolTip="{loc:T Edit_IntroTip}" Margin="0,0,16,0">
+                                <TextBlock Text="{loc:T Edit_Intro}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBlock Text="{Binding IntroName}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0"
+                                           MaxWidth="160" TextTrimming="CharacterEllipsis" />
+                                <Button Style="{StaticResource GhostButton}" Content="{loc:T Edit_ChooseMusic}" Command="{Binding ChooseIntroCommand}" />
+                                <Button Style="{StaticResource GhostButton}" Content="{loc:T Edit_ClearMusic}" Command="{Binding ClearIntroCommand}"
+                                        Visibility="{Binding HasIntro, Converter={StaticResource BoolToVisibility}}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" ToolTip="{loc:T Edit_OutroTip}" Margin="0,0,16,0">
+                                <TextBlock Text="{loc:T Edit_Outro}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBlock Text="{Binding OutroName}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0"
+                                           MaxWidth="160" TextTrimming="CharacterEllipsis" />
+                                <Button Style="{StaticResource GhostButton}" Content="{loc:T Edit_ChooseMusic}" Command="{Binding ChooseOutroCommand}" />
+                                <Button Style="{StaticResource GhostButton}" Content="{loc:T Edit_ClearMusic}" Command="{Binding ClearOutroCommand}"
+                                        Visibility="{Binding HasOutro, Converter={StaticResource BoolToVisibility}}" />
+                            </StackPanel>
+                            <TextBlock Text="{loc:T Main_Format}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <ComboBox ItemsSource="{x:Static vm:EditViewModel.Encoders}" SelectedItem="{Binding SelectedAutoEncoder}"
+                                      DisplayMemberPath="DisplayName" Width="150" IsEnabled="{Binding IsIdle}" />
+                        </WrapPanel>
+
                         <!-- How silences are found -->
                         <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6" IsEnabled="{Binding IsIdle}">
                             <StackPanel Orientation="Horizontal" ToolTip="{loc:T Edit_ThresholdTip}" Margin="0,0,16,0">
@@ -445,10 +472,12 @@
                         <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
                             <CheckBox Content="{loc:T Edit_DetectFillers}" IsChecked="{Binding DetectFillers}" VerticalAlignment="Center"
                                       Margin="0,0,12,0" ToolTip="{loc:T Edit_DetectFillersTip}" IsEnabled="{Binding IsIdle}" />
+                            <CheckBox Content="{loc:T Edit_DetectRepeats}" IsChecked="{Binding DetectRepeats}" VerticalAlignment="Center"
+                                      Margin="0,0,12,0" ToolTip="{loc:T Edit_DetectRepeatsTip}" IsEnabled="{Binding IsIdle}" />
                             <TextBlock Text="{loc:T Edit_FillerWords}" VerticalAlignment="Center" Margin="0,0,6,0" />
                             <TextBox Text="{Binding FillerWords, UpdateSourceTrigger=PropertyChanged}" Width="320" Margin="0,0,12,0"
                                      VerticalContentAlignment="Center" ToolTip="{loc:T Edit_FillerWordsTip}" IsEnabled="{Binding DetectFillers}" />
-                            <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE721;" Content="{loc:T Edit_Analyze}" Command="{Binding AnalyzeCommand}" />
+                            <Button services:ButtonAssist.Icon="&#xE721;" Content="{loc:T Edit_Analyze}" Command="{Binding AnalyzeCommand}" />
                             <Button services:ButtonAssist.Icon="&#xE711;" Content="{loc:T Main_Iptal}" Command="{Binding CancelCommand}" />
                         </WrapPanel>
                         <ProgressBar DockPanel.Dock="Top" Height="6" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}"

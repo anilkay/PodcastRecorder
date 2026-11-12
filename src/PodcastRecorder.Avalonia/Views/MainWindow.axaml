@@ -288,6 +288,31 @@
                                       ToolTip.Tip="{loc:T Edit_IncludeStemsTip}" IsVisible="{Binding HasStems}" />
                         </WrapPanel>
 
+                        <!-- The one-button edit: everything below, without asking -->
+                        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                            <Button Classes="accent" Content="{loc:T Edit_AutoButton, Prefix='✨ '}" Command="{Binding AutoEditCommand}"
+                                    ToolTip.Tip="{loc:T Edit_AutoTip}" Margin="0,0,16,4" />
+                            <CheckBox Content="{loc:T Edit_Normalize}" IsChecked="{Binding NormalizeLoudness}" Margin="0,0,16,4"
+                                      ToolTip.Tip="{loc:T Edit_NormalizeTip}" IsEnabled="{Binding IsIdle}" />
+                            <StackPanel Orientation="Horizontal" ToolTip.Tip="{loc:T Edit_IntroTip}" Margin="0,0,16,4">
+                                <TextBlock Text="{loc:T Edit_Intro}" Classes="label" />
+                                <TextBlock Text="{Binding IntroName}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0"
+                                           MaxWidth="160" TextTrimming="CharacterEllipsis" />
+                                <Button Content="{loc:T Edit_ChooseMusic}" Command="{Binding ChooseIntroCommand}" />
+                                <Button Content="{loc:T Edit_ClearMusic}" Command="{Binding ClearIntroCommand}" IsVisible="{Binding HasIntro}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" ToolTip.Tip="{loc:T Edit_OutroTip}" Margin="0,0,16,4">
+                                <TextBlock Text="{loc:T Edit_Outro}" Classes="label" />
+                                <TextBlock Text="{Binding OutroName}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0"
+                                           MaxWidth="160" TextTrimming="CharacterEllipsis" />
+                                <Button Content="{loc:T Edit_ChooseMusic}" Command="{Binding ChooseOutroCommand}" />
+                                <Button Content="{loc:T Edit_ClearMusic}" Command="{Binding ClearOutroCommand}" IsVisible="{Binding HasOutro}" />
+                            </StackPanel>
+                            <TextBlock Text="{loc:T Main_Format}" Classes="label" />
+                            <ComboBox ItemsSource="{x:Static vm:EditViewModel.Encoders}" SelectedItem="{Binding SelectedAutoEncoder}"
+                                      DisplayMemberBinding="{ReflectionBinding DisplayName}" Width="150" Margin="0,0,0,4" IsEnabled="{Binding IsIdle}" />
+                        </WrapPanel>
+
                         <!-- How silences are found -->
                         <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6" IsEnabled="{Binding IsIdle}">
                             <StackPanel Orientation="Horizontal" ToolTip.Tip="{loc:T Edit_ThresholdTip}" Margin="0,0,16,4">
@@ -314,10 +339,12 @@
                         <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
                             <CheckBox Content="{loc:T Edit_DetectFillers}" IsChecked="{Binding DetectFillers}" Margin="0,0,12,4"
                                       ToolTip.Tip="{loc:T Edit_DetectFillersTip}" IsEnabled="{Binding IsIdle}" />
+                            <CheckBox Content="{loc:T Edit_DetectRepeats}" IsChecked="{Binding DetectRepeats}" Margin="0,0,12,4"
+                                      ToolTip.Tip="{loc:T Edit_DetectRepeatsTip}" IsEnabled="{Binding IsIdle}" />
                             <TextBlock Text="{loc:T Edit_FillerWords}" Classes="label" />
                             <TextBox Text="{Binding FillerWords}" Width="320" Margin="0,0,12,4"
                                      ToolTip.Tip="{loc:T Edit_FillerWordsTip}" IsEnabled="{Binding DetectFillers}" />
-                            <Button Classes="accent" Content="{loc:T Edit_Analyze}" Command="{Binding AnalyzeCommand}" />
+                            <Button Content="{loc:T Edit_Analyze}" Command="{Binding AnalyzeCommand}" />
                             <Button Content="{loc:T Main_Iptal}" Command="{Binding CancelCommand}" />
                         </WrapPanel>
                         <ProgressBar DockPanel.Dock="Top" Classes="thin" Value="{Binding Progress}" Margin="0,0,0,4" IsVisible="{Binding IsBusy}" />

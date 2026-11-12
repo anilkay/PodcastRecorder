@@ -30,7 +30,12 @@ public partial class CutItemViewModel(CutRegion region, EditViewModel owner) : O
 
     public string DurationText => Loc.F("Edit_SecondsShort", Region.Duration.TotalSeconds);
 
-    public string KindName => Loc.T(IsSilence ? "Edit_KindSilence" : "Edit_KindFiller");
+    public string KindName => Loc.T(Region.Kind switch
+    {
+        CutKind.Silence => "Edit_KindSilence",
+        CutKind.Repeat => "Edit_KindRepeat",
+        _ => "Edit_KindFiller",
+    });
 
     /// <summary>What was heard: the filler as Whisper wrote it, or the level of the pause.</summary>
     public string Label => Region.Label;
@@ -82,6 +87,11 @@ public partial class EditViewModel : ObservableObject, IDisposable
         FillerWords = settings.FillerWords;
         IncludeStems = settings.IncludeStems;
         ReduceNoise = settings.ReduceNoise && IsNoiseReductionAvailable;
+        DetectRepeats = settings.DetectRepeats;
+        NormalizeLoudness = settings.NormalizeLoudness;
+        IntroPath = ExistingFile(settings.IntroPath);
+        OutroPath = ExistingFile(settings.OutroPath);
+        SelectedAutoEncoder = EncoderCatalog.Find(settings.AutoEncoderId);
         _preview.Ended += (_, _) => _ui.Post(_ => IsPreviewing = false, null);
     }
 
@@ -91,7 +101,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SourceName), nameof(HasSource))]
-    [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(AutoEditCommand))]
     public partial string? SourcePath { get; set; }
 
     public string SourceName => SourcePath is null ? Loc.T("Edit_NoRecording") : Path.GetFileName(SourcePath);
@@ -136,20 +146,57 @@ public partial class EditViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial string FillerWords { get; set; }
 
+    /// <summary>Also look for phrases said twice in a row and words started over.</summary>
+    [ObservableProperty]
+    public partial bool DetectRepeats { get; set; }
+
+    /// <summary>Automatic edit: bring the speech to the podcast loudness.</summary>
+    [ObservableProperty]
+    public partial bool NormalizeLoudness { get; set; }
+
+    /// <summary>Automatic edit: music before the recording, if any.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IntroName), nameof(HasIntro))]
+    public partial string? IntroPath { get; set; }
+
+    public string IntroName => IntroPath is null ? Loc.T("Edit_NoMusic") : Path.GetFileName(IntroPath);
+
+    public bool HasIntro => IntroPath is not null;
+
+    /// <summary>Automatic edit: music after the recording, if any.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(OutroName), nameof(HasOutro))]
+    public partial string? OutroPath { get; set; }
+
+    public string OutroName => OutroPath is null ? Loc.T("Edit_NoMusic") : Path.GetFileName(OutroPath);
+
+    public bool HasOutro => OutroPath is not null;
+
+    /// <summary>Format of the file the automatic edit writes.</summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AutoEditCommand))]
+    public partial EncoderOption? SelectedAutoEncoder { get; set; }
+
+    /// <summary>The automatic edit is running (it analyses, then writes).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise))]
+    [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(ExportCommand), nameof(CancelCommand), nameof(ChooseFileCommand), nameof(AutoEditCommand), nameof(ChooseIntroCommand), nameof(ChooseOutroCommand))]
+    public partial bool IsAutoEditing { get; set; }
+
     [ObservableProperty]
     public partial EncoderOption? SelectedEncoder { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise))]
-    [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(ExportCommand), nameof(CancelCommand), nameof(ChooseFileCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(ExportCommand), nameof(CancelCommand), nameof(ChooseFileCommand), nameof(AutoEditCommand), nameof(ChooseIntroCommand), nameof(ChooseOutroCommand))]
     public partial bool IsAnalyzing { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise))]
-    [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(ExportCommand), nameof(CancelCommand), nameof(ChooseFileCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(ExportCommand), nameof(CancelCommand), nameof(ChooseFileCommand), nameof(AutoEditCommand), nameof(ChooseIntroCommand), nameof(ChooseOutroCommand))]
     public partial bool IsExporting { get; set; }
 
-    public bool IsBusy => IsAnalyzing || IsExporting;
+    public bool IsBusy => IsAnalyzing || IsExporting || IsAutoEditing;
 
     /// <summary>Settings can change only while nothing is running.</summary>
     public bool IsIdle => !IsBusy;
@@ -210,11 +257,17 @@ public partial class EditViewModel : ObservableObject, IDisposable
     [RelayCommand(CanExecute = nameof(CanAnalyze))]
     private async Task Analyze()
     {
-        if (SourcePath is not { } path) return;
+        if (SourcePath is { } path) await FindCutsAsync(path);
+    }
+
+    /// <summary>Fills <see cref="Cuts"/> with what can go from the recording.</summary>
+    /// <returns>False if it failed or was cancelled; <see cref="Status"/> then says why.</returns>
+    private async Task<bool> FindCutsAsync(string path)
+    {
         if (!File.Exists(path))
         {
             Status = Loc.F("Edit_FileMissing", path);
-            return;
+            return false;
         }
 
         StopPreview();
@@ -231,7 +284,10 @@ public partial class EditViewModel : ObservableObject, IDisposable
             MinimumSilence = TimeSpan.FromSeconds(MinimumSilenceSeconds),
             KeptGap = TimeSpan.FromSeconds(KeptGapSeconds),
         };
-        bool fillers = DetectFillers;
+        bool repeats = DetectRepeats;
+        // Fillers and repeats both come out of the same Whisper pass.
+        bool fillers = DetectFillers || repeats;
+        bool keepFillers = DetectFillers;
         var fillerList = FillerMatcher.ParseList(FillerWords);
         // Silence detection is quick; most of the time goes to Whisper.
         double silenceShare = fillers ? 0.1 : 1;
@@ -258,7 +314,8 @@ public partial class EditViewModel : ObservableObject, IDisposable
                 var language = string.IsNullOrWhiteSpace(_language()) ? "tr" : _language().Trim();
                 using var detector = new FillerDetector(SpeechProviders.WhisperModelFolder, model);
                 var result = await Task.Run(() => detector.DetectFileAsync(path, fillerList, language, progress: fillerProgress, cancellationToken: token), token);
-                found.AddRange(result.Fillers);
+                if (keepFillers) found.AddRange(result.Fillers);
+                if (repeats) found.AddRange(RepeatMatcher.Match(result.Words, fillerList));
             }
 
             _length = length;
@@ -267,16 +324,20 @@ public partial class EditViewModel : ObservableObject, IDisposable
             CutsChanged();
             Status = Cuts.Count == 0
                 ? Loc.T("Edit_NothingFound")
-                : Loc.F("Edit_Found", found.Count(r => r.Kind == CutKind.Silence), found.Count(r => r.Kind == CutKind.Filler));
+                : Loc.F("Edit_Found", found.Count(r => r.Kind == CutKind.Silence), found.Count(r => r.Kind == CutKind.Filler),
+                    found.Count(r => r.Kind == CutKind.Repeat));
+            return true;
         }
         catch (OperationCanceledException)
         {
             Cuts.Clear();
             Status = Loc.T("Edit_Canceled");
+            return false;
         }
         catch (Exception ex)
         {
             Status = Loc.F("Edit_AnalyzeFailed", ex.Message);
+            return false;
         }
         finally
         {
@@ -296,10 +357,11 @@ public partial class EditViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void SelectFillers(string? on) => SetKind(CutKind.Filler, on == "true");
 
+    /// <summary>Repeats go with the fillers: both are found by Whisper.</summary>
     private void SetKind(CutKind kind, bool enabled)
     {
         _bulkChange = true;
-        foreach (var cut in Cuts.Where(c => c.Region.Kind == kind)) cut.IsEnabled = enabled;
+        foreach (var cut in Cuts.Where(c => (c.Region.Kind == CutKind.Silence) == (kind == CutKind.Silence))) cut.IsEnabled = enabled;
         _bulkChange = false;
         CutsChanged();
     }
@@ -381,6 +443,99 @@ public partial class EditViewModel : ObservableObject, IDisposable
         }
     }
 
+    private bool CanAutoEdit() => SourcePath is not null && !IsBusy && SelectedAutoEncoder is not null;
+
+    /// <summary>
+    /// The one-button edit: finds the cuts, takes all of them out without asking, cleans and
+    /// levels the recording, puts the intro and outro around it and writes a file ready to publish.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanAutoEdit))]
+    private async Task AutoEdit()
+    {
+        if (SourcePath is not { } path || SelectedAutoEncoder is not { } format) return;
+
+        IsAutoEditing = true;
+        try
+        {
+            if (!await FindCutsAsync(path)) return;
+
+            var options = new MasterOptions
+            {
+                ReduceNoise = ReduceNoise && IsNoiseReductionAvailable,
+                Normalize = NormalizeLoudness,
+                IntroPath = ExistingFile(IntroPath),
+                OutroPath = ExistingFile(OutroPath),
+            };
+            var regions = Regions();
+            IsExporting = true;
+            Progress = 0;
+            Status = Loc.T("Edit_AutoWriting");
+            _work = new CancellationTokenSource();
+            var progress = new Progress<double>(p =>
+            {
+                Progress = p;
+                Status = Loc.F("Edit_AutoProgress", p * 100);
+            });
+            var encoder = format.Create();
+            var target = new RecordingTarget(EditExporter.EditedPath(path, encoder.FileExtension, EpisodeMaster.Suffix), encoder);
+            // Progress<T> posts its reports, so one can still arrive after the export is over.
+            string? done = null;
+            try
+            {
+                var result = await EpisodeMaster.ExportAsync(path, target, regions, options, progress, _work.Token);
+                LastExportPath = result.Path;
+                var loudness = !double.IsFinite(result.MeasuredLufs)
+                    ? ""
+                    : options.Normalize
+                        ? Loc.F("Edit_AutoLoudness", result.MeasuredLufs, result.MeasuredLufs + result.GainDb)
+                        : Loc.F("Edit_AutoLoudnessKept", result.MeasuredLufs);
+                done = Loc.F("Edit_AutoDone", result.Path, regions.Count, FormatTime(result.Removed), FormatTime(result.Length), loudness);
+            }
+            catch (OperationCanceledException)
+            {
+                done = Loc.T("Edit_ExportCanceled");
+            }
+            catch (Exception ex)
+            {
+                done = Loc.F("Edit_ExportFailed", ex.Message);
+            }
+            finally
+            {
+                encoder.Dispose();
+                _work.Dispose();
+                _work = null;
+                IsExporting = false;
+                Progress = 0;
+                // After any report still queued on the UI thread.
+                _ui.Post(_ => Status = done, null);
+            }
+        }
+        finally
+        {
+            IsAutoEditing = false;
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private void ChooseIntro()
+    {
+        if (_dialogs.PickAudioFiles(multiple: false) is [var path]) IntroPath = path;
+    }
+
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private void ChooseOutro()
+    {
+        if (_dialogs.PickAudioFiles(multiple: false) is [var path]) OutroPath = path;
+    }
+
+    [RelayCommand]
+    private void ClearIntro() => IntroPath = null;
+
+    [RelayCommand]
+    private void ClearOutro() => OutroPath = null;
+
+    private static string? ExistingFile(string? path) => !string.IsNullOrWhiteSpace(path) && File.Exists(path) ? path : null;
+
     private bool HasExport() => LastExportPath is not null;
 
     [RelayCommand(CanExecute = nameof(HasExport))]
@@ -429,6 +584,11 @@ public partial class EditViewModel : ObservableObject, IDisposable
         settings.IncludeStems = IncludeStems;
         if (IsNoiseReductionAvailable) settings.ReduceNoise = ReduceNoise;
         settings.EncoderId = SelectedEncoder?.Id ?? settings.EncoderId;
+        settings.DetectRepeats = DetectRepeats;
+        settings.NormalizeLoudness = NormalizeLoudness;
+        settings.IntroPath = IntroPath;
+        settings.OutroPath = OutroPath;
+        settings.AutoEncoderId = SelectedAutoEncoder?.Id ?? settings.AutoEncoderId;
     }
 
     public void Dispose()
@@ -474,7 +634,8 @@ public partial class EditViewModel : ObservableObject, IDisposable
     }
 
     private static bool IsEdit(string path) =>
-        Path.GetFileNameWithoutExtension(path).Contains(EditExporter.Suffix, StringComparison.Ordinal);
+        Path.GetFileNameWithoutExtension(path) is var name
+        && (name.Contains(EditExporter.Suffix, StringComparison.Ordinal) || name.Contains(EpisodeMaster.Suffix, StringComparison.Ordinal));
 
     /// <summary>"1:02:03.4" or "02:03.4".</summary>
     internal static string FormatTime(TimeSpan time) =>

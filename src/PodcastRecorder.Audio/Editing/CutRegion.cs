@@ -7,6 +7,9 @@ public enum CutKind
 
     /// <summary>A filler sound such as "ııı", "eee" or "hmm".</summary>
     Filler,
+
+    /// <summary>A first attempt at a word or phrase that was then said again.</summary>
+    Repeat,
 }
 
 /// <summary>
