@@ -89,6 +89,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
         ReduceNoise = settings.ReduceNoise && IsNoiseReductionAvailable;
         DetectRepeats = settings.DetectRepeats;
         NormalizeLoudness = settings.NormalizeLoudness;
+        LevelVoice = settings.LevelVoice;
         IntroPath = ExistingFile(settings.IntroPath);
         OutroPath = ExistingFile(settings.OutroPath);
         SelectedAutoEncoder = EncoderCatalog.Find(settings.AutoEncoderId);
@@ -153,6 +154,10 @@ public partial class EditViewModel : ObservableObject, IDisposable
     /// <summary>Automatic edit: bring the speech to the podcast loudness.</summary>
     [ObservableProperty]
     public partial bool NormalizeLoudness { get; set; }
+
+    /// <summary>Automatic edit: raise quiet passages and lower loud ones.</summary>
+    [ObservableProperty]
+    public partial bool LevelVoice { get; set; }
 
     /// <summary>Automatic edit: music before the recording, if any.</summary>
     [ObservableProperty]
@@ -463,6 +468,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
             {
                 ReduceNoise = ReduceNoise && IsNoiseReductionAvailable,
                 Normalize = NormalizeLoudness,
+                Level = LevelVoice,
                 IntroPath = ExistingFile(IntroPath),
                 OutroPath = ExistingFile(OutroPath),
             };
@@ -486,8 +492,8 @@ public partial class EditViewModel : ObservableObject, IDisposable
                 LastExportPath = result.Path;
                 var loudness = !double.IsFinite(result.MeasuredLufs)
                     ? ""
-                    : options.Normalize
-                        ? Loc.F("Edit_AutoLoudness", result.MeasuredLufs, result.MeasuredLufs + result.GainDb)
+                    : options.Normalize || options.Level
+                        ? Loc.F("Edit_AutoLoudness", result.MeasuredLufs, result.FinalLufs)
                         : Loc.F("Edit_AutoLoudnessKept", result.MeasuredLufs);
                 done = Loc.F("Edit_AutoDone", result.Path, regions.Count, FormatTime(result.Removed), FormatTime(result.Length), loudness);
             }
@@ -586,6 +592,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
         settings.EncoderId = SelectedEncoder?.Id ?? settings.EncoderId;
         settings.DetectRepeats = DetectRepeats;
         settings.NormalizeLoudness = NormalizeLoudness;
+        settings.LevelVoice = LevelVoice;
         settings.IntroPath = IntroPath;
         settings.OutroPath = OutroPath;
         settings.AutoEncoderId = SelectedAutoEncoder?.Id ?? settings.AutoEncoderId;

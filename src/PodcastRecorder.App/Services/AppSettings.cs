@@ -162,6 +162,9 @@ public sealed class EditSettings
     /// <summary>Automatic edit: bring the speech to -16 LUFS.</summary>
     public bool NormalizeLoudness { get; set; } = true;
 
+    /// <summary>Automatic edit: raise quiet passages and lower loud ones.</summary>
+    public bool LevelVoice { get; set; } = true;
+
     /// <summary>Automatic edit: music put before the recording.</summary>
     public string? IntroPath { get; set; }
 

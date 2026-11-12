@@ -354,7 +354,7 @@ her hücrenin köşesinde yazar)
   <data name="Edit_DetectRepeatsTip" xml:space="preserve"><value>Arka arkaya iki kez söylenen ifadeleri, duraksayıp yeniden söylenen kelimeleri ve yarıda kesilip baştan başlanan kelimeleri bulur; ilk deneme kesilir, ikincisi kalır. Whisper dökümünü kullanır. &quot;Yavaş yavaş&quot; gibi ikilemelere dokunmaz.</value></data>
   <data name="Edit_AutoTitle" xml:space="preserve"><value>Otomatik kurgu</value></data>
   <data name="Edit_AutoButton" xml:space="preserve"><value>Otomatik kurgula</value></data>
-  <data name="Edit_AutoTip" xml:space="preserve"><value>Tek tuşla yayına hazır dosya: kesilecek yerleri bulur ve sormadan hepsini keser, gürültüyü azaltır (kutu işaretliyse), sesi -16 LUFS&apos;a getirir, intro ve outro müziğini ekler. Orijinalin yanına _yayin ekiyle yeni bir dosya yazar; orijinal dosya değişmez. Yukarıdaki sessizlik ve dolgu ayarlarını kullanır.</value></data>
+  <data name="Edit_AutoTip" xml:space="preserve"><value>Tek tuşla yayına hazır dosya: kesilecek yerleri bulur ve sormadan hepsini keser, gürültüyü azaltır (kutu işaretliyse), kısık yerleri yükseltip yüksek yerleri kısar, sesi -16 LUFS&apos;a getirir, intro ve outro müziğini ekler. Orijinalin yanına _yayin ekiyle yeni bir dosya yazar; orijinal dosya değişmez. Yukarıdaki sessizlik ve dolgu ayarlarını kullanır.</value></data>
   <data name="Edit_Normalize" xml:space="preserve"><value>Seviyeyi -16 LUFS&apos;a getir</value></data>
   <data name="Edit_NormalizeTip" xml:space="preserve"><value>Kesimlerden sonra konuşmanın yüksekliğini ölçer ve podcast standardı olan -16 LUFS&apos;a getirir; limiter tepeleri -1 dB&apos;de tutar.</value></data>
   <data name="Edit_Intro" xml:space="preserve"><value>Intro:</value></data>
@@ -369,4 +369,6 @@ her hücrenin köşesinde yazar)
   <data name="Edit_AutoDone" xml:space="preserve"><value>Yayına hazır: {0} · {1} kesim, {2} kısaldı, süre {3}{4}</value></data>
   <data name="Edit_AutoLoudness" xml:space="preserve"><value> · {0:0.0} → {1:0.0} LUFS</value></data>
   <data name="Edit_AutoLoudnessKept" xml:space="preserve"><value> · {0:0.0} LUFS</value></data>
+  <data name="Edit_Level" xml:space="preserve"><value>Sesi dengele</value></data>
+  <data name="Edit_LevelTip" xml:space="preserve"><value>Kayıt boyunca ses seviyesini eşitler: kısık kalan yerleri yükseltir, yüksek yerleri kısar (en çok 12 dB, birkaç saniyelik yavaş geçişlerle). Mikrofondan uzaklaşan ya da daha kısık konuşan biri diğerleriyle aynı yükseklikte duyulur. Duraklamalardaki dip gürültüsünü yükseltmez.</value></data>
 </root>

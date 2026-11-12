@@ -70,6 +70,34 @@ public class AutoEditTests
     }
 
     [Fact]
+    public async Task Quiet_passages_are_raised_and_loud_ones_lowered()
+    {
+        // The second half is 10 dB quieter than the first, with a pause between them.
+        using var source = Synth.Tone(15, 1000, level: 0.3).Then(Synth.Silence(1)).Then(Synth.Tone(15, 1000, level: 0.095)).WriteTemp();
+        using var output = new TempFile(".wav");
+
+        var result = await EpisodeMaster.ExportAsync(source.Path, Target(output.Path), [], new MasterOptions { Level = true });
+
+        var samples = Read(output.Path);
+        double loud = Rms(samples, 3, 12);
+        double quiet = Rms(samples, 19, 28);
+        Assert.Equal(0, 20 * Math.Log10(loud / quiet), 0);
+        Assert.Equal(Normalizer.PodcastTargetLufs, Loudness(samples), 0);
+        Assert.Equal(Normalizer.PodcastTargetLufs, result.FinalLufs, 0);
+        // The pause stays a pause.
+        Assert.True(Rms(samples, 15.3, 15.7) < 0.001);
+    }
+
+    [Fact]
+    public void Leveller_leaves_an_even_recording_alone_and_holds_through_pauses()
+    {
+        var analyzer = new VoiceLeveler.Analyzer();
+        analyzer.Add(Synth.Tone(10, 1000, level: 0.2).Then(Synth.Noise(5, -70)).Then(Synth.Tone(10, 1000, level: 0.2)).Samples);
+
+        Assert.All(analyzer.Build().GainsDb, gain => Assert.Equal(0, gain, 1));
+    }
+
+    [Fact]
     public void Timeline_without_music_is_just_the_speech()
     {
         var plan = EpisodeMaster.Timeline.Plan(48000, 0, 0, TimeSpan.FromSeconds(4), TimeSpan.FromSeconds(0.5));

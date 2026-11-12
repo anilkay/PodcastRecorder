@@ -354,7 +354,7 @@ shown in each pad&apos;s corner)
   <data name="Edit_DetectRepeatsTip" xml:space="preserve"><value>Finds phrases said twice in a row, words said again after a hesitation and words broken off and started over; the first attempt is cut, the second stays. Uses the Whisper transcript. Words doubled on purpose without a pause are left alone.</value></data>
   <data name="Edit_AutoTitle" xml:space="preserve"><value>Automatic edit</value></data>
   <data name="Edit_AutoButton" xml:space="preserve"><value>Edit automatically</value></data>
-  <data name="Edit_AutoTip" xml:space="preserve"><value>A file ready to publish with one button: finds what can go and cuts all of it without asking, reduces noise (if the box is ticked), brings the level to -16 LUFS and adds the intro and outro music. Writes a new file next to the original with _yayin added to its name; the original is not changed. Uses the silence and filler settings above.</value></data>
+  <data name="Edit_AutoTip" xml:space="preserve"><value>A file ready to publish with one button: finds what can go and cuts all of it without asking, reduces noise (if the box is ticked), raises quiet passages and lowers loud ones, brings the level to -16 LUFS and adds the intro and outro music. Writes a new file next to the original with _yayin added to its name; the original is not changed. Uses the silence and filler settings above.</value></data>
   <data name="Edit_Normalize" xml:space="preserve"><value>Bring the level to -16 LUFS</value></data>
   <data name="Edit_NormalizeTip" xml:space="preserve"><value>Measures the loudness of the speech after the cuts and brings it to -16 LUFS, the podcast standard; the limiter holds peaks at -1 dB.</value></data>
   <data name="Edit_Intro" xml:space="preserve"><value>Intro:</value></data>
@@ -369,4 +369,6 @@ shown in each pad&apos;s corner)
   <data name="Edit_AutoDone" xml:space="preserve"><value>Ready to publish: {0} · {1} cuts, {2} shorter, length {3}{4}</value></data>
   <data name="Edit_AutoLoudness" xml:space="preserve"><value> · {0:0.0} → {1:0.0} LUFS</value></data>
   <data name="Edit_AutoLoudnessKept" xml:space="preserve"><value> · {0:0.0} LUFS</value></data>
+  <data name="Edit_Level" xml:space="preserve"><value>Even out the level</value></data>
+  <data name="Edit_LevelTip" xml:space="preserve"><value>Evens out the level across the recording: raises passages that are too quiet and lowers ones that are too loud (by 12 dB at most, changing slowly over a few seconds). Someone who moves away from the microphone or speaks more quietly ends up as loud as the rest. Noise in pauses is not pulled up.</value></data>
 </root>

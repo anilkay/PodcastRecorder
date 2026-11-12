@@ -12,6 +12,9 @@ public sealed record MasterOptions
     /// <summary>Clean the recording with RNNoise.</summary>
     public bool ReduceNoise { get; init; }
 
+    /// <summary>Even out the level over time: raise quiet passages, lower loud ones.</summary>
+    public bool Level { get; init; }
+
     /// <summary>Bring the speech to <see cref="TargetLufs"/>.</summary>
     public bool Normalize { get; init; } = true;
 
@@ -36,7 +39,9 @@ public sealed record MasterOptions
 /// <summary>What <see cref="EpisodeMaster"/> wrote.</summary>
 /// <param name="MeasuredLufs">Loudness of the speech after the cuts, before the gain.</param>
 /// <param name="SpeechStart">Where the recording starts in the file (after the intro).</param>
-public sealed record MasterResult(string Path, TimeSpan Length, TimeSpan Removed, double MeasuredLufs, double GainDb, TimeSpan SpeechStart);
+/// <param name="FinalLufs">Loudness of the speech in the file written.</param>
+public sealed record MasterResult(
+    string Path, TimeSpan Length, TimeSpan Removed, double MeasuredLufs, double FinalLufs, double GainDb, TimeSpan SpeechStart);
 
 /// <summary>
 /// Turns a recording into a file ready to publish, in one go: the cuts are taken out, the noise
@@ -79,6 +84,7 @@ public static class EpisodeMaster
             TimeSpan sourceLength;
             long speechFrames;
             var meter = new LoudnessMeter();
+            var levels = new VoiceLeveler.Analyzer();
             using (var reader = AudioFiles.Open(sourcePath))
             using (var writer = new WaveFileWriter(speechPath, AudioFormat.Mix))
             {
@@ -92,14 +98,18 @@ public static class EpisodeMaster
                 speechFrames = CutRenderer.Render(source, cuts, EditExporter.DefaultCrossfade, total, (samples, offset, count) =>
                 {
                     meter.Process(samples.AsSpan(offset, count), integrate: true);
+                    levels.Add(samples.AsSpan(offset, count));
                     writer.WriteSamples(samples, offset, count);
                 }, part, cancellationToken);
             }
 
             double measured = meter.IntegratedLufs;
-            double gainDb = options.Normalize ? Normalizer.GainFor(measured, options.TargetLufs) : 0;
+            var leveler = options.Level ? levels.Build() : null;
+            // Levelling moves the loudness, so the gain to the target is worked out after it.
+            double levelled = leveler is null ? measured : Measure(speechPath, leveler, cancellationToken);
+            double gainDb = options.Normalize ? Normalizer.GainFor(levelled, options.TargetLufs) : 0;
             // Music sits a little under the speech, wherever the speech ends up.
-            double speechLufs = double.IsFinite(measured) ? measured + gainDb : options.TargetLufs;
+            double speechLufs = double.IsFinite(levelled) ? levelled + gainDb : options.TargetLufs;
             var intro = Music.Load(options.IntroPath, speechLufs + options.MusicDb, cancellationToken);
             var outro = Music.Load(options.OutroPath, speechLufs + options.MusicDb, cancellationToken);
 
@@ -109,7 +119,7 @@ public static class EpisodeMaster
                 using var speech = new WaveFileReader(speechPath);
                 using var encoder = output.Encoder;
                 encoder.Open(output.Path, AudioFormat.Mix);
-                Mix(speech.ToSampleProvider(), intro, outro, plan, gainDb, options.DuckDb, encoder,
+                Mix(speech.ToSampleProvider(), leveler, intro, outro, plan, gainDb, options.DuckDb, encoder,
                     progress is null ? null : new Scaled(progress, 0.55, 0.45), cancellationToken);
             }
             catch
@@ -122,7 +132,7 @@ public static class EpisodeMaster
             EditExporter.CopyTags(sourcePath, output.Path);
             EditExporter.CopyChapters(sourcePath, output.Path, cuts, speechStart);
             var removed = cuts.Aggregate(TimeSpan.Zero, (sum, c) => sum + c.Duration);
-            return new MasterResult(output.Path, AudioFormat.FramesToTime(plan.Total), removed, measured, gainDb, speechStart);
+            return new MasterResult(output.Path, AudioFormat.FramesToTime(plan.Total), removed, measured, levelled + gainDb, gainDb, speechStart);
         }
         finally
         {
@@ -130,8 +140,28 @@ public static class EpisodeMaster
         }
     }
 
+    /// <summary>The loudness of the cut speech once <paramref name="leveler"/> has been applied.</summary>
+    private static double Measure(string speechPath, VoiceLeveler leveler, CancellationToken cancellationToken)
+    {
+        using var reader = new WaveFileReader(speechPath);
+        var source = reader.ToSampleProvider();
+        var meter = new LoudnessMeter();
+        var buffer = new float[BlockFrames * AudioFormat.Channels];
+        long frame = 0;
+        int read;
+        while ((read = ReadFully(source, buffer, buffer.Length)) > 0)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            leveler.Apply(buffer.AsSpan(0, read), frame);
+            meter.Process(buffer.AsSpan(0, read), integrate: true);
+            frame += read / AudioFormat.Channels;
+        }
+
+        return meter.IntegratedLufs;
+    }
+
     private static void Mix(
-        ISampleProvider speech, Music? intro, Music? outro, Timeline plan, double gainDb, double duckDb,
+        ISampleProvider speech, VoiceLeveler? leveler, Music? intro, Music? outro, Timeline plan, double gainDb, double duckDb,
         IAudioEncoder encoder, IProgress<double>? progress, CancellationToken cancellationToken)
     {
         const int channels = AudioFormat.Channels;
@@ -155,6 +185,7 @@ public static class EpisodeMaster
             {
                 int want = (int)(to - from) * channels;
                 int got = ReadFully(speech, voice, want);
+                leveler?.Apply(voice.AsSpan(0, got), from - plan.SpeechStart);
                 int at = (int)(from - position) * channels;
                 for (int i = 0; i < got; i++) mixed[at + i] = voice[i] * gain;
             }

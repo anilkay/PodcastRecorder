@@ -292,6 +292,8 @@
                         <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,8">
                             <Button Classes="accent" Content="{loc:T Edit_AutoButton, Prefix='✨ '}" Command="{Binding AutoEditCommand}"
                                     ToolTip.Tip="{loc:T Edit_AutoTip}" Margin="0,0,16,4" />
+                            <CheckBox Content="{loc:T Edit_Level}" IsChecked="{Binding LevelVoice}" Margin="0,0,16,4"
+                                      ToolTip.Tip="{loc:T Edit_LevelTip}" IsEnabled="{Binding IsIdle}" />
                             <CheckBox Content="{loc:T Edit_Normalize}" IsChecked="{Binding NormalizeLoudness}" Margin="0,0,16,4"
                                       ToolTip.Tip="{loc:T Edit_NormalizeTip}" IsEnabled="{Binding IsIdle}" />
                             <StackPanel Orientation="Horizontal" ToolTip.Tip="{loc:T Edit_IntroTip}" Margin="0,0,16,4">

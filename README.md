@@ -58,7 +58,7 @@ Anahtarlar ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Y
 
 1. Uzun sessizlikleri, dolgu seslerini ve tekrarları bulur (aşağıdaki ayarlarla) ve hepsini keser.
 2. "Gürültüyü azalt" işaretliyse kaydı RNNoise ile temizler. Kayıtta müzik ya da jingle varsa kapalı bırakın; RNNoise müziği de bastırır.
-3. Kesimlerden sonra konuşmanın yüksekliğini ölçer, -16 LUFS'a getirir; limiter tepeleri -1 dB'de tutar.
+3. "Sesi dengele" işaretliyse kayıt boyunca seviyeyi eşitler: kısık kalan yerleri yükseltir, yüksek yerleri kısar (en çok 12 dB, birkaç saniyelik yavaş geçişlerle; duraklamalardaki dip gürültüsü yükseltilmez). Sonra konuşmanın yüksekliğini ölçer, -16 LUFS'a getirir; limiter tepeleri -1 dB'de tutar.
 4. Seçildiyse **intro** ve **outro** müziğini ekler: intro tek başına çalar, sonu ilk sözlerin altında kısılarak biter; outro son sözlerin altında kısık başlar, konuşma bitince yükselir. Müzik konuşmadan 3 dB aşağıda, konuşmanın altındayken 14 dB daha kısık çalar; bindirme en çok 4 saniyedir.
 5. Dosya bilgilerini ve bölümleri taşır; bölümler kesilen süre kadar öne, intro kadar ileri kayar.
 

@@ -423,6 +423,8 @@
                         <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,8">
                             <Button Style="{StaticResource PrimaryButton}" services:ButtonAssist.Icon="&#xE945;" Content="{loc:T Edit_AutoButton}"
                                     Command="{Binding AutoEditCommand}" ToolTip="{loc:T Edit_AutoTip}" Margin="0,0,16,0" />
+                            <CheckBox Content="{loc:T Edit_Level}" IsChecked="{Binding LevelVoice}" MinWidth="0" VerticalAlignment="Center"
+                                      Margin="0,0,16,0" ToolTip="{loc:T Edit_LevelTip}" IsEnabled="{Binding IsIdle}" />
                             <CheckBox Content="{loc:T Edit_Normalize}" IsChecked="{Binding NormalizeLoudness}" MinWidth="0" VerticalAlignment="Center"
                                       Margin="0,0,16,0" ToolTip="{loc:T Edit_NormalizeTip}" IsEnabled="{Binding IsIdle}" />
                             <StackPanel Orientation="Horizontal" ToolTip="{loc:T Edit_IntroTip}" Margin="0,0,16,0">
