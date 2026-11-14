@@ -67,6 +67,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
     private CancellationTokenSource? _work;
     private TimeSpan _length;
     private bool _bulkChange;
+    private string? _whisperProblem;
 
     public EditViewModel(EditSettings settings, Func<string> recordingFolder, Func<string> whisperModel, Func<string> language,
         PreviewPlayer preview, Func<bool> isOutputRunning, IFileDialogs dialogs, SynchronizationContext ui)
@@ -90,6 +91,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
         DetectRepeats = settings.DetectRepeats;
         NormalizeLoudness = settings.NormalizeLoudness;
         LevelVoice = settings.LevelVoice;
+        AutoEditOnStop = settings.AutoEditOnStop;
         IntroPath = ExistingFile(settings.IntroPath);
         OutroPath = ExistingFile(settings.OutroPath);
         SelectedAutoEncoder = EncoderCatalog.Find(settings.AutoEncoderId);
@@ -158,6 +160,10 @@ public partial class EditViewModel : ObservableObject, IDisposable
     /// <summary>Automatic edit: raise quiet passages and lower loud ones.</summary>
     [ObservableProperty]
     public partial bool LevelVoice { get; set; }
+
+    /// <summary>Start the automatic edit by itself when a recording is finished.</summary>
+    [ObservableProperty]
+    public partial bool AutoEditOnStop { get; set; }
 
     /// <summary>Automatic edit: music before the recording, if any.</summary>
     [ObservableProperty]
@@ -249,6 +255,17 @@ public partial class EditViewModel : ObservableObject, IDisposable
         if (path is not null && File.Exists(path) && !IsBusy) SourcePath = path;
     }
 
+    /// <summary>
+    /// A recording is finished and its tags and chapters are written: with
+    /// <see cref="AutoEditOnStop"/> on, the automatic edit starts on it without a click.
+    /// </summary>
+    public void RecordingFinished(string? path)
+    {
+        if (!AutoEditOnStop || path is null || !File.Exists(path) || IsBusy) return;
+        SourcePath = path;
+        if (AutoEditCommand.CanExecute(null)) AutoEditCommand.Execute(null);
+    }
+
     private bool CanChooseFile() => !IsBusy;
 
     [RelayCommand(CanExecute = nameof(CanChooseFile))]
@@ -267,8 +284,13 @@ public partial class EditViewModel : ObservableObject, IDisposable
 
     /// <summary>Fills <see cref="Cuts"/> with what can go from the recording.</summary>
     /// <returns>False if it failed or was cancelled; <see cref="Status"/> then says why.</returns>
-    private async Task<bool> FindCutsAsync(string path)
+    /// <param name="silencesIfWhisperFails">
+    /// The automatic edit carries on with the silences alone when Whisper cannot run (no model and
+    /// no internet, say); <see cref="_whisperProblem"/> then holds why.
+    /// </param>
+    private async Task<bool> FindCutsAsync(string path, bool silencesIfWhisperFails = false)
     {
+        _whisperProblem = null;
         if (!File.Exists(path))
         {
             Status = Loc.F("Edit_FileMissing", path);
@@ -317,10 +339,17 @@ public partial class EditViewModel : ObservableObject, IDisposable
             {
                 var model = _whisperModel();
                 var language = string.IsNullOrWhiteSpace(_language()) ? "tr" : _language().Trim();
-                using var detector = new FillerDetector(SpeechProviders.WhisperModelFolder, model);
-                var result = await Task.Run(() => detector.DetectFileAsync(path, fillerList, language, progress: fillerProgress, cancellationToken: token), token);
-                if (keepFillers) found.AddRange(result.Fillers);
-                if (repeats) found.AddRange(RepeatMatcher.Match(result.Words, fillerList));
+                try
+                {
+                    using var detector = new FillerDetector(SpeechProviders.WhisperModelFolder, model);
+                    var result = await Task.Run(() => detector.DetectFileAsync(path, fillerList, language, progress: fillerProgress, cancellationToken: token), token);
+                    if (keepFillers) found.AddRange(result.Fillers);
+                    if (repeats) found.AddRange(RepeatMatcher.Match(result.Words, fillerList));
+                }
+                catch (Exception ex) when (silencesIfWhisperFails && ex is not OperationCanceledException)
+                {
+                    _whisperProblem = ex.Message;
+                }
             }
 
             _length = length;
@@ -462,7 +491,8 @@ public partial class EditViewModel : ObservableObject, IDisposable
         IsAutoEditing = true;
         try
         {
-            if (!await FindCutsAsync(path)) return;
+            if (!await FindCutsAsync(path, silencesIfWhisperFails: true)) return;
+            var whisperProblem = _whisperProblem;
 
             var options = new MasterOptions
             {
@@ -496,6 +526,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
                         ? Loc.F("Edit_AutoLoudness", result.MeasuredLufs, result.FinalLufs)
                         : Loc.F("Edit_AutoLoudnessKept", result.MeasuredLufs);
                 done = Loc.F("Edit_AutoDone", result.Path, regions.Count, FormatTime(result.Removed), FormatTime(result.Length), loudness);
+                if (whisperProblem is not null) done += " " + Loc.F("Edit_AutoNoWhisper", whisperProblem);
             }
             catch (OperationCanceledException)
             {
@@ -593,6 +624,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
         settings.DetectRepeats = DetectRepeats;
         settings.NormalizeLoudness = NormalizeLoudness;
         settings.LevelVoice = LevelVoice;
+        settings.AutoEditOnStop = AutoEditOnStop;
         settings.IntroPath = IntroPath;
         settings.OutroPath = OutroPath;
         settings.AutoEncoderId = SelectedAutoEncoder?.Id ?? settings.AutoEncoderId;

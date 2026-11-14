@@ -371,4 +371,7 @@ her hücrenin köşesinde yazar)
   <data name="Edit_AutoLoudnessKept" xml:space="preserve"><value> · {0:0.0} LUFS</value></data>
   <data name="Edit_Level" xml:space="preserve"><value>Sesi dengele</value></data>
   <data name="Edit_LevelTip" xml:space="preserve"><value>Kayıt boyunca ses seviyesini eşitler: kısık kalan yerleri yükseltir, yüksek yerleri kısar (en çok 12 dB, birkaç saniyelik yavaş geçişlerle). Mikrofondan uzaklaşan ya da daha kısık konuşan biri diğerleriyle aynı yükseklikte duyulur. Duraklamalardaki dip gürültüsünü yükseltmez.</value></data>
+  <data name="Edit_AutoOnStop" xml:space="preserve"><value>Kayıt bitince kendiliğinden başlat</value></data>
+  <data name="Edit_AutoOnStopTip" xml:space="preserve"><value>Kayıt durdurulup dosya yazıldığında otomatik kurgu hiçbir tuşa basmadan başlar; yayına hazır dosya kaydın yanına yazılır.</value></data>
+  <data name="Edit_AutoNoWhisper" xml:space="preserve"><value>Whisper çalışmadığı için yalnızca sessizlikler kesildi ({0}).</value></data>
 </root>

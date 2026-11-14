@@ -371,4 +371,7 @@ shown in each pad&apos;s corner)
   <data name="Edit_AutoLoudnessKept" xml:space="preserve"><value> · {0:0.0} LUFS</value></data>
   <data name="Edit_Level" xml:space="preserve"><value>Even out the level</value></data>
   <data name="Edit_LevelTip" xml:space="preserve"><value>Evens out the level across the recording: raises passages that are too quiet and lowers ones that are too loud (by 12 dB at most, changing slowly over a few seconds). Someone who moves away from the microphone or speaks more quietly ends up as loud as the rest. Noise in pauses is not pulled up.</value></data>
+  <data name="Edit_AutoOnStop" xml:space="preserve"><value>Start by itself when a recording ends</value></data>
+  <data name="Edit_AutoOnStopTip" xml:space="preserve"><value>When a recording is stopped and its file is written, the automatic edit starts without a click; the file ready to publish is written next to the recording.</value></data>
+  <data name="Edit_AutoNoWhisper" xml:space="preserve"><value>Whisper could not run, so only the silences were cut ({0}).</value></data>
 </root>

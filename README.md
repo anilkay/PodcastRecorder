@@ -62,6 +62,8 @@ Anahtarlar ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Y
 4. Seçildiyse **intro** ve **outro** müziğini ekler: intro tek başına çalar, sonu ilk sözlerin altında kısılarak biter; outro son sözlerin altında kısık başlar, konuşma bitince yükselir. Müzik konuşmadan 3 dB aşağıda, konuşmanın altındayken 14 dB daha kısık çalar; bindirme en çok 4 saniyedir.
 5. Dosya bilgilerini ve bölümleri taşır; bölümler kesilen süre kadar öne, intro kadar ileri kayar.
 
+**Kayıt bitince kendiliğinden başlat** işaretliyse düğmeye basmak da gerekmez: kayıt durdurulup dosya yazılır yazılmaz otomatik kurgu başlar. Whisper çalışamazsa (model inmemiş ve internet yoksa) otomatik kurgu durmaz, yalnızca sessizlikleri keserek dosyayı yine yazar ve bunu durum satırında söyler.
+
 **Tekrarları bul** işaretliyse Whisper dökümünden arka arkaya iki kez söylenen ifadeler ("bugün sizinle, bugün sizinle konuşacağız"), duraksayıp yeniden söylenen kelimeler ("ben, eee, ben") ve yarıda kesilip baştan başlanan kelimeler bulunur; ilk deneme kesilir. Duraksamadan söylenen ikilemelere ("yavaş yavaş") dokunulmaz. Whisper tekrarları çoğu zaman kendisi düzelterek yazdığı için hepsi yakalanmaz. Otomatik kurgudan sonra kesimler listede kalır; beğenmediğinizin işaretini kaldırıp "Dışa aktar" ile elle de yazabilirsiniz.
 
 ### Düzenle: sessizlik ve dolgu seslerini kesme

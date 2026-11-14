@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using NAudio.Wave;
 using PodcastRecorder.Audio.Denoising;
 using PodcastRecorder.Audio.Mixing;
@@ -77,7 +78,8 @@ public static class EpisodeMaster
         }
 
         // The cut speech goes to a temporary file first: its loudness is only known at its end.
-        var speechPath = Path.Combine(Path.GetTempPath(), $"podcastrecorder-kurgu-{Guid.NewGuid():N}.wav");
+        // Raw samples rather than a WAV, which cannot hold more than 4 GB (about three hours).
+        var speechPath = Path.Combine(Path.GetTempPath(), $"podcastrecorder-kurgu-{Guid.NewGuid():N}.raw");
         try
         {
             IReadOnlyList<TimeRange> cuts;
@@ -86,7 +88,7 @@ public static class EpisodeMaster
             var meter = new LoudnessMeter();
             var levels = new VoiceLeveler.Analyzer();
             using (var reader = AudioFiles.Open(sourcePath))
-            using (var writer = new WaveFileWriter(speechPath, AudioFormat.Mix))
+            using (var writer = File.Create(speechPath))
             {
                 sourceLength = reader.TotalTime;
                 cuts = CutList.Merge(regions, sourceLength);
@@ -99,7 +101,7 @@ public static class EpisodeMaster
                 {
                     meter.Process(samples.AsSpan(offset, count), integrate: true);
                     levels.Add(samples.AsSpan(offset, count));
-                    writer.WriteSamples(samples, offset, count);
+                    writer.Write(MemoryMarshal.AsBytes(samples.AsSpan(offset, count)));
                 }, part, cancellationToken);
             }
 
@@ -116,10 +118,10 @@ public static class EpisodeMaster
             var plan = Timeline.Plan(speechFrames, intro?.Frames ?? 0, outro?.Frames ?? 0, options.Overlap, DuckFade);
             try
             {
-                using var speech = new WaveFileReader(speechPath);
+                using var speech = new RawSamples(speechPath);
                 using var encoder = output.Encoder;
                 encoder.Open(output.Path, AudioFormat.Mix);
-                Mix(speech.ToSampleProvider(), leveler, intro, outro, plan, gainDb, options.DuckDb, encoder,
+                Mix(speech, leveler, intro, outro, plan, gainDb, options.DuckDb, encoder,
                     progress is null ? null : new Scaled(progress, 0.55, 0.45), cancellationToken);
             }
             catch
@@ -143,8 +145,7 @@ public static class EpisodeMaster
     /// <summary>The loudness of the cut speech once <paramref name="leveler"/> has been applied.</summary>
     private static double Measure(string speechPath, VoiceLeveler leveler, CancellationToken cancellationToken)
     {
-        using var reader = new WaveFileReader(speechPath);
-        var source = reader.ToSampleProvider();
+        using var source = new RawSamples(speechPath);
         var meter = new LoudnessMeter();
         var buffer = new float[BlockFrames * AudioFormat.Channels];
         long frame = 0;
@@ -290,7 +291,7 @@ public static class EpisodeMaster
     internal sealed class Music(float[] samples)
     {
         /// <summary>Longer files are cut off here; an intro is not meant to be a whole song.</summary>
-        public static TimeSpan MaximumLength { get; } = TimeSpan.FromMinutes(10);
+        public static TimeSpan MaximumLength { get; } = TimeSpan.FromMinutes(5);
 
         public float[] Samples { get; } = samples;
 
@@ -302,26 +303,55 @@ public static class EpisodeMaster
 
             using var reader = AudioFiles.Open(path);
             var source = FormatConversion.ToMixFormat(reader.ToSampleProvider());
-            long limit = CutList.ToFrame(MaximumLength, AudioFormat.SampleRate) * AudioFormat.Channels;
-            var samples = new List<float>();
-            var buffer = new float[BlockFrames * AudioFormat.Channels];
+            int limit = (int)CutList.ToFrame(MaximumLength, AudioFormat.SampleRate) * AudioFormat.Channels;
+            // Sized from the file's own length, so a long piece is not copied again and again as it grows.
+            long expected = CutList.ToFrame(reader.TotalTime, AudioFormat.SampleRate) * AudioFormat.Channels;
+            var all = new float[(int)Math.Clamp(expected, BlockFrames * AudioFormat.Channels, limit)];
             var meter = new LoudnessMeter();
-            int read;
-            while (samples.Count < limit && (read = source.Read(buffer, 0, buffer.Length)) > 0)
+            int count = 0;
+            while (count < limit)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                if (count == all.Length) Array.Resize(ref all, Math.Min(limit, all.Length * 2));
+                int want = all.Length - count;
+                int read = source.Read(all, count, want - want % AudioFormat.Channels);
                 read -= read % AudioFormat.Channels;
-                meter.Process(buffer.AsSpan(0, read), integrate: true);
-                samples.AddRange(buffer.AsSpan(0, read));
+                if (read <= 0) break;
+                meter.Process(all.AsSpan(count, read), integrate: true);
+                count += read;
             }
 
-            if (samples.Count == 0) return null;
+            if (count == 0) return null;
 
-            var all = samples.ToArray();
+            if (count < all.Length) Array.Resize(ref all, count);
             float gain = ToGain(Normalizer.GainFor(meter.IntegratedLufs, targetLufs));
             for (int i = 0; i < all.Length; i++) all[i] *= gain;
             return new Music(all);
         }
+    }
+
+    /// <summary>The temporary file of cut speech: interleaved floats in the mix format, nothing else.</summary>
+    private sealed class RawSamples(string path) : ISampleProvider, IDisposable
+    {
+        private readonly FileStream _file = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, 1 << 16);
+
+        public WaveFormat WaveFormat => AudioFormat.Mix;
+
+        public int Read(float[] buffer, int offset, int count)
+        {
+            var bytes = MemoryMarshal.AsBytes(buffer.AsSpan(offset, count));
+            int total = 0;
+            while (total < bytes.Length)
+            {
+                int read = _file.Read(bytes[total..]);
+                if (read == 0) break;
+                total += read;
+            }
+
+            return total / sizeof(float);
+        }
+
+        public void Dispose() => _file.Dispose();
     }
 
     /// <summary>Maps 0..1 onto a part of the whole job's progress.</summary>

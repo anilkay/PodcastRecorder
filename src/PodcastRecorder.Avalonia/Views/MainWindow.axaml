@@ -312,7 +312,9 @@
                             </StackPanel>
                             <TextBlock Text="{loc:T Main_Format}" Classes="label" />
                             <ComboBox ItemsSource="{x:Static vm:EditViewModel.Encoders}" SelectedItem="{Binding SelectedAutoEncoder}"
-                                      DisplayMemberBinding="{ReflectionBinding DisplayName}" Width="150" Margin="0,0,0,4" IsEnabled="{Binding IsIdle}" />
+                                      DisplayMemberBinding="{ReflectionBinding DisplayName}" Width="150" Margin="0,0,16,4" IsEnabled="{Binding IsIdle}" />
+                            <CheckBox Content="{loc:T Edit_AutoOnStop}" IsChecked="{Binding AutoEditOnStop}" Margin="0,0,0,4"
+                                      ToolTip.Tip="{loc:T Edit_AutoOnStopTip}" />
                         </WrapPanel>
 
                         <!-- How silences are found -->

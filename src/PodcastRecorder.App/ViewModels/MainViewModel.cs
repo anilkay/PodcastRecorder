@@ -510,6 +510,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
 
             TranscribeIfEnabled(path);
+            Edit.RecordingFinished(path);
             return;
         }
 
@@ -527,6 +528,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             await WriteTagsAsync(pending.Final.Path, stems);
             await WriteChaptersAsync(pending.Final.Path, stems, chapters);
             TranscribeIfEnabled(pending.Final.Path);
+            Edit.RecordingFinished(pending.Final.Path);
         }
         catch (Exception ex)
         {

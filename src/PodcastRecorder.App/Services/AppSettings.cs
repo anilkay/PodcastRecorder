@@ -165,6 +165,9 @@ public sealed class EditSettings
     /// <summary>Automatic edit: raise quiet passages and lower loud ones.</summary>
     public bool LevelVoice { get; set; } = true;
 
+    /// <summary>Run the automatic edit by itself as soon as a recording is finished.</summary>
+    public bool AutoEditOnStop { get; set; }
+
     /// <summary>Automatic edit: music put before the recording.</summary>
     public string? IntroPath { get; set; }
 
