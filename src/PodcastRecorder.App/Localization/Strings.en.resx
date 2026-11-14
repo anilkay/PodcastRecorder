@@ -374,4 +374,5 @@ shown in each pad&apos;s corner)
   <data name="Edit_AutoOnStop" xml:space="preserve"><value>Start by itself when a recording ends</value></data>
   <data name="Edit_AutoOnStopTip" xml:space="preserve"><value>When a recording is stopped and its file is written, the automatic edit starts without a click; the file ready to publish is written next to the recording.</value></data>
   <data name="Edit_AutoNoWhisper" xml:space="preserve"><value>Whisper could not run, so only the silences were cut ({0}).</value></data>
+  <data name="Edit_AutoLossySource" xml:space="preserve"><value>Tip: the recording is in a compressed format, so the audio was compressed a second time. Record in FLAC or WAV for a cleaner file to publish.</value></data>
 </root>

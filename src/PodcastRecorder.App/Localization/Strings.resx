@@ -374,4 +374,5 @@ her hücrenin köşesinde yazar)
   <data name="Edit_AutoOnStop" xml:space="preserve"><value>Kayıt bitince kendiliğinden başlat</value></data>
   <data name="Edit_AutoOnStopTip" xml:space="preserve"><value>Kayıt durdurulup dosya yazıldığında otomatik kurgu hiçbir tuşa basmadan başlar; yayına hazır dosya kaydın yanına yazılır.</value></data>
   <data name="Edit_AutoNoWhisper" xml:space="preserve"><value>Whisper çalışmadığı için yalnızca sessizlikler kesildi ({0}).</value></data>
+  <data name="Edit_AutoLossySource" xml:space="preserve"><value>İpucu: kayıt sıkıştırılmış bir biçimde olduğu için ses ikinci kez sıkıştırıldı. Kaydı FLAC ya da WAV alırsanız yayın dosyası daha temiz olur.</value></data>
 </root>

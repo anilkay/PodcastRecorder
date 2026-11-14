@@ -527,6 +527,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
                         : Loc.F("Edit_AutoLoudnessKept", result.MeasuredLufs);
                 done = Loc.F("Edit_AutoDone", result.Path, regions.Count, FormatTime(result.Removed), FormatTime(result.Length), loudness);
                 if (whisperProblem is not null) done += " " + Loc.F("Edit_AutoNoWhisper", whisperProblem);
+                if (IsLossy(path) && IsLossy(result.Path)) done += " " + Loc.T("Edit_AutoLossySource");
             }
             catch (OperationCanceledException)
             {
@@ -570,6 +571,9 @@ public partial class EditViewModel : ObservableObject, IDisposable
 
     [RelayCommand]
     private void ClearOutro() => OutroPath = null;
+
+    /// <summary>MP3, M4A and WMA lose a little with every encode; WAV and FLAC do not.</summary>
+    internal static bool IsLossy(string path) => Path.GetExtension(path).ToLowerInvariant() is ".mp3" or ".m4a" or ".aac" or ".wma" or ".ogg" or ".opus";
 
     private static string? ExistingFile(string? path) => !string.IsNullOrWhiteSpace(path) && File.Exists(path) ? path : null;
 

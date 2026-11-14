@@ -64,6 +64,8 @@ Anahtarlar ayar dosyasında Windows kullanıcınıza özel olarak şifrelenir. Y
 
 **Kayıt bitince kendiliğinden başlat** işaretliyse düğmeye basmak da gerekmez: kayıt durdurulup dosya yazılır yazılmaz otomatik kurgu başlar. Whisper çalışamazsa (model inmemiş ve internet yoksa) otomatik kurgu durmaz, yalnızca sessizlikleri keserek dosyayı yine yazar ve bunu durum satırında söyler.
 
+En temiz sonuç için kaydı kayıpsız (FLAC ya da WAV) alın, yayın dosyasını MP3 yazdırın; yeni kurulumlarda kayıt biçimi FLAC, otomatik kurgunun biçimi MP3 192 kbps gelir. MP3 bir kaydı yeniden MP3'e kurgulamak sesi ikinci kez sıkıştırır; otomatik kurgu bunu durum satırında hatırlatır.
+
 **Tekrarları bul** işaretliyse Whisper dökümünden arka arkaya iki kez söylenen ifadeler ("bugün sizinle, bugün sizinle konuşacağız"), duraksayıp yeniden söylenen kelimeler ("ben, eee, ben") ve yarıda kesilip baştan başlanan kelimeler bulunur; ilk deneme kesilir. Duraksamadan söylenen ikilemelere ("yavaş yavaş") dokunulmaz. Whisper tekrarları çoğu zaman kendisi düzelterek yazdığı için hepsi yakalanmaz. Otomatik kurgudan sonra kesimler listede kalır; beğenmediğinizin işaretini kaldırıp "Dışa aktar" ile elle de yazabilirsiniz.
 
 ### Düzenle: sessizlik ve dolgu seslerini kesme

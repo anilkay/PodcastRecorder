@@ -17,7 +17,11 @@ public sealed class AppSettings
 
     public string? OutputDeviceId { get; set; }
 
-    public string? EncoderId { get; set; }
+    /// <summary>
+    /// The recording format. Lossless FLAC unless the user picks another: the automatic edit then
+    /// writes the MP3 to publish from a clean original instead of compressing a second time.
+    /// </summary>
+    public string? EncoderId { get; set; } = "flac";
 
     public string RecordingFolder { get; set; } = Path.Combine(MusicFolder, Loc.T("Default_RecordingFolder"));
 
