@@ -41,6 +41,9 @@ public sealed class AppSettings
     /// <summary>Bring each finished recording to -16 LUFS.</summary>
     public bool NormalizeOnStop { get; set; }
 
+    /// <summary>Write a small MP3 safety copy next to each recording, in case the app or computer stops mid-take.</summary>
+    public bool BackupRecording { get; set; } = true;
+
     public double MusicVolume { get; set; } = 0.8;
 
     public double JingleVolume { get; set; } = 0.8;

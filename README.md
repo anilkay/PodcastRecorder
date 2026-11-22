@@ -12,6 +12,8 @@ Windows için podcast kayıt uygulaması; Linux ve macOS için de [Avalonia sür
 - Kaydet / duraklat / durdur, süre sayacı; MP3 128/192/320 kbps, M4A (AAC) 128/192 kbps, WMA 128/192 kbps, WAV veya FLAC (kayıpsız)
 - Kayıt sırasında **Ctrl+B** (ya da "Bölüm" düğmesi) ile bölüm işareti; bkz. [Bölümler](#bölümler)
 - **Ayrı izler (multitrack):** Karışıma ek olarak her kanal (her mikrofon, müzik, jingle) `podcast-TARİH izler` klasörüne ayrı dosya olarak kaydedilir; kurguda konuşmacıları ayrı ayrı düzeltmek için
+- **Ön kontrol:** Kayıttan önce 10 saniyelik test. 3 saniye sessiz kalırsınız (ortam gürültüsü ölçülür), sonra 7 saniye normal sesinizle konuşursunuz (mikrofon seviyesi, patlama). Her mikrofon için seviye ve gürültü, ayrıca diskte bu ayarlarla kaç saatlik kayıt sığdığı ✓ / ! / ✕ ile gösterilir; sorun varsa ne yapılacağı yazar (macOS'ta mikrofon izni dahil).
+- **Yedek kayıt** (varsayılan açık): Asıl kaydın yanında `Yedek` klasörüne 96 kbps MP3 bir kopya da yazılır (saatte ~43 MB). MP3 sonunda başlık gerektirmediği ve dosya 5 saniyede bir diske itildiği için uygulama çökse ya da bilgisayar kapansa bile yedek çalınabilir kalır. LAME kurulu olmayan Mac/Linux'ta yedek FLAC yazılır. Yedek hata verirse asıl kayıt sürer.
 - Mikser: Mikrofon, Müzik, Jingle kanalları; seviye, sessiz, "kulaklıkta duy", VU metre ve clip uyarısı; Master (kayıt) ve Kulaklık seviyesi
 - Jingle paneli: sürükle-bırak ya da sağ tık ile dosya ata, tıkla ya da tuşuna basarak çal/durdur
 - Çalma listesi: ekle, sırala, çal, sonraki, bitince otomatik sonrakine geç

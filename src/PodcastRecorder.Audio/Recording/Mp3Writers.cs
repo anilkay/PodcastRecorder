@@ -10,6 +10,24 @@ namespace PodcastRecorder.Audio.Recording;
 /// </summary>
 public static class Mp3Writers
 {
+    /// <summary>Whether MP3 can be written here: always on Windows, elsewhere only with libmp3lame installed.</summary>
+    public static bool IsAvailable
+    {
+        get
+        {
+            if (OperatingSystem.IsWindows()) return true;
+            try
+            {
+                LameNative.EnsureAvailable();
+                return true;
+            }
+            catch (DllNotFoundException)
+            {
+                return false;
+            }
+        }
+    }
+
     public static Stream CreateFile(string path, WaveFormat pcmFormat, int bitrateKbps)
     {
         if (OperatingSystem.IsWindows()) return new LameMP3FileWriter(path, pcmFormat, bitrateKbps);

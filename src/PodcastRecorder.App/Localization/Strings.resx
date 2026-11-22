@@ -375,4 +375,43 @@ her hücrenin köşesinde yazar)
   <data name="Edit_AutoOnStopTip" xml:space="preserve"><value>Kayıt durdurulup dosya yazıldığında otomatik kurgu hiçbir tuşa basmadan başlar; yayına hazır dosya kaydın yanına yazılır.</value></data>
   <data name="Edit_AutoNoWhisper" xml:space="preserve"><value>Whisper çalışmadığı için yalnızca sessizlikler kesildi ({0}).</value></data>
   <data name="Edit_AutoLossySource" xml:space="preserve"><value>İpucu: kayıt sıkıştırılmış bir biçimde olduğu için ses ikinci kez sıkıştırıldı. Kaydı FLAC ya da WAV alırsanız yayın dosyası daha temiz olur.</value></data>
+  <data name="Check_Button" xml:space="preserve"><value>Ön kontrol</value></data>
+  <data name="Check_ButtonTip" xml:space="preserve"><value>Kayda başlamadan önce 10 saniyelik test: 3 saniye sessiz kalın (ortam gürültüsü ölçülür), sonra 7 saniye normal sesinizle konuşun (mikrofon seviyesi ölçülür). Diskte kaç saatlik kayıt yeri kaldığına da bakar.</value></data>
+  <data name="Check_Cancel" xml:space="preserve"><value>İptal</value></data>
+  <data name="Check_Title" xml:space="preserve"><value>Kayıt öncesi kontrol</value></data>
+  <data name="Check_Close" xml:space="preserve"><value>Kapat</value></data>
+  <data name="Check_StayQuiet" xml:space="preserve"><value>Sessiz kalın, ortam gürültüsü ölçülüyor… {0}</value></data>
+  <data name="Check_Speak" xml:space="preserve"><value>Şimdi normal sesinizle konuşun… {0}</value></data>
+  <data name="Check_Cancelled" xml:space="preserve"><value>Ön kontrol iptal edildi.</value></data>
+  <data name="Check_SummaryOk" xml:space="preserve"><value>Ön kontrol: her şey hazır, kayda başlayabilirsiniz.</value></data>
+  <data name="Check_SummaryWarnings" xml:space="preserve"><value>Ön kontrol: dikkat edilmesi gereken {0} şey var.</value></data>
+  <data name="Check_SummaryProblems" xml:space="preserve"><value>Ön kontrol: kayıttan önce düzeltilmesi gereken {0} şey var.</value></data>
+  <data name="Check_NoMicrophone" xml:space="preserve"><value>Mikrofon yok. Önce "Mikrofon ekle" ile bir mikrofon ekleyin.</value></data>
+  <data name="Check_NoOutput" xml:space="preserve"><value>Dinleme çıkışı açık değil; mikrofon ancak bir çıkış aygıtı seçiliyken ölçülebilir.</value></data>
+  <data name="Check_MicOff" xml:space="preserve"><value>Mikrofon düğmesi kapalı: bu haliyle mikrofon kayda girmez. Kayda başlarken açın (Ctrl+M).</value></data>
+  <data name="Check_LevelOk" xml:space="preserve"><value>Mikrofon seviyesi iyi ({0:0} dBFS, en yüksek {1:0.0} dBFS).</value></data>
+  <data name="Check_TooQuiet" xml:space="preserve"><value>Ses kısık ({0:0} dBFS). Mikrofona yaklaşın ya da kanalın sesini veya sistemdeki giriş seviyesini artırın.</value></data>
+  <data name="Check_TooLoud" xml:space="preserve"><value>Ses çok yüksek ({0:0} dBFS), patlamaya yakın. Kanalın sesini biraz kısın ya da mikrofondan biraz uzaklaşın.</value></data>
+  <data name="Check_Clipping" xml:space="preserve"><value>Ses patlıyor (en yüksek {0:0.0} dBFS). Giriş seviyesini kısın ya da mikrofondan biraz uzaklaşın.</value></data>
+  <data name="Check_NoSignal" xml:space="preserve"><value>Mikrofondan konuşma duyulmadı. Doğru mikrofonun seçili olduğuna ve kanalın sessize alınmadığına bakın.</value></data>
+  <data name="Check_NoSignalMac" xml:space="preserve"><value>macOS'ta Sistem Ayarları › Gizlilik ve Güvenlik › Mikrofon'dan Podcast Recorder'a izin verin.</value></data>
+  <data name="Check_NoiseOk" xml:space="preserve"><value>Ortam sessiz (gürültü {0:0} dBFS, konuşmanın {1:0} dB altında).</value></data>
+  <data name="Check_NoiseNoticeable" xml:space="preserve"><value>Arka planda duyulur bir gürültü var ({0:0} dBFS). Fan, klima ya da açık pencere varsa kapatın.</value></data>
+  <data name="Check_NoiseLoud" xml:space="preserve"><value>Ortam gürültülü ({0:0} dBFS). Daha sessiz bir yer bulun.</value></data>
+  <data name="Check_TryNoiseReduction" xml:space="preserve"><value>"Gürültü azaltma"yı açmak da yardımcı olur.</value></data>
+  <data name="Check_LowSeparation" xml:space="preserve"><value>Konuşma ortam gürültüsünden yeterince ayrılmıyor (yalnızca {0:0} dB). Mikrofona yaklaşın.</value></data>
+  <data name="Check_NoiseNotMeasured" xml:space="preserve"><value>Ortam gürültüsü ölçülemedi, çünkü mikrofondan ses gelmedi.</value></data>
+  <data name="Check_DiskOk" xml:space="preserve"><value>Disk: {0} boş, bu ayarlarla {1} kayıt sığar.</value></data>
+  <data name="Check_DiskLow" xml:space="preserve"><value>Disk dolmak üzere: {0} boş, bu ayarlarla yalnızca {1} kayıt sığar. Uzun bir bölüm için yer açın.</value></data>
+  <data name="Check_DiskFull" xml:space="preserve"><value>Disk neredeyse dolu: {0} boş, bu ayarlarla yalnızca {1} kayıt sığar. Kayıttan önce yer açın ya da başka bir klasör seçin.</value></data>
+  <data name="Check_DiskUnknown" xml:space="preserve"><value>Kayıt klasörünün diskindeki boş yer okunamadı ({0}).</value></data>
+  <data name="Check_DiskPlenty" xml:space="preserve"><value>100 saatten fazla</value></data>
+  <data name="Check_Hours" xml:space="preserve"><value>yaklaşık {0:0} saat</value></data>
+  <data name="Check_Minutes" xml:space="preserve"><value>yaklaşık {0:0} dakika</value></data>
+  <data name="Main_Backup" xml:space="preserve"><value>Yedek kayıt</value></data>
+  <data name="Main_BackupTip" xml:space="preserve"><value>Kaydın yanına küçük bir MP3 yedeği de yazılır ("Yedek" klasörüne, 96 kbps, saatte yaklaşık 43 MB). Birkaç saniyede bir diske kaydedildiği için uygulama çöker ya da bilgisayar kapanırsa kayıt kaybolmaz. LAME kurulu olmayan Mac ve Linux'ta yedek FLAC olarak yazılır.</value></data>
+  <data name="Main_BackupFolder" xml:space="preserve"><value>Yedek</value></data>
+  <data name="Main_RecordingBackup" xml:space="preserve"><value> (+ yedek)</value></data>
+  <data name="Main_BackupFailed" xml:space="preserve"><value> · Yedek kayıt açılamadı: {0}</value></data>
+  <data name="Main_BackupError" xml:space="preserve"><value>Yedek kayıt durdu (asıl kayıt sürüyor): {0}</value></data>
 </root>

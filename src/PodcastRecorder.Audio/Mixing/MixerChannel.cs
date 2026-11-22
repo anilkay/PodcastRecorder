@@ -13,6 +13,7 @@ public sealed class MixerChannel : ISampleProvider
     private readonly GainRamp _gain;
     private readonly Fade _fade = new();
     private float _volume = 1f;
+    private volatile LevelProbe? _probe;
 
     public MixerChannel(string name, ISampleProvider source, bool monitorEnabled = true)
     {
@@ -55,6 +56,16 @@ public sealed class MixerChannel : ISampleProvider
     public float LastBlockRms { get; private set; }
 
     /// <summary>
+    /// Measures the channel for the pre-recording check while set: after the fader and mute, before
+    /// the on-air fade, so the result is the level the recording gets once the microphone is live.
+    /// </summary>
+    public LevelProbe? Probe
+    {
+        get => _probe;
+        set => _probe = value;
+    }
+
+    /// <summary>
     /// The level an automatic fade is heading to (1 = untouched). Used for ducking and for
     /// switching a microphone on and off, independently of the fader and mute.
     /// </summary>
@@ -67,6 +78,7 @@ public sealed class MixerChannel : ISampleProvider
         int read = _source.Read(buffer, offset, count);
         var samples = buffer.AsSpan(offset, read);
         _gain.Apply(samples, WaveFormat.Channels, IsMuted ? 0f : _volume);
+        _probe?.Process(samples, WaveFormat.Channels);
         _fade.Apply(samples, WaveFormat.Channels);
         Meter.Process(samples, WaveFormat.Channels);
         LastBlockRms = Rms(samples);

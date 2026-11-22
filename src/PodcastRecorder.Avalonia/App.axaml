@@ -184,6 +184,15 @@
             <Setter Property="Margin" Value="-2,-4,0,0" />
         </Style>
 
+        <Style Selector="TextBlock.check">
+            <Setter Property="Foreground" Value="{DynamicResource LiveBrush}" />
+        </Style>
+        <Style Selector="TextBlock.check.warning">
+            <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+        </Style>
+        <Style Selector="TextBlock.check.problem">
+            <Setter Property="Foreground" Value="{DynamicResource RecordBrush}" />
+        </Style>
         <Style Selector="Ellipse.voice">
             <Setter Property="Fill" Value="{DynamicResource BorderBrush}" />
         </Style>

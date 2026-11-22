@@ -375,4 +375,43 @@ shown in each pad&apos;s corner)
   <data name="Edit_AutoOnStopTip" xml:space="preserve"><value>When a recording is stopped and its file is written, the automatic edit starts without a click; the file ready to publish is written next to the recording.</value></data>
   <data name="Edit_AutoNoWhisper" xml:space="preserve"><value>Whisper could not run, so only the silences were cut ({0}).</value></data>
   <data name="Edit_AutoLossySource" xml:space="preserve"><value>Tip: the recording is in a compressed format, so the audio was compressed a second time. Record in FLAC or WAV for a cleaner file to publish.</value></data>
+  <data name="Check_Button" xml:space="preserve"><value>Pre-check</value></data>
+  <data name="Check_ButtonTip" xml:space="preserve"><value>A 10-second test before you record: stay quiet for 3 seconds (the room noise is measured), then speak normally for 7 seconds (the microphone level is measured). It also checks how many hours of recording fit on the disk.</value></data>
+  <data name="Check_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Check_Title" xml:space="preserve"><value>Pre-recording check</value></data>
+  <data name="Check_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Check_StayQuiet" xml:space="preserve"><value>Stay quiet, measuring the room noise… {0}</value></data>
+  <data name="Check_Speak" xml:space="preserve"><value>Now speak in your normal voice… {0}</value></data>
+  <data name="Check_Cancelled" xml:space="preserve"><value>Pre-check cancelled.</value></data>
+  <data name="Check_SummaryOk" xml:space="preserve"><value>Pre-check: all good, you can start recording.</value></data>
+  <data name="Check_SummaryWarnings" xml:space="preserve"><value>Pre-check: {0} thing(s) to keep an eye on.</value></data>
+  <data name="Check_SummaryProblems" xml:space="preserve"><value>Pre-check: {0} thing(s) to fix before recording.</value></data>
+  <data name="Check_NoMicrophone" xml:space="preserve"><value>No microphone. Add one with "Add microphone" first.</value></data>
+  <data name="Check_NoOutput" xml:space="preserve"><value>The monitor output is not open; the microphone can only be measured while an output device is selected.</value></data>
+  <data name="Check_MicOff" xml:space="preserve"><value>The microphone switch is off: as it is, the microphone will not be recorded. Turn it on when you start (Ctrl+M).</value></data>
+  <data name="Check_LevelOk" xml:space="preserve"><value>Microphone level is good ({0:0} dBFS, peak {1:0.0} dBFS).</value></data>
+  <data name="Check_TooQuiet" xml:space="preserve"><value>The voice is quiet ({0:0} dBFS). Move closer to the microphone or raise the channel or the system input level.</value></data>
+  <data name="Check_TooLoud" xml:space="preserve"><value>The voice is very loud ({0:0} dBFS), close to clipping. Lower the channel a little or move back from the microphone.</value></data>
+  <data name="Check_Clipping" xml:space="preserve"><value>The voice is clipping (peak {0:0.0} dBFS). Lower the input level or move back from the microphone.</value></data>
+  <data name="Check_NoSignal" xml:space="preserve"><value>No speech came through the microphone. Check that the right microphone is selected and the channel is not muted.</value></data>
+  <data name="Check_NoSignalMac" xml:space="preserve"><value>On macOS, allow Podcast Recorder under System Settings › Privacy &amp; Security › Microphone.</value></data>
+  <data name="Check_NoiseOk" xml:space="preserve"><value>The room is quiet (noise {0:0} dBFS, {1:0} dB below the voice).</value></data>
+  <data name="Check_NoiseNoticeable" xml:space="preserve"><value>There is audible background noise ({0:0} dBFS). Turn off fans or air conditioning and close windows if you can.</value></data>
+  <data name="Check_NoiseLoud" xml:space="preserve"><value>The room is noisy ({0:0} dBFS). Find a quieter place.</value></data>
+  <data name="Check_TryNoiseReduction" xml:space="preserve"><value>Turning on "Noise reduction" also helps.</value></data>
+  <data name="Check_LowSeparation" xml:space="preserve"><value>The voice does not stand out enough from the room noise (only {0:0} dB). Move closer to the microphone.</value></data>
+  <data name="Check_NoiseNotMeasured" xml:space="preserve"><value>The room noise could not be measured because no sound came through the microphone.</value></data>
+  <data name="Check_DiskOk" xml:space="preserve"><value>Disk: {0} free, room for {1} of recording with these settings.</value></data>
+  <data name="Check_DiskLow" xml:space="preserve"><value>The disk is filling up: {0} free, room for only {1} of recording with these settings. Free some space for a long episode.</value></data>
+  <data name="Check_DiskFull" xml:space="preserve"><value>The disk is almost full: {0} free, room for only {1} of recording with these settings. Free some space or pick another folder before recording.</value></data>
+  <data name="Check_DiskUnknown" xml:space="preserve"><value>Could not read the free space on the recording folder's disk ({0}).</value></data>
+  <data name="Check_DiskPlenty" xml:space="preserve"><value>more than 100 hours</value></data>
+  <data name="Check_Hours" xml:space="preserve"><value>about {0:0} hours</value></data>
+  <data name="Check_Minutes" xml:space="preserve"><value>about {0:0} minutes</value></data>
+  <data name="Main_Backup" xml:space="preserve"><value>Backup recording</value></data>
+  <data name="Main_BackupTip" xml:space="preserve"><value>Also writes a small MP3 backup of the recording (in the "Backup" folder, 96 kbps, about 43 MB per hour). It is saved to the disk every few seconds, so the take survives if the app crashes or the computer shuts down. On Mac and Linux without LAME the backup is written as FLAC.</value></data>
+  <data name="Main_BackupFolder" xml:space="preserve"><value>Backup</value></data>
+  <data name="Main_RecordingBackup" xml:space="preserve"><value> (+ backup)</value></data>
+  <data name="Main_BackupFailed" xml:space="preserve"><value> · Could not open the backup: {0}</value></data>
+  <data name="Main_BackupError" xml:space="preserve"><value>The backup stopped (the recording goes on): {0}</value></data>
 </root>

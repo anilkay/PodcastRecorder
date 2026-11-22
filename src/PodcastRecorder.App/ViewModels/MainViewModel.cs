@@ -62,6 +62,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         };
 
         _engine.Recorder.Faulted += (_, ex) => _ui.Post(_ => StatusMessage = Loc.F("Main_RecordingError", ex.Message), null);
+        _engine.Recorder.BackupFaulted += (_, ex) => _ui.Post(_ => StatusMessage = Loc.F("Main_BackupError", ex.Message), null);
         _engine.OutputStopped += (_, ex) =>
         {
             if (ex is not null) _ui.Post(_ => StatusMessage = Loc.F("Main_OutputStopped", ex.Message), null);
@@ -142,12 +143,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
-    [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand), nameof(AddMicrophoneCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand), nameof(AddMicrophoneCommand), nameof(ToggleCheckCommand))]
     public partial bool IsNormalizing { get; set; }
 
     /// <summary>Also write every mixer channel to its own file (multitrack).</summary>
     [ObservableProperty]
     public partial bool RecordStems { get; set; }
+
+    /// <summary>Also write a small MP3 safety copy of the mix, in case the app or the computer stops mid-take.</summary>
+    [ObservableProperty]
+    public partial bool BackupRecording { get; set; } = true;
 
     [ObservableProperty]
     public partial AudioDevice? SelectedOutput { get; set; }
@@ -217,7 +222,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle), nameof(IsRecording), nameof(IsPaused), nameof(StateText), nameof(PauseButtonText))]
-    [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand), nameof(AddMicrophoneCommand), nameof(AddChapterMarkerCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StartRecordingCommand), nameof(TogglePauseCommand), nameof(StopRecordingCommand), nameof(AddMicrophoneCommand), nameof(AddChapterMarkerCommand), nameof(ToggleCheckCommand))]
     public partial RecorderState RecordingState { get; set; }
 
     [ObservableProperty]
@@ -283,6 +288,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         RecordingFolder = _settings.RecordingFolder;
         RecordStems = _settings.RecordStems;
         NormalizeOnStop = _settings.NormalizeOnStop;
+        BackupRecording = _settings.BackupRecording;
 
         Playlist.AddFiles(_settings.Playlist.Where(File.Exists));
         LoadJingleBanks();
@@ -435,6 +441,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
+        _checkCancel?.Cancel();
+
         try
         {
             Directory.CreateDirectory(RecordingFolder);
@@ -455,10 +463,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
 
             var stems = RecordStems ? StemTargets(Path.Combine(RecordingFolder, name + " " + Loc.T("Main_StemsFolderSuffix"))) : null;
-            _engine.Recorder.Start(mix, stems);
+            string? backupError = null;
+            var backup = BackupRecording ? BackupTarget(name, out backupError) : null;
+            _engine.Recorder.Start(mix, stems, backup);
             MarkerCount = 0;
             _engine.Loudness.ResetIntegrated();
-            StatusMessage = Loc.F("Main_RecordingTo", finalPath) + (stems is null ? "" : Loc.F("Main_RecordingStems", stems.Count));
+            StatusMessage = Loc.F("Main_RecordingTo", finalPath) + (stems is null ? "" : Loc.F("Main_RecordingStems", stems.Count))
+                + (_engine.Recorder.BackupPath is not null ? Loc.T("Main_RecordingBackup")
+                    : (backupError ?? _engine.Recorder.BackupError?.Message) is { } error ? Loc.F("Main_BackupFailed", error) : "");
         }
         catch (Exception ex)
         {
@@ -644,6 +656,27 @@ public partial class MainViewModel : ObservableObject, IDisposable
             });
     }
 
+    /// <summary>
+    /// The safety copy, in a folder of its own next to the recordings so it is not mistaken for
+    /// the recording itself. Null (no backup) when the folder cannot be made.
+    /// </summary>
+    private RecordingTarget? BackupTarget(string name, out string? error)
+    {
+        error = null;
+        try
+        {
+            var folder = Path.Combine(RecordingFolder, Loc.T("Main_BackupFolder"));
+            Directory.CreateDirectory(folder);
+            var encoder = new BackupEncoder();
+            return new RecordingTarget(Path.Combine(folder, name + encoder.FileExtension), encoder);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            error = ex.Message;
+            return null;
+        }
+    }
+
     private bool CanPause() => RecordingState != RecorderState.Idle;
 
     private bool CanStop() => RecordingState != RecorderState.Idle;
@@ -694,6 +727,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        _checkCancel?.Cancel();
         _timer.Dispose();
         if (RecordingState != RecorderState.Idle)
         {
@@ -729,6 +763,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             .ToList();
         _settings.RecordStems = RecordStems;
         _settings.NormalizeOnStop = NormalizeOnStop;
+        _settings.BackupRecording = BackupRecording;
         _settings.OutputDeviceId = SelectedOutput?.Id;
         _settings.EncoderId = SelectedEncoder.Id;
         _settings.RecordingFolder = RecordingFolder;

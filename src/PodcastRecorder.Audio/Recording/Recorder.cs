@@ -24,6 +24,7 @@ public sealed class Recorder : IProgramSink
     private readonly Lock _gate = new();
     private Track? _mix;
     private Dictionary<MixerChannel, Track> _stems = [];
+    private Track? _backup;
     private long _frames;
     private readonly List<TimeSpan> _markers = [];
     private volatile RecorderState _state = RecorderState.Idle;
@@ -36,6 +37,12 @@ public sealed class Recorder : IProgramSink
     public IReadOnlyList<string> StemPaths { get; private set; } = [];
 
     public bool IsRecordingStems => _stems.Count > 0;
+
+    /// <summary>The safety copy of the current or last recording; null when none was written.</summary>
+    public string? BackupPath { get; private set; }
+
+    /// <summary>Why the safety copy could not be opened in the last <see cref="Start(RecordingTarget, IReadOnlyDictionary{MixerChannel, RecordingTarget}?, RecordingTarget?)"/>; the recording itself still runs.</summary>
+    public Exception? BackupError { get; private set; }
 
     /// <summary>Length of audio written so far, excluding paused time.</summary>
     public TimeSpan Elapsed => AudioFormat.FramesToTime(Interlocked.Read(ref _frames));
@@ -68,12 +75,20 @@ public sealed class Recorder : IProgramSink
     /// <summary>Raised on a background thread if an encoder fails; that file stops being written.</summary>
     public event EventHandler<Exception>? Faulted;
 
+    /// <summary>Raised on a background thread if the safety copy fails; the recording goes on without it.</summary>
+    public event EventHandler<Exception>? BackupFaulted;
+
     public void Start(string path, IAudioEncoder encoder) => Start(new RecordingTarget(path, encoder));
 
     /// <summary>
-    /// Starts recording the mix, plus one file per channel given in <paramref name="stems"/>.
+    /// Starts recording the mix, plus one file per channel given in <paramref name="stems"/>, plus
+    /// a safety copy of the mix in <paramref name="backup"/>. A backup that cannot be opened does
+    /// not stop the recording; <see cref="BackupError"/> says why.
     /// </summary>
-    public void Start(RecordingTarget mix, IReadOnlyDictionary<MixerChannel, RecordingTarget>? stems = null)
+    public void Start(
+        RecordingTarget mix,
+        IReadOnlyDictionary<MixerChannel, RecordingTarget>? stems = null,
+        RecordingTarget? backup = null)
     {
         lock (_gate)
         {
@@ -85,6 +100,25 @@ public sealed class Recorder : IProgramSink
             var targets = new List<RecordingTarget> { mix };
             if (stems is not null) targets.AddRange(stems.Values);
             OpenAll(targets);
+
+            BackupPath = null;
+            BackupError = null;
+            _backup = null;
+            if (backup is not null)
+            {
+                try
+                {
+                    backup.Encoder.Open(backup.Path, AudioFormat.Mix);
+                    _backup = new Track(backup, OnBackupFaulted);
+                    BackupPath = backup.Path;
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DllNotFoundException
+                    or BadImageFormatException or InvalidOperationException or ArgumentException or NotSupportedException)
+                {
+                    backup.Encoder.Dispose();
+                    BackupError = ex;
+                }
+            }
 
             _mix = new Track(mix, OnFaulted);
             _stems = stems?.ToDictionary(s => s.Key, s => new Track(s.Value, OnFaulted)) ?? [];
@@ -120,8 +154,10 @@ public sealed class Recorder : IProgramSink
             _state = RecorderState.Idle;
             tracks = [.. _stems.Values];
             if (_mix is not null) tracks.Insert(0, _mix);
+            if (_backup is not null) tracks.Add(_backup);
             _mix = null;
             _stems = [];
+            _backup = null;
         }
 
         foreach (var track in tracks) track.Complete();
@@ -142,6 +178,8 @@ public sealed class Recorder : IProgramSink
         {
             Interlocked.Add(ref _frames, samples.Length / AudioFormat.Channels);
         }
+
+        _backup?.TryWrite(samples);
     }
 
     /// <summary>Called by the mixer with one channel's block, for multitrack recording.</summary>
@@ -172,6 +210,8 @@ public sealed class Recorder : IProgramSink
     }
 
     private void OnFaulted(Exception ex) => Faulted?.Invoke(this, ex);
+
+    private void OnBackupFaulted(Exception ex) => BackupFaulted?.Invoke(this, ex);
 
     /// <summary>One output file with its queue and writer task.</summary>
     private sealed class Track

@@ -30,4 +30,17 @@ public static class EncoderCatalog
     public static EncoderOption Default => All[1];
 
     public static EncoderOption Find(string? id) => All.FirstOrDefault(o => o.Id == id) ?? Default;
+
+    /// <summary>
+    /// Roughly how many bytes an hour of the program mix takes in the format <paramref name="id"/>:
+    /// the bitrate for MP3/M4A/WMA ("mp3-192"), 16-bit stereo for WAV, about 60% of that for FLAC.
+    /// </summary>
+    public static long EstimatedBytesPerHour(string id)
+    {
+        const long wav = (long)AudioFormat.SampleRate * AudioFormat.Channels * 2 * 3600;
+        if (id == "wav") return wav;
+        if (id == "flac") return wav * 6 / 10;
+        int dash = id.LastIndexOf('-');
+        return dash > 0 && int.TryParse(id.AsSpan(dash + 1), out int kbps) ? kbps * 1000L / 8 * 3600 : wav;
+    }
 }

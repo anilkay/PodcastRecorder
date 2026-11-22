@@ -77,7 +77,39 @@
 
         <!-- Devices and AI tools -->
         <StackPanel Grid.Row="1">
+            <!-- Pre-recording check: the countdown while it runs, then one line per result. -->
+            <Border Classes="panel" Padding="12,8" Margin="0,10,0,0" IsVisible="{Binding IsCheckPanelVisible}">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top">
+                        <Button DockPanel.Dock="Right" Content="{loc:T Check_Close}" Command="{Binding CloseCheckCommand}" />
+                        <TextBlock VerticalAlignment="Center">
+                            <Run Text="{loc:T Check_Title}" FontWeight="SemiBold" />
+                            <Run Text="   " />
+                            <Run Text="{Binding CheckSummary}" Foreground="{DynamicResource MutedTextBrush}" />
+                        </TextBlock>
+                    </DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Margin="0,6,0,0" IsVisible="{Binding IsChecking}">
+                        <TextBlock Text="{Binding CheckPrompt}" FontSize="16" FontWeight="SemiBold" />
+                        <ProgressBar Classes="thin" Minimum="0" Maximum="1" Value="{Binding CheckProgress}" Margin="0,6,0,0" />
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding CheckResults}" Margin="0,4,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CheckResultLine">
+                                <DockPanel Margin="0,2">
+                                    <TextBlock DockPanel.Dock="Left" Text="{Binding Symbol}" FontWeight="Bold" Width="18"
+                                               Classes="check" Classes.warning="{Binding IsWarning}" Classes.problem="{Binding IsProblem}" />
+                                    <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+            </Border>
             <WrapPanel Orientation="Horizontal" Margin="4,10,0,6">
+                <Button Command="{Binding ToggleCheckCommand}" Content="{Binding CheckButtonText}" Margin="0,0,8,4"
+                        ToolTip.Tip="{loc:T Check_ButtonTip}" />
+                <CheckBox Content="{loc:T Main_Backup}" IsChecked="{Binding BackupRecording}" IsEnabled="{Binding IsIdle}"
+                          Margin="0,0,16,4" ToolTip.Tip="{loc:T Main_BackupTip}" />
                 <TextBlock Text="{loc:T Main_MikrofonEkle}" Classes="label" />
                 <ComboBox ItemsSource="{Binding InputDevices}" SelectedItem="{Binding InputToAdd}" DisplayMemberBinding="{ReflectionBinding Name}"
                           Width="210" IsEnabled="{Binding IsIdle}" Margin="0,0,6,4" />
