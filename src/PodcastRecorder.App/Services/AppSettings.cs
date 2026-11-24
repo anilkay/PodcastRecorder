@@ -166,8 +166,14 @@ public sealed class EditSettings
     /// <summary>Also find phrases said twice in a row and words started over (needs Whisper).</summary>
     public bool DetectRepeats { get; set; } = true;
 
-    /// <summary>Automatic edit: bring the speech to -16 LUFS.</summary>
+    /// <summary>Automatic edit: bring the speech to the loudness of <see cref="LoudnessPreset"/>.</summary>
     public bool NormalizeLoudness { get; set; } = true;
+
+    /// <summary>Automatic edit: id of the loudness preset (youtube, spotify, apple, ebu-r128, custom); empty means Apple Podcasts, -16 LUFS.</summary>
+    public string? LoudnessPreset { get; set; }
+
+    /// <summary>Automatic edit: the loudness of the custom preset, in LUFS.</summary>
+    public double CustomLufs { get; set; } = -16;
 
     /// <summary>Automatic edit: raise quiet passages and lower loud ones.</summary>
     public bool LevelVoice { get; set; } = true;

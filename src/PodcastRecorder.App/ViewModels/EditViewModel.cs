@@ -14,6 +14,12 @@ using PodcastRecorder.Speech.Fillers;
 
 namespace PodcastRecorder.App.ViewModels;
 
+/// <summary>A loudness preset as the automatic edit offers it.</summary>
+public sealed record LoudnessPresetOption(string Id, string DisplayName)
+{
+    public override string ToString() => DisplayName;
+}
+
 /// <summary>One found cut in the "Düzenle" list.</summary>
 public partial class CutItemViewModel(CutRegion region, EditViewModel owner) : ObservableObject
 {
@@ -91,6 +97,10 @@ public partial class EditViewModel : ObservableObject, IDisposable
         DetectRepeats = settings.DetectRepeats;
         NormalizeLoudness = settings.NormalizeLoudness;
         LevelVoice = settings.LevelVoice;
+        LoudnessPresets = [.. LoudnessPreset.All.Select(p => new LoudnessPresetOption(p.Id, PresetName(p))),
+            new LoudnessPresetOption(LoudnessPreset.CustomId, Loc.T("Edit_PresetCustom"))];
+        CustomLufs = LoudnessPreset.Custom(settings.CustomLufs).TargetLufs;
+        SelectedLoudnessPreset = LoudnessPresets.First(o => o.Id == LoudnessPreset.Find(settings.LoudnessPreset).Id);
         AutoEditOnStop = settings.AutoEditOnStop;
         IntroPath = ExistingFile(settings.IntroPath);
         OutroPath = ExistingFile(settings.OutroPath);
@@ -153,9 +163,36 @@ public partial class EditViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial bool DetectRepeats { get; set; }
 
-    /// <summary>Automatic edit: bring the speech to the podcast loudness.</summary>
+    /// <summary>Automatic edit: bring the speech to the loudness of <see cref="SelectedLoudnessPreset"/>.</summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanChangeLoudness))]
     public partial bool NormalizeLoudness { get; set; }
+
+    /// <summary>The platforms the automatic edit can aim its loudness at, then "Custom".</summary>
+    public IReadOnlyList<LoudnessPresetOption> LoudnessPresets { get; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsCustomLoudness))]
+    public partial LoudnessPresetOption? SelectedLoudnessPreset { get; set; }
+
+    public bool IsCustomLoudness => SelectedLoudnessPreset?.Id == LoudnessPreset.CustomId;
+
+    /// <summary>The loudness of the "Custom" preset, in LUFS.</summary>
+    [ObservableProperty]
+    public partial double CustomLufs { get; set; }
+
+    public bool CanChangeLoudness => IsIdle && NormalizeLoudness;
+
+    /// <summary>What the chosen preset stands for, with a custom loudness filled in.</summary>
+    public LoudnessPreset CurrentLoudness => LoudnessPreset.Find(SelectedLoudnessPreset?.Id, CustomLufs);
+
+    private static string PresetName(LoudnessPreset preset) => preset.Id switch
+    {
+        "youtube" => "YouTube",
+        "spotify" => "Spotify",
+        "apple" => "Apple Podcasts",
+        _ => Loc.T("Edit_PresetBroadcast"),
+    } + string.Format(CultureInfo.InvariantCulture, " · {0:0} LUFS", preset.TargetLufs);
 
     /// <summary>Automatic edit: raise quiet passages and lower loud ones.</summary>
     [ObservableProperty]
@@ -190,7 +227,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
 
     /// <summary>The automatic edit is running (it analyses, then writes).</summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise))]
+    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise), nameof(CanChangeLoudness))]
     [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(ExportCommand), nameof(CancelCommand), nameof(ChooseFileCommand), nameof(AutoEditCommand), nameof(ChooseIntroCommand), nameof(ChooseOutroCommand))]
     public partial bool IsAutoEditing { get; set; }
 
@@ -198,12 +235,12 @@ public partial class EditViewModel : ObservableObject, IDisposable
     public partial EncoderOption? SelectedEncoder { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise))]
+    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise), nameof(CanChangeLoudness))]
     [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(ExportCommand), nameof(CancelCommand), nameof(ChooseFileCommand), nameof(AutoEditCommand), nameof(ChooseIntroCommand), nameof(ChooseOutroCommand))]
     public partial bool IsAnalyzing { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise))]
+    [NotifyPropertyChangedFor(nameof(IsBusy), nameof(IsIdle), nameof(CanChangeReduceNoise), nameof(CanChangeLoudness))]
     [NotifyCanExecuteChangedFor(nameof(AnalyzeCommand), nameof(ExportCommand), nameof(CancelCommand), nameof(ChooseFileCommand), nameof(AutoEditCommand), nameof(ChooseIntroCommand), nameof(ChooseOutroCommand))]
     public partial bool IsExporting { get; set; }
 
@@ -494,10 +531,12 @@ public partial class EditViewModel : ObservableObject, IDisposable
             if (!await FindCutsAsync(path, silencesIfWhisperFails: true)) return;
             var whisperProblem = _whisperProblem;
 
+            var preset = CurrentLoudness;
             var options = new MasterOptions
             {
                 ReduceNoise = ReduceNoise && IsNoiseReductionAvailable,
                 Normalize = NormalizeLoudness,
+                TargetLufs = preset.TargetLufs,
                 Level = LevelVoice,
                 IntroPath = ExistingFile(IntroPath),
                 OutroPath = ExistingFile(OutroPath),
@@ -513,6 +552,7 @@ public partial class EditViewModel : ObservableObject, IDisposable
                 Status = Loc.F("Edit_AutoProgress", p * 100);
             });
             var encoder = format.Create();
+            options = options with { CeilingDb = preset.LimiterCeilingDb(IsLossy(encoder.FileExtension)) };
             var target = new RecordingTarget(EditExporter.EditedPath(path, encoder.FileExtension, EpisodeMaster.Suffix), encoder);
             // Progress<T> posts its reports, so one can still arrive after the export is over.
             string? done = null;
@@ -628,6 +668,8 @@ public partial class EditViewModel : ObservableObject, IDisposable
         settings.DetectRepeats = DetectRepeats;
         settings.NormalizeLoudness = NormalizeLoudness;
         settings.LevelVoice = LevelVoice;
+        settings.LoudnessPreset = SelectedLoudnessPreset?.Id ?? settings.LoudnessPreset;
+        settings.CustomLufs = CustomLufs;
         settings.AutoEditOnStop = AutoEditOnStop;
         settings.IntroPath = IntroPath;
         settings.OutroPath = OutroPath;

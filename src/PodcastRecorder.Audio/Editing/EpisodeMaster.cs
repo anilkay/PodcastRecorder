@@ -21,6 +21,9 @@ public sealed record MasterOptions
 
     public double TargetLufs { get; init; } = Normalizer.PodcastTargetLufs;
 
+    /// <summary>The limiter holds every peak of the finished file under this level, in dBFS.</summary>
+    public double CeilingDb { get; init; } = -1;
+
     /// <summary>Music played before the recording; its end runs under the first words.</summary>
     public string? IntroPath { get; init; }
 
@@ -121,7 +124,7 @@ public static class EpisodeMaster
                 using var speech = new RawSamples(speechPath);
                 using var encoder = output.Encoder;
                 encoder.Open(output.Path, AudioFormat.Mix);
-                Mix(speech, leveler, intro, outro, plan, gainDb, options.DuckDb, encoder,
+                Mix(speech, leveler, intro, outro, plan, gainDb, options.DuckDb, options.CeilingDb, encoder,
                     progress is null ? null : new Scaled(progress, 0.55, 0.45), cancellationToken);
             }
             catch
@@ -162,13 +165,13 @@ public static class EpisodeMaster
     }
 
     private static void Mix(
-        ISampleProvider speech, VoiceLeveler? leveler, Music? intro, Music? outro, Timeline plan, double gainDb, double duckDb,
+        ISampleProvider speech, VoiceLeveler? leveler, Music? intro, Music? outro, Timeline plan, double gainDb, double duckDb, double ceilingDb,
         IAudioEncoder encoder, IProgress<double>? progress, CancellationToken cancellationToken)
     {
         const int channels = AudioFormat.Channels;
         float gain = ToGain(gainDb);
         float duck = ToGain(duckDb);
-        var limiter = new Limiter();
+        var limiter = new Limiter { CeilingDb = ceilingDb };
         var block = new float[BlockFrames * channels];
         var voice = new float[BlockFrames * channels];
 

@@ -473,7 +473,18 @@
                             <CheckBox Content="{loc:T Edit_Level}" IsChecked="{Binding LevelVoice}" MinWidth="0" VerticalAlignment="Center"
                                       Margin="0,0,16,0" ToolTip="{loc:T Edit_LevelTip}" IsEnabled="{Binding IsIdle}" />
                             <CheckBox Content="{loc:T Edit_Normalize}" IsChecked="{Binding NormalizeLoudness}" MinWidth="0" VerticalAlignment="Center"
-                                      Margin="0,0,16,0" ToolTip="{loc:T Edit_NormalizeTip}" IsEnabled="{Binding IsIdle}" />
+                                      Margin="0,0,6,0" ToolTip="{loc:T Edit_NormalizeTip}" IsEnabled="{Binding IsIdle}" />
+                            <ComboBox ItemsSource="{Binding LoudnessPresets}" SelectedItem="{Binding SelectedLoudnessPreset}"
+                                      DisplayMemberPath="DisplayName" Width="210" IsEnabled="{Binding CanChangeLoudness}"
+                                      ToolTip="{loc:T Edit_PresetTip}" Margin="0,0,6,0" />
+                            <StackPanel Orientation="Horizontal" ToolTip="{loc:T Edit_CustomLufsTip}" Margin="0,0,10,0"
+                                        Visibility="{Binding IsCustomLoudness, Converter={StaticResource BoolToVisibility}}" IsEnabled="{Binding CanChangeLoudness}">
+                                <Slider Minimum="-24" Maximum="-10" Value="{Binding CustomLufs}" Width="100" VerticalAlignment="Center"
+                                        IsSnapToTickEnabled="True" TickFrequency="0.5" SmallChange="0.5" LargeChange="1" />
+                                <TextBlock Text="{Binding CustomLufs, StringFormat={}{0:0.0} LUFS}" VerticalAlignment="Center" Margin="6,0,0,0" MinWidth="64" />
+                            </StackPanel>
+                            <CheckBox Content="{loc:T Edit_ReduceNoise}" IsChecked="{Binding ReduceNoise}" MinWidth="0" VerticalAlignment="Center" Margin="6,0,16,0"
+                                      IsEnabled="{Binding CanChangeReduceNoise}" ToolTip="{Binding ReduceNoiseTip}" ToolTipService.ShowOnDisabled="True" />
                             <StackPanel Orientation="Horizontal" ToolTip="{loc:T Edit_IntroTip}" Margin="0,0,16,0">
                                 <TextBlock Text="{loc:T Edit_Intro}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="{Binding IntroName}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0"

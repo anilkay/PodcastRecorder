@@ -30,6 +30,48 @@ public class AutoEditTests
         Assert.Equal(Normalizer.PodcastTargetLufs, Loudness(samples), 0);
     }
 
+    [Theory]
+    [InlineData("youtube", -14)]
+    [InlineData("spotify", -14)]
+    [InlineData("apple", -16)]
+    [InlineData("ebu-r128", -23)]
+    public async Task Speech_is_brought_to_the_loudness_of_the_preset(string id, double lufs)
+    {
+        var preset = LoudnessPreset.Find(id);
+        Assert.Equal(lufs, preset.TargetLufs);
+        using var source = Synth.Tone(10, 1000, level: 0.05).WriteTemp();
+        using var output = new TempFile(".wav");
+
+        var options = new MasterOptions { TargetLufs = preset.TargetLufs, CeilingDb = preset.CeilingDb };
+        await EpisodeMaster.ExportAsync(source.Path, Target(output.Path), [], options);
+
+        Assert.Equal(lufs, Loudness(Read(output.Path)), 0);
+    }
+
+    [Fact]
+    public async Task Peaks_stay_under_the_ceiling_of_the_preset()
+    {
+        using var source = Synth.Tone(3, 1000, level: 0.9).WriteTemp();
+        using var output = new TempFile(".wav");
+
+        await EpisodeMaster.ExportAsync(source.Path, Target(output.Path), [], new MasterOptions { Normalize = false, CeilingDb = -3 });
+
+        Assert.True(Read(output.Path).Max(Math.Abs) <= Math.Pow(10, -3 / 20.0) + 1e-4);
+    }
+
+    [Fact]
+    public void Presets_are_found_by_their_saved_id()
+    {
+        Assert.Same(LoudnessPreset.ApplePodcasts, LoudnessPreset.Find(null));
+        Assert.Same(LoudnessPreset.ApplePodcasts, LoudnessPreset.Find("no-such-preset"));
+        Assert.Same(LoudnessPreset.YouTube, LoudnessPreset.Find("youtube"));
+        Assert.Equal(-19, LoudnessPreset.Find(LoudnessPreset.CustomId, -19).TargetLufs);
+        Assert.Equal(LoudnessPreset.MinimumLufs, LoudnessPreset.Custom(-40).TargetLufs);
+        Assert.Equal(LoudnessPreset.MaximumLufs, LoudnessPreset.Custom(0).TargetLufs);
+        Assert.Equal(-1.5, LoudnessPreset.YouTube.LimiterCeilingDb(lossyOutput: true));
+        Assert.Equal(-1, LoudnessPreset.YouTube.LimiterCeilingDb(lossyOutput: false));
+    }
+
     [Fact]
     public async Task Level_is_left_alone_when_normalizing_is_off()
     {

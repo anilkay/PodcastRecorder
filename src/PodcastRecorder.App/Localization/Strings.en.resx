@@ -355,8 +355,8 @@ shown in each pad&apos;s corner)
   <data name="Edit_AutoTitle" xml:space="preserve"><value>Automatic edit</value></data>
   <data name="Edit_AutoButton" xml:space="preserve"><value>Edit automatically</value></data>
   <data name="Edit_AutoTip" xml:space="preserve"><value>A file ready to publish with one button: finds what can go and cuts all of it without asking, reduces noise (if the box is ticked), raises quiet passages and lowers loud ones, brings the level to -16 LUFS and adds the intro and outro music. Writes a new file next to the original with _yayin added to its name; the original is not changed. Uses the silence and filler settings above.</value></data>
-  <data name="Edit_Normalize" xml:space="preserve"><value>Bring the level to -16 LUFS</value></data>
-  <data name="Edit_NormalizeTip" xml:space="preserve"><value>Measures the loudness of the speech after the cuts and brings it to -16 LUFS, the podcast standard; the limiter holds peaks at -1 dB.</value></data>
+  <data name="Edit_Normalize" xml:space="preserve"><value>Set the loudness:</value></data>
+  <data name="Edit_NormalizeTip" xml:space="preserve"><value>Measures the loudness of the speech after the cuts and brings it to what the chosen platform expects; the limiter holds peaks under -1 dB (-1.5 dB for MP3 and AAC).</value></data>
   <data name="Edit_Intro" xml:space="preserve"><value>Intro:</value></data>
   <data name="Edit_Outro" xml:space="preserve"><value>Outro:</value></data>
   <data name="Edit_NoMusic" xml:space="preserve"><value>none</value></data>
@@ -367,6 +367,10 @@ shown in each pad&apos;s corner)
   <data name="Edit_AutoWriting" xml:space="preserve"><value>Writing the file ready to publish…</value></data>
   <data name="Edit_AutoProgress" xml:space="preserve"><value>Writing the file ready to publish… {0:0}%</value></data>
   <data name="Edit_AutoDone" xml:space="preserve"><value>Ready to publish: {0} · {1} cuts, {2} shorter, length {3}{4}</value></data>
+  <data name="Edit_PresetBroadcast" xml:space="preserve"><value>Broadcast (EBU R128)</value></data>
+  <data name="Edit_PresetCustom" xml:space="preserve"><value>Custom</value></data>
+  <data name="Edit_PresetTip" xml:space="preserve"><value>YouTube and Spotify play at -14 LUFS, Apple Podcasts asks for -16 LUFS, radio and television (EBU R128) use -23 LUFS. Custom lets you pick your own target.</value></data>
+  <data name="Edit_CustomLufsTip" xml:space="preserve"><value>Your own target loudness, from -24 to -10 LUFS.</value></data>
   <data name="Edit_AutoLoudness" xml:space="preserve"><value> · {0:0.0} → {1:0.0} LUFS</value></data>
   <data name="Edit_AutoLoudnessKept" xml:space="preserve"><value> · {0:0.0} LUFS</value></data>
   <data name="Edit_Level" xml:space="preserve"><value>Even out the level</value></data>
